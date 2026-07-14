@@ -45,7 +45,7 @@ async def get_interview_history(
                 "role": i.predicted_role,
                 "mode": "Technical", # V2 doesn't store mode explicitly on model yet, default to Technical
                 "experience": "N/A",
-                "finalScore": i.overall_score,
+                "finalScore": i.final_score,
                 "status": i.status,
                 "createdAt": i.created_at,
             }

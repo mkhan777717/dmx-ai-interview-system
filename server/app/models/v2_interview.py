@@ -68,7 +68,9 @@ class ParseResumeResponse(BaseModel):
     skills: List[str]
     education: List[str]
     experience: List[str]
+    projects: List[str] = []
     predicted_role: str
+    resume_quality_score: int = 85
 
 
 class StartInterviewRequest(BaseModel):

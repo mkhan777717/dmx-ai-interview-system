@@ -87,7 +87,7 @@ function Home() {
             {/* Small Features Grid */}
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.5 }}
-              className='grid grid-cols-2 sm:grid-cols-4 gap-4'
+              className='flex flex-wrap md:flex-nowrap items-center gap-x-8 gap-y-6'
             >
               {[
                 { icon: <BsRobot />, title: 'AI Interviewer', desc: 'Smart & Adaptive' },
@@ -95,8 +95,8 @@ function Home() {
                 { icon: <BsPersonBadge />, title: 'Personalized', desc: 'For Your Role' },
                 { icon: <HiOutlineChartSquareBar />, title: 'Detailed Reports', desc: 'Track & Improve' },
               ].map((f, i) => (
-                <div key={i} className='flex items-start gap-3'>
-                  <div className='w-8 h-8 shrink-0 rounded-lg bg-green-50/80 border border-green-100 text-green-500 flex items-center justify-center text-sm'>
+                <div key={i} className='flex items-center gap-3'>
+                  <div className='w-10 h-10 shrink-0 rounded-xl bg-white border border-green-100 shadow-[0_4px_10px_rgb(0,0,0,0.03)] text-green-500 flex items-center justify-center text-lg'>
                     {f.icon}
                   </div>
                   <div>
@@ -114,11 +114,24 @@ function Home() {
             {/* Background pattern */}
             <div className="absolute inset-0 right-[-10%] bottom-[10%] opacity-20" style={{ backgroundImage: 'radial-gradient(#10b981 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
 
-            {/* Graphic 1: AI Avatar Card */}
+            {/* Graphic 1: Mock Sidebar (Behind Avatar) */}
             <motion.div 
-              initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3 }}
-              animate={{ y: [0, -10, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute left-[10%] top-[25%] bg-white rounded-3xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-gray-100 w-[220px] z-20 flex flex-col items-center"
+              initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.2 }}
+              className="absolute left-[8%] top-[15%] w-16 h-[340px] bg-[#f0fdf4] rounded-2xl border border-green-50 z-10 flex flex-col items-center py-6 gap-5 shadow-sm"
+            >
+              {[BsRobot, BsFileEarmarkText, BsBarChart, BsClock, BsPersonBadge, BsShieldCheck].map((Icon, i) => (
+                <div key={i} className={`w-8 h-8 rounded-lg flex items-center justify-center ${i===0 ? 'bg-green-500 text-white shadow-md' : 'text-green-600/60'}`}>
+                  <Icon size={i===0 ? 16 : 14} />
+                </div>
+              ))}
+            </motion.div>
+
+            {/* Graphic 2: AI Avatar Card */}
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }} 
+              animate={{ opacity: 1, y: [0, -10, 0] }} 
+              transition={{ opacity: { duration: 0.7, delay: 0.3 }, y: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 } }}
+              className="absolute left-[14%] top-[25%] bg-white rounded-3xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-gray-100 w-[220px] z-20 flex flex-col items-center"
             >
               <div className="w-24 h-24 rounded-full p-1 mb-4">
                 <img src="/ai_avatar.jpg" alt="Avatar" className="w-full h-full rounded-full object-cover object-top" onError={(e) => { e.target.src = "https://ui-avatars.com/api/?name=AI&background=10b981&color=fff" }} />
@@ -132,10 +145,11 @@ function Home() {
               </div>
             </motion.div>
 
-            {/* Graphic 2: Great Answer Notification */}
+            {/* Graphic 3: Great Answer Notification */}
             <motion.div 
-              initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.7 }}
-              animate={{ y: [0, -6, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              initial={{ opacity: 0, scale: 0.8, y: 0 }} 
+              animate={{ opacity: 1, scale: 1, y: [0, -6, 0] }} 
+              transition={{ opacity: { duration: 0.5, delay: 0.7 }, scale: { duration: 0.5, delay: 0.7 }, y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1.2 } }}
               className="absolute left-[25%] top-[10%] bg-white rounded-2xl p-4 shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-gray-100 flex items-start gap-3 z-30"
             >
               <div className="w-6 h-6 rounded-full bg-green-100 text-green-500 flex items-center justify-center shrink-0 mt-0.5"><FaCheckCircle size={14}/></div>
@@ -145,10 +159,11 @@ function Home() {
               </div>
             </motion.div>
 
-            {/* Graphic 3: Performance Score */}
+            {/* Graphic 4: Performance Score */}
             <motion.div 
-              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.9 }}
-              animate={{ y: [0, 8, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              initial={{ opacity: 0, x: 20, y: 0 }} 
+              animate={{ opacity: 1, x: 0, y: [0, 8, 0] }} 
+              transition={{ opacity: { duration: 0.6, delay: 0.9 }, x: { duration: 0.6, delay: 0.9 }, y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1.5 } }}
               className="absolute left-[30%] bottom-[20%] bg-white rounded-2xl p-4 shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-gray-100 flex items-center gap-4 z-30 min-w-[180px]"
             >
               <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-500"><HiOutlineChartSquareBar size={20}/></div>
@@ -162,10 +177,11 @@ function Home() {
               </div>
             </motion.div>
 
-            {/* Graphic 4: Dashboard Overview */}
+            {/* Graphic 5: Dashboard Overview */}
             <motion.div 
-              initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.5 }}
-              animate={{ y: [0, -5, 0] }} transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              initial={{ opacity: 0, x: 40, y: 0 }} 
+              animate={{ opacity: 1, x: 0, y: [0, -5, 0] }} 
+              transition={{ opacity: { duration: 0.8, delay: 0.5 }, x: { duration: 0.8, delay: 0.5 }, y: { duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1.3 } }}
               className="absolute right-[-5%] top-[15%] bg-white rounded-3xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-gray-100 w-[420px] z-10"
             >
               <h3 className="text-xs font-bold text-gray-900 mb-4">Dashboard Overview</h3>
@@ -217,8 +233,14 @@ function Home() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 relative">
             
             {/* Arrow connectors (hidden on mobile) */}
-            <div className="hidden md:block absolute top-1/2 left-[30%] w-[10%] border-t-2 border-dashed border-gray-200"></div>
-            <div className="hidden md:block absolute top-1/2 left-[65%] w-[10%] border-t-2 border-dashed border-gray-200"></div>
+            <div className="hidden md:flex absolute top-1/2 left-[28%] w-[8%] items-center text-gray-300">
+              <div className="flex-1 border-t-2 border-dotted border-gray-300"></div>
+              <BsArrowRight className="shrink-0 -ml-2" />
+            </div>
+            <div className="hidden md:flex absolute top-1/2 left-[62%] w-[8%] items-center text-gray-300">
+              <div className="flex-1 border-t-2 border-dotted border-gray-300"></div>
+              <BsArrowRight className="shrink-0 -ml-2" />
+            </div>
 
             {[
               {

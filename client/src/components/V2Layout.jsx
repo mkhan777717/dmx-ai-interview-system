@@ -59,12 +59,7 @@ export default function V2Layout({
         <nav className="px-4 flex-1">
           <NavItem onClick={() => navigate('/dashboard')} icon={FaThLarge} label="Overview" active={location.pathname === '/dashboard'} />
           <NavItem onClick={() => navigate('/v2/interview')} icon={FaMicrophoneAlt} label="Interview" active={location.pathname === '/v2/interview'} />
-          <NavItem onClick={() => {}} icon={FaRegIdBadge} label="Resume Parser" active={location.pathname === '/resume'} />
-          <NavItem onClick={() => {}} icon={FaListOl} label="Question Bank" active={location.pathname === '/questions'} />
-          <NavItem onClick={() => navigate('/history')} icon={FaHistory} label="Interview History" active={location.pathname === '/history'} />
-          <NavItem onClick={() => {}} icon={FaChartPie} label="Reports" active={location.pathname === '/reports'} />
-          <NavItem onClick={() => {}} icon={FaChartBar} label="Analytics" active={location.pathname === '/analytics'} />
-          <NavItem onClick={() => {}} icon={FaCog} label="Settings" active={location.pathname === '/settings'} />
+          <NavItem onClick={() => navigate('/analytics')} icon={FaChartBar} label="Analytics" active={location.pathname === '/analytics'} />
         </nav>
 
         {/* Bottom Cards */}

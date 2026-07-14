@@ -61,8 +61,10 @@ function Navbar() {
                         }
                         setShowCreditPopup(!showCreditPopup);
                         setShowUserPopup(false)
-                    }} className='flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full text-md hover:bg-gray-200 transition'>
-                        <BsCoin size={20}/>
+                    }} className='flex items-center gap-2 text-sm font-semibold text-gray-800 hover:text-black transition'>
+                        <div className="w-6 h-6 rounded-full border border-gray-900 flex items-center justify-center">
+                          <span className="text-[10px] font-bold">$</span>
+                        </div>
                         {userData?.credits || 0}
                     </button>
 

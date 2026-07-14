@@ -231,21 +231,28 @@ export default function Dashboard() {
                   </select>
                 </div>
                 <div className="h-[200px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={scoreTrendData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8'}} dy={10} />
-                      <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8'}} />
-                      <Tooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
-                      <Area type="monotone" dataKey="score" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorScore)" activeDot={{r: 6, fill: '#10b981', stroke: '#fff', strokeWidth: 2}} />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                  {scoreTrendData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={scoreTrendData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8'}} dy={10} />
+                        <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8'}} />
+                        <Tooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                        <Area type="monotone" dataKey="score" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorScore)" activeDot={{r: 6, fill: '#10b981', stroke: '#fff', strokeWidth: 2}} />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                      <FaChartLine size={32} className="mb-2 opacity-30" />
+                      <p className="text-xs">No score data available yet.</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -253,31 +260,40 @@ export default function Dashboard() {
               <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm flex flex-col">
                 <h3 className="font-bold text-gray-900 text-sm mb-2">Interviews by Role</h3>
                 <div className="flex-1 flex items-center justify-between">
-                  <div className="relative w-[120px] h-[120px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie data={roleData} cx="50%" cy="50%" innerRadius={40} outerRadius={60} paddingAngle={2} dataKey="value" stroke="none">
-                          {roleData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-                        </Pie>
-                      </PieChart>
-                    </ResponsiveContainer>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-xl font-bold text-gray-900 leading-none">24</span>
-                      <span className="text-[9px] text-gray-500 font-medium mt-0.5">Total</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex-1 pl-6 space-y-2.5">
-                    {roleData.map((r, i) => (
-                      <div key={i} className="flex justify-between items-center text-[10px]">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full" style={{backgroundColor: COLORS[i]}}></div>
-                          <span className="text-gray-600 font-medium truncate max-w-[90px]">{r.name}</span>
+                  {roleData.length > 0 ? (
+                    <>
+                      <div className="relative w-[120px] h-[120px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie data={roleData} cx="50%" cy="50%" innerRadius={40} outerRadius={60} paddingAngle={2} dataKey="value" stroke="none">
+                              {roleData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                            </Pie>
+                          </PieChart>
+                        </ResponsiveContainer>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <span className="text-xl font-bold text-gray-900 leading-none">{interviews.length}</span>
+                          <span className="text-[9px] text-gray-500 font-medium mt-0.5">Total</span>
                         </div>
-                        <span className="text-gray-400">{r.value} ({Math.round(r.value/24*100)}%)</span>
                       </div>
-                    ))}
-                  </div>
+                      
+                      <div className="flex-1 pl-6 space-y-2.5">
+                        {roleData.map((r, i) => (
+                          <div key={i} className="flex justify-between items-center text-[10px]">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full" style={{backgroundColor: COLORS[i]}}></div>
+                              <span className="text-gray-600 font-medium truncate max-w-[90px]">{r.name}</span>
+                            </div>
+                            <span className="text-gray-400">{r.value} ({Math.round(r.value/interviews.length*100)}%)</span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 min-h-[150px]">
+                      <BsPersonBadge size={32} className="mb-2 opacity-30" />
+                      <p className="text-xs">No role data available yet.</p>
+                    </div>
+                  )}
                 </div>
               </div>
 

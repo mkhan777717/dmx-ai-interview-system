@@ -73,6 +73,7 @@ function ResumeUpload({ onStart, onResumeParsed }) {
       setResumeData(data)
       if (onResumeParsed) onResumeParsed(data)
       setStep(4)
+      setTimeout(() => setStep(5), 500)
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to parse resume. Please try again.')
       setStep(1)
@@ -102,7 +103,7 @@ function ResumeUpload({ onStart, onResumeParsed }) {
 
   return (
     <div className="max-w-[1400px] mx-auto w-full">
-      <Stepper currentStep={step} />
+      <Stepper currentStep={step >= 5 ? 4 : step} />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
@@ -171,9 +172,9 @@ function ResumeUpload({ onStart, onResumeParsed }) {
 
               <div className="mt-6 pt-5 border-t border-gray-100">
                 <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-green-500 transition-all duration-700" style={{ width: `${(step/4)*100}%` }}></div>
+                  <div className="h-full bg-green-500 transition-all duration-700" style={{ width: `${(Math.min(step, 4)/4)*100}%` }}></div>
                 </div>
-                <p className="text-right text-xs text-gray-500 font-medium mt-1">{Math.round((step/4)*100)}%</p>
+                <p className="text-right text-xs text-gray-500 font-medium mt-1">{Math.round((Math.min(step, 4)/4)*100)}%</p>
               </div>
             </div>
           </div>
@@ -267,10 +268,18 @@ function ResumeUpload({ onStart, onResumeParsed }) {
                 <div className="bg-gray-50 rounded-xl p-4 flex items-center justify-between border border-gray-100 mt-4">
                    <div>
                      <p className="text-sm font-semibold text-gray-800">Resume Quality Score</p>
-                     <p className="text-xs text-gray-500 mt-0.5">Ready for technical round</p>
+                     <p className="text-xs text-gray-500 mt-0.5">
+                        {resumeData.resume_quality_score >= 80 ? 'Ready for technical round' :
+                         resumeData.resume_quality_score >= 60 ? 'Good, but could be improved' :
+                         'Needs improvement for ATS'}
+                     </p>
                    </div>
-                   <div className="w-12 h-12 rounded-full border-4 border-green-500 flex items-center justify-center font-bold text-green-600 bg-white">
-                      92
+                   <div className={`w-12 h-12 rounded-full border-4 flex items-center justify-center font-bold bg-white
+                      ${resumeData.resume_quality_score >= 80 ? 'border-green-500 text-green-600' :
+                        resumeData.resume_quality_score >= 60 ? 'border-yellow-500 text-yellow-600' :
+                        'border-red-500 text-red-600'}`}
+                   >
+                      {resumeData.resume_quality_score || 85}
                    </div>
                 </div>
                 

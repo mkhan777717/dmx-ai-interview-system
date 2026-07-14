@@ -37,7 +37,9 @@ async def parse_resume(pdf_bytes: bytes) -> dict:
                 '  "skills": ["skill1", "skill2"] (List of technical skills ONLY. Extract as many tech stack keywords as possible. E.g., React, Python, AWS),\n'
                 '  "education": ["Degree from University (Year)"] (List of strings summarizing education degrees),\n'
                 '  "experience": ["Company Name - Role (Duration)"] (List of strings summarizing past roles),\n'
-                '  "predicted_role": "Predicted job title based on skills (e.g., Frontend Developer, Backend Developer, Data Scientist. If unsure, default to Software Engineer)"\n'
+                '  "projects": ["Project Name - Description"] (List of strings describing personal or work projects),\n'
+                '  "predicted_role": "Predicted job title based on skills (e.g., Frontend Developer, Backend Developer, Data Scientist. If unsure, default to Software Engineer)",\n'
+                '  "resume_quality_score": Integer between 1 and 100 representing the overall quality, depth, and ATS-readiness of the resume\n'
                 "}"
             ),
         },
@@ -75,7 +77,9 @@ async def parse_resume(pdf_bytes: bytes) -> dict:
                 "skills": parsed.get("skills", []),
                 "education": parsed.get("education", []),
                 "experience": parsed.get("experience", []),
+                "projects": parsed.get("projects", []),
                 "predicted_role": parsed.get("predicted_role", "Software Engineer"),
+                "resume_quality_score": parsed.get("resume_quality_score", 85),
             }
 
     except Exception as e:
@@ -89,5 +93,7 @@ async def parse_resume(pdf_bytes: bytes) -> dict:
             "skills": ["JavaScript", "Python", "SQL"], # Dummy fallback
             "education": [],
             "experience": [],
-            "predicted_role": "Software Engineer"
+            "projects": [],
+            "predicted_role": "Software Engineer",
+            "resume_quality_score": 75,
         }
