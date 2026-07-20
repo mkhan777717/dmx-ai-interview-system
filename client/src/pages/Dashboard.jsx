@@ -56,11 +56,11 @@ export default function Dashboard() {
   const mins = totalMins % 60
   
   // Recent Interviews
-  const recentInterviews = [...interviews].reverse().slice(0, 5)
+  const recentInterviews = [...completed].reverse().slice(0, 5)
 
   // Roles Aggregation
   const roleCounts = {}
-  interviews.forEach(i => {
+  completed.forEach(i => {
     const r = i.role || 'Other'
     roleCounts[r] = (roleCounts[r] || 0) + 1
   })
@@ -262,16 +262,16 @@ export default function Dashboard() {
                 <div className="flex-1 flex items-center justify-between">
                   {roleData.length > 0 ? (
                     <>
-                      <div className="relative w-[120px] h-[120px]">
+                      <div className="relative w-[130px] h-[130px] flex items-center justify-center">
                         <ResponsiveContainer width="100%" height="100%">
                           <PieChart>
-                            <Pie data={roleData} cx="50%" cy="50%" innerRadius={40} outerRadius={60} paddingAngle={2} dataKey="value" stroke="none">
+                            <Pie data={roleData} cx="50%" cy="50%" innerRadius={40} outerRadius={55} paddingAngle={2} dataKey="value" stroke="none">
                               {roleData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                             </Pie>
                           </PieChart>
                         </ResponsiveContainer>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="text-xl font-bold text-gray-900 leading-none">{interviews.length}</span>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                          <span className="text-xl font-bold text-gray-900 leading-none">{completed.length}</span>
                           <span className="text-[9px] text-gray-500 font-medium mt-0.5">Total</span>
                         </div>
                       </div>
@@ -283,7 +283,7 @@ export default function Dashboard() {
                               <div className="w-2 h-2 rounded-full" style={{backgroundColor: COLORS[i]}}></div>
                               <span className="text-gray-600 font-medium truncate max-w-[90px]">{r.name}</span>
                             </div>
-                            <span className="text-gray-400">{r.value} ({Math.round(r.value/interviews.length*100)}%)</span>
+                            <span className="text-gray-400">{r.value} <span className="text-[9px] ml-0.5">({Math.round((r.value/completed.length)*100)}%)</span></span>
                           </div>
                         ))}
                       </div>
@@ -381,7 +381,7 @@ export default function Dashboard() {
             {/* AI Insights */}
             <div className="space-y-3">
               <h3 className="font-bold text-gray-900 text-sm flex items-center gap-2 mb-4">
-                <BsStars className="text-blue-500"/> AI Insights
+                <BsStars className="text-green-500"/> AI Insights
               </h3>
 
               <div className="bg-green-50 border border-green-100 rounded-xl p-4 flex gap-3 cursor-pointer hover:bg-green-100 transition">

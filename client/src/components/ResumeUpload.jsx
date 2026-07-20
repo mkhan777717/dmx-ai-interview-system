@@ -149,32 +149,43 @@ function ResumeUpload({ onStart, onResumeParsed }) {
               <h3 className="text-gray-900 font-semibold mb-5">Parsing Progress</h3>
               
               <div className="flex-1 flex flex-col justify-center gap-5">
-                {[
-                  { label: 'Reading PDF', s: 1 },
-                  { label: 'Extracting Text', s: 2 },
-                  { label: 'Analyzing Sections', s: 2 },
-                  { label: 'Extracting Information', s: 3 },
-                  { label: 'Generating Summary', s: 4 },
-                  { label: 'Finalizing Output', s: 4 }
-                ].map((item, i) => (
-                  <div key={i} className="flex justify-between items-center">
-                    <span className={`text-sm ${step >= item.s ? 'text-gray-800 font-medium' : 'text-gray-400'}`}>{item.label}</span>
-                    {step > item.s ? (
-                      <span className="text-xs font-semibold text-green-600 flex items-center gap-1">Completed <FaCheckCircle/></span>
-                    ) : step === item.s ? (
-                      <span className="text-xs font-semibold text-blue-500 flex items-center gap-1">In Progress <FaSpinner className="animate-spin"/></span>
-                    ) : (
-                      <span className="text-xs text-gray-400">Pending</span>
-                    )}
-                  </div>
-                ))}
+                {(() => {
+                  const currentParseStep = resumeData ? 5 : (parsing ? step : 0);
+                  return [
+                    { label: 'Reading PDF', s: 1 },
+                    { label: 'Extracting Text', s: 2 },
+                    { label: 'Analyzing Sections', s: 2 },
+                    { label: 'Extracting Information', s: 3 },
+                    { label: 'Generating Summary', s: 4 },
+                    { label: 'Finalizing Output', s: 4 }
+                  ].map((item, i) => (
+                    <div key={i} className="flex justify-between items-center">
+                      <span className={`text-sm ${currentParseStep >= item.s ? 'text-gray-800 font-medium' : 'text-gray-400'}`}>{item.label}</span>
+                      {currentParseStep > item.s ? (
+                        <span className="text-xs font-semibold text-green-600 flex items-center gap-1">Completed <FaCheckCircle/></span>
+                      ) : currentParseStep === item.s ? (
+                        <span className="text-xs font-semibold text-blue-500 flex items-center gap-1">In Progress <FaSpinner className="animate-spin"/></span>
+                      ) : (
+                        <span className="text-xs text-gray-400">Pending</span>
+                      )}
+                    </div>
+                  ));
+                })()}
               </div>
 
               <div className="mt-6 pt-5 border-t border-gray-100">
                 <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-green-500 transition-all duration-700" style={{ width: `${(Math.min(step, 4)/4)*100}%` }}></div>
+                  {(() => {
+                    const currentParseStep = resumeData ? 5 : (parsing ? step : 0);
+                    return <div className="h-full bg-green-500 transition-all duration-700" style={{ width: `${(Math.min(currentParseStep, 4)/4)*100}%` }}></div>
+                  })()}
                 </div>
-                <p className="text-right text-xs text-gray-500 font-medium mt-1">{Math.round((Math.min(step, 4)/4)*100)}%</p>
+                <p className="text-right text-xs text-gray-500 font-medium mt-1">
+                  {(() => {
+                    const currentParseStep = resumeData ? 5 : (parsing ? step : 0);
+                    return Math.round((Math.min(currentParseStep, 4)/4)*100)
+                  })()}%
+                </p>
               </div>
             </div>
           </div>

@@ -15,7 +15,9 @@ function InterviewHistory() {
         const getMyInterviews = async () => {
             try {
                 const result = await axios.get(ServerUrl + "/api/v2/interview/history", { withCredentials: true })
-                setInterviews(result.data)
+                // Only show fully completed interviews that have a report generated
+                const completedInterviews = result.data.filter(i => i.status === 'completed')
+                setInterviews(completedInterviews)
             } catch (error) {
                 console.log(error)
             } finally {
