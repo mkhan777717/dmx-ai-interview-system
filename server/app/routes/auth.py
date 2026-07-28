@@ -1,9 +1,8 @@
 from fastapi import APIRouter, HTTPException, Response, Depends
-from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from app.models.user import UserCreate, UserResponse, User
+from app.models.user import UserCreate, UserResponse, User, Role
 from app.config.database import get_db
 from app.config.jwt_handler import create_access_token
 
@@ -12,27 +11,33 @@ router = APIRouter()
 
 @router.post("/google", response_model=UserResponse)
 async def google_auth(user_data: UserCreate, response: Response, db: AsyncSession = Depends(get_db)):
-    """Google OAuth authentication"""
+    """Google OAuth authentication — creates user if not exists, returns JWT with role + org_id."""
     try:
-        # Check if user exists
         result = await db.execute(select(User).where(User.email == user_data.email))
         user = result.scalar_one_or_none()
-        
+
         if not user:
-            # Create new user
             user = User(
                 name=user_data.name,
                 email=user_data.email,
-                credits=100
+                credits=100,
+                role=Role.USER,        # Default role for self-signup
+                org_id=None,
+                is_active=True,
             )
             db.add(user)
             await db.commit()
             await db.refresh(user)
-        
-        # Generate token
-        token = create_access_token(str(user.id))
-        
-        # Set cookie
+        elif not user.is_active:
+            raise HTTPException(status_code=403, detail="Your account has been deactivated.")
+
+        # Token now includes role + org_id
+        token = create_access_token(
+            user_id=user.id,
+            role=user.role.value if hasattr(user.role, 'value') else user.role,
+            org_id=user.org_id,
+        )
+
         response.set_cookie(
             key="token",
             value=token,
@@ -40,11 +45,13 @@ async def google_auth(user_data: UserCreate, response: Response, db: AsyncSessio
             secure=False,
             samesite="lax",
             path="/",
-            max_age=7 * 24 * 60 * 60  # 7 days
+            max_age=7 * 24 * 60 * 60,  # 7 days
         )
-        
+
         return user
-        
+
+    except HTTPException:
+        raise
     except Exception as e:
         await db.rollback()
         raise HTTPException(status_code=500, detail=f"Google auth error: {str(e)}")

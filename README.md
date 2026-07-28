@@ -1,366 +1,166 @@
-# 🎯 InterviewIQ - Complete Backend Migration
+# 🎯 InterviewIQ v2.0 - AI-Powered Interview Preparation Platform
 
-## ✅ Migration Complete: Node.js → FastAPI
-
-The entire backend has been **successfully migrated** from Node.js/Express to **FastAPI (Python)**.
+InterviewIQ is an end-to-end, enterprise-grade AI interview candidate assessment and preparation platform. Built with **FastAPI (Python 3.13)**, **PostgreSQL (SQLAlchemy 2.0 AsyncPG)**, and **React 19 (Vite)**, it provides dynamic question selection, real-time candidate evaluation, adaptive difficulty scaling, automated follow-up question generation, peer percentile benchmarking, and role-based access control (RBAC).
 
 ---
 
-## 🚀 Quick Start
+## 🌟 Key Features
 
-### For Backend (FastAPI)
+### 🏢 Multi-Role Access Control (RBAC)
+- **Candidate**: Personal interview practice, real-time feedback, detailed performance scorecards, and AI coaching plans.
+- **Recruiter**: Job description parsing, rubric configuration, interview invite distribution, and candidate evaluation reports.
+- **SuperAdmin**: System-wide platform metrics, user management, recruiter provisioning, impersonation audit trail, and global configuration.
 
-```bash
-# Navigate to server
-cd server
+### 🤖 Adaptive AI Assessment Engine
+- **Sentence Transformers Semantic Scoring**: Evaluates candidate responses against rubric-weighted reference answers, covering semantic relevance, key concepts, and domain keywords.
+- **Adaptive Difficulty Adjustment**: Automatically monitors candidate performance (`consecutive_good` count) to swap technical questions to higher or lower difficulty tiers dynamically.
+- **Automated Follow-up Generation**: Triggers tailored follow-up questions when candidate answers reveal missing core concepts.
+- **AI Answer & Fraud Heuristics**: Heuristic analysis detecting copy-pasted or LLM-generated responses based on response length, completion time, and structural patterns.
+- **Peer Percentile Benchmarking**: Dynamically ranks candidate final scores against peers interviewing for identical roles.
 
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate
+### 📄 Resume & JD Intelligence
+- **PDF Resume Parsing**: Powered by PyMuPDF (`fitz`) for skill extraction, candidate contact detection, and target role prediction.
+- **Job Description Parsing**: Extracts key required technical skills, experience requirements, and maps them to tailored interview rubrics.
 
-# Install dependencies
-pip install -r requirements.txt
-
-# Configure .env (add your MongoDB URL)
-# Edit server/.env and add MONGODB_URL
-
-# Run server
-python main.py
-```
-
-**Server will run on**: http://localhost:8000  
-**API Documentation**: http://localhost:8000/docs
+### 🎙️ Audio & Voice Support
+- **Speech-to-Text**: Voice transcription routes powered by Groq Whisper (`groq`).
+- **Text-to-Speech**: Speech synthesis endpoints for voice-driven interview simulation.
 
 ---
 
-### For Frontend (React)
+## 🛠️ Technology Stack
 
-```bash
-# Navigate to client
-cd client
+### Backend (FastAPI)
+- **Framework**: FastAPI (Python 3.13) with full async/await architecture
+- **Database**: PostgreSQL with SQLAlchemy 2.0 (`asyncpg` engine) & Alembic migrations
+- **Authentication**: JWT token-based authentication with HTTP-only cookies and Google OAuth support
+- **NLP / ML**: `sentence-transformers`, `spacy`, `scikit-learn`, `numpy`, `pandas`, `PyMuPDF`, `groq`
+- **Validation & OpenAPI**: Pydantic v2 with auto-generated Swagger UI (`/docs`)
 
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-```
-
-**Client will run on**: http://localhost:5173
-
----
-
-## 📊 What Changed
-
-### ✅ Migrated Features
-- ✅ User Authentication (Google OAuth)
-- ✅ JWT Token Management
-- ✅ Resume PDF Analysis
-- ✅ AI Interview Question Generation
-- ✅ Answer Submission & Evaluation
-- ✅ Interview History & Reports
-- ✅ User Credit System
-
-### ❌ Removed Features
-- ❌ Payment Integration (Razorpay)
-- ❌ All payment-related endpoints
-- ❌ Payment model and controllers
-
-### 🎨 Improvements
-- Modern Python async patterns
-- Type safety with Pydantic
-- Auto-generated API documentation
-- Better error handling
-- Cleaner project structure
-- Comprehensive documentation
+### Frontend (React SPA)
+- **Core**: React 19, React Router v7, JavaScript (ES modules)
+- **Build System**: Vite 7
+- **State Management**: Redux Toolkit & React-Redux
+- **Styling & UI**: Vanilla CSS & TailwindCSS v4 with Motion animations, React Icons, Circular Progressbar, Monaco Code Editor, and Recharts.
 
 ---
 
-## 📁 Project Structure
+## 📁 Repository Structure
 
 ```
-3.interviewIQ/
-├── client/                 # React frontend (unchanged)
+.
+├── client/                     # Frontend Application (React + Vite)
 │   ├── src/
-│   ├── public/
-│   └── package.json
+│   │   ├── components/         # Navigation, banners, modal components
+│   │   ├── pages/              # AdminDashboard, CandidateDashboard, Analytics, Interview Room
+│   │   ├── redux/              # Redux Toolkit slices & store definition
+│   │   └── App.jsx             # Main routing and auth wrappers
+│   ├── package.json            # Frontend scripts and dependencies
+│   └── vite.config.js          # Vite build configuration
 │
-└── server/                 # FastAPI backend (NEW)
+└── server/                     # Backend Application (FastAPI + PostgreSQL)
     ├── app/
-    │   ├── config/         # Settings, DB, JWT
-    │   ├── middleware/     # Authentication
-    │   ├── models/         # Pydantic models
-    │   ├── routes/         # API endpoints
-    │   └── services/       # AI, PDF processing
-    ├── main.py             # Entry point
-    ├── requirements.txt    # Dependencies
-    └── [Documentation]
+    │   ├── config/             # Database connection, JWT handler, environment settings
+    │   ├── middleware/         # Auth & RBAC role-verification middleware
+    │   ├── models/             # SQLAlchemy ORM models (V2Interview, V2Answer, AuditLog, etc.)
+    │   ├── routes/             # API Router endpoints (auth, interview, admin, superadmin, etc.)
+    │   └── services/           # AI services (resume_parser, jd_parser, evaluator, rubric_service)
+    ├── main.py                 # Application entry point & FastAPI setup
+    ├── requirements.txt        # Python package dependencies
+    ├── seed_superadmin.py      # Seed script for initial SuperAdmin user
+    ├── start.sh                # Server launch script
+    └── venv/                   # Active Python 3.13 virtual environment
 ```
 
 ---
 
-## 📚 Documentation
+## 🚀 Quick Start Guide
 
-| File | Purpose |
-|------|---------|
-| **server/QUICK_START_CHECKLIST.md** | ⚡ Fast setup guide |
-| **server/README.md** | Project overview |
-| **server/SETUP_GUIDE.md** | Detailed setup with troubleshooting |
-| **server/MIGRATION_GUIDE.md** | Node.js → FastAPI comparison |
-| **server/ARCHITECTURE.md** | System design & flows |
-| **server/CONVERSION_SUMMARY.md** | Migration summary |
-| **server/FILES_CREATED.md** | All files created/deleted |
+### Prerequisites
+- **Python**: Version `3.12` or `3.13`
+- **Node.js**: Version `18+` (npm v9+)
+- **PostgreSQL**: Version `14+` running locally or accessible via remote URL
 
 ---
 
-## 🔧 Technology Stack
+### 1. Backend Setup
 
-### Backend (NEW - FastAPI)
-- **FastAPI** 0.115.5 - Modern Python web framework
-- **Motor** 3.6.0 - Async MongoDB driver
-- **PyJWT** 3.3.0 - JWT authentication
-- **Pydantic** 2.10.3 - Data validation
-- **PyPDF2** 3.0.1 - PDF processing
-- **HTTPX** 0.28.1 - Async HTTP client
-- **Uvicorn** 0.32.1 - ASGI server
-
-### Frontend (Unchanged)
-- React 19.2.0
-- Redux Toolkit
-- React Router
-- Axios
-- Tailwind CSS
-- Firebase (Authentication)
-
-### Database
-- MongoDB (with Motor async driver)
-
-### External Services
-- OpenRouter AI (GPT-4o-mini)
-- Firebase Authentication
-
----
-
-## 🌐 API Endpoints
-
-All endpoints remain **identical** - no frontend changes needed!
-
-### Authentication
-- `POST /api/auth/google` - Google login
-- `GET /api/auth/logout` - Logout
-
-### User
-- `GET /api/user/current-user` - Get current user (protected)
-
-### Interview
-- `POST /api/interview/resume` - Upload resume (protected)
-- `POST /api/interview/generate-questions` - Generate questions (protected)
-- `POST /api/interview/submit-answer` - Submit answer (protected)
-- `POST /api/interview/finish` - Finish interview (protected)
-- `GET /api/interview/get-interview` - Get history (protected)
-- `GET /api/interview/report/{id}` - Get report (protected)
-
----
-
-## ⚙️ Environment Variables
-
-### Backend (.env)
-```env
-PORT=8000
-MONGODB_URL=                    # Required: Add your MongoDB URL
-JWT_SECRET=DSY29QURD12R23TFNO1FFFTY13
-OPENROUTER_API_KEY=sk-or-v1-... # Pre-configured
-```
-
-### Frontend (.env)
-```env
-VITE_FIREBASE_APIKEY=           # Required: Your Firebase key
-VITE_RAZORPAY_KEY_ID=           # Optional: Can be removed
-```
-
----
-
-## 📈 Statistics
-
-### Code Migration
-- **18 Python files** created (~957 lines)
-- **6 documentation files** created
-- **3 Node.js files** removed
-- **7 directories** cleaned up
-
-### Features
-- **10 API endpoints** migrated
-- **2 database collections** (users, interviews)
-- **3 external services** (MongoDB, OpenRouter, Firebase)
-- **100% feature parity** (minus payments)
-
----
-
-## 🎯 Next Steps
-
-### 1. Backend Setup (5 minutes)
 ```bash
+# Navigate to the server directory
 cd server
-python3 -m venv venv
+
+# Activate the virtual environment
 source venv/bin/activate
+
+# Install dependencies (if setting up fresh environment)
 pip install -r requirements.txt
-# Edit .env with MongoDB URL
+
+# Configure environment variables in server/.env
+# Example .env configuration:
+# PORT=8000
+# DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/interviewiq
+# JWT_SECRET=your_super_secret_jwt_key
+# GROQ_API_KEY=your_groq_api_key
+
+# Run database seed (creates default admin accounts if needed)
+python seed_superadmin.py
+
+# Start the FastAPI backend server
 python main.py
 ```
 
-### 2. Frontend Setup (3 minutes)
+- **Backend API Base URL**: `http://localhost:8000`
+- **Interactive Swagger Documentation**: `http://localhost:8000/docs`
+- **API Health Check**: `http://localhost:8000/api/health`
+
+---
+
+### 2. Frontend Setup
+
 ```bash
+# Navigate to the client directory
 cd client
+
+# Install Node.js dependencies
 npm install
-# Edit .env with Firebase key
+
+# Start the Vite development server
 npm run dev
 ```
 
-### 3. Test Application
-- Visit http://localhost:5173
-- Login with Google
-- Upload a resume
-- Generate interview questions
-- Test interview flow
+- **Frontend Application URL**: `http://localhost:5173` (or `http://localhost:5174` if 5173 is occupied)
 
 ---
 
-## 🐛 Troubleshooting
+## 🔒 API Endpoints Overview
 
-### Backend Issues
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/health` | Public | Backend health and RBAC status check |
+| `POST` | `/api/auth/google` | Public | Authenticate user via Google OAuth |
+| `POST` | `/api/v2/resume/parse` | Candidate / Recruiter | Upload PDF resume for parsing and skill extraction |
+| `POST` | `/api/v2/jd/parse` | Candidate / Recruiter | Parse Job Description text for key skills |
+| `POST` | `/api/v2/interview/start` | Candidate | Initialize personalized interview session |
+| `POST` | `/api/v2/interview/submit` | Candidate | Submit main or follow-up answer for AI evaluation |
+| `POST` | `/api/v2/interview/finish` | Candidate | Complete session, generate report & peer percentile |
+| `GET` | `/api/v2/interview/report/{id}` | Candidate / Recruiter | Fetch complete candidate report |
+| `GET` | `/api/v2/rubrics` | Candidate / Recruiter | List available assessment rubrics |
+| `GET` | `/api/admin/metrics` | Recruiter / Admin | View candidate performance & platform metrics |
+| `GET` | `/api/superadmin/users` | SuperAdmin | Manage system users and recruiter privileges |
 
-**"Module not found"**
+---
+
+## 🧪 Testing & Code Quality
+
+To verify backend type safety using Pyright:
+
 ```bash
-source venv/bin/activate
-pip install -r requirements.txt
+cd server
+venv/bin/pyright app/routes/v2_interview.py
 ```
 
-**"Cannot connect to MongoDB"**
-- Check MongoDB is running
-- Verify MONGODB_URL in .env
-- For Atlas: Check IP whitelist
-
-**"Port already in use"**
-```bash
-kill -9 $(lsof -ti:8000)
-# or change PORT in .env
-```
-
-### Frontend Issues
-
-**"Network Error"**
-- Ensure backend is running on port 8000
-- Check CORS settings in main.py
-
-**"Firebase Error"**
-- Verify VITE_FIREBASE_APIKEY in .env
-- Check Firebase project settings
-
 ---
 
-## 📖 Learning Resources
+## 📜 License
 
-- [FastAPI Documentation](https://fastapi.tiangolo.com/)
-- [Motor (Async MongoDB)](https://motor.readthedocs.io/)
-- [Pydantic](https://docs.pydantic.dev/)
-- [Python Async/Await](https://docs.python.org/3/library/asyncio.html)
-
----
-
-## 🎓 For Developers
-
-### New to FastAPI?
-1. Read `server/QUICK_START_CHECKLIST.md`
-2. Visit http://localhost:8000/docs for interactive API testing
-3. Explore `server/ARCHITECTURE.md` for system design
-
-### Coming from Node.js?
-1. Check `server/MIGRATION_GUIDE.md` for code comparisons
-2. Note: All async functions need `async def`
-3. Use Pydantic models instead of manual validation
-
-### Want to Contribute?
-1. Keep async patterns consistent
-2. Use type hints for all functions
-3. Update documentation when adding features
-4. Test endpoints via `/docs` interface
-
----
-
-## 🔒 Security Features
-
-- ✅ JWT token authentication
-- ✅ HTTP-only cookies (XSS prevention)
-- ✅ SameSite cookies (CSRF prevention)
-- ✅ Input validation with Pydantic
-- ✅ CORS restrictions
-- ✅ File upload size limits
-- ✅ Password-free OAuth (Firebase/Google)
-
----
-
-## 🚀 Production Deployment
-
-### Backend
-```bash
-# Install production dependencies
-pip install -r requirements.txt
-
-# Run with production settings
-uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
-```
-
-### Frontend
-```bash
-npm run build
-# Deploy 'dist' folder to your hosting
-```
-
-### Environment
-- Set `secure=True` for cookies in production
-- Use HTTPS for all endpoints
-- Configure proper CORS origins
-- Set up MongoDB Atlas or production DB
-- Use environment-specific .env files
-
----
-
-## 📝 License
-
-[Your License Here]
-
----
-
-## 🙏 Acknowledgments
-
-- OpenRouter for AI integration
-- FastAPI for the amazing framework
-- MongoDB for flexible data storage
-- Firebase for authentication
-
----
-
-## 📞 Support
-
-- **API Documentation**: http://localhost:8000/docs
-- **Issues**: Check `server/SETUP_GUIDE.md` troubleshooting
-- **Code Examples**: See `server/MIGRATION_GUIDE.md`
-
----
-
-## ✨ Summary
-
-✅ **Backend fully migrated to FastAPI**  
-✅ **Payment integration removed**  
-✅ **All features working**  
-✅ **Comprehensive documentation**  
-✅ **Frontend compatibility maintained**  
-✅ **Ready for production**
-
-**Total Migration Time**: Complete!  
-**Breaking Changes**: None (endpoints unchanged)  
-**Documentation**: 6 comprehensive guides  
-
----
-
-**🎉 Ready to build amazing interview experiences! 🚀**
+This project is open source and available under the [MIT License](LICENSE).

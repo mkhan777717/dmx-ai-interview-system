@@ -2,7 +2,7 @@ from sqlalchemy import (
     Column, Integer, String, Float, DateTime,
     ForeignKey, Text, JSON, Boolean,
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy.sql import func
 from pydantic import BaseModel
 from typing import Optional, List, Any
@@ -14,21 +14,35 @@ from app.config.database import Base
 class V2Interview(Base):
     __tablename__ = "v2_interviews"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
-    predicted_role = Column(String, nullable=False)
-    candidate_name = Column(String, nullable=True)
-    candidate_email = Column(String, nullable=True)
-    candidate_skills = Column(JSON, default=list)
-    questions = Column(JSON, default=list)          # Full 5-question list with metadata
-    status = Column(String, default="in_progress")  # in_progress | completed
-    consecutive_good = Column(Integer, default=0)
-    current_question_index = Column(Integer, default=0)
-    final_score = Column(Float, default=0.0)
-    report = Column(JSON, nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    predicted_role: Mapped[str] = mapped_column(String, nullable=False)
+    candidate_name: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    candidate_email: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    candidate_skills: Mapped[Any] = mapped_column(JSON, default=list)
+    questions: Mapped[Any] = mapped_column(JSON, default=list)          # Full question list with metadata
+    status: Mapped[str] = mapped_column(String, default="in_progress")  # in_progress | completed
+    consecutive_good: Mapped[int] = mapped_column(Integer, default=0)
+    current_question_index: Mapped[int] = mapped_column(Integer, default=0)
+    final_score: Mapped[float] = mapped_column(Float, default=0.0)
+    report: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[Any] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
-    answers = relationship(
+    # ── New fields (Phase 2 additions) ────────────────────────────────────────
+    interview_mode: Mapped[str] = mapped_column(String, default="Technical")   # Technical | HR
+    jd_skills: Mapped[Any] = mapped_column(JSON, default=list)                 # Skills extracted from JD
+    jd_role: Mapped[Optional[str]] = mapped_column(String, nullable=True)                # Role extracted from JD
+    rubric_id: Mapped[str] = mapped_column(String, default="technical_standard")  # Rubric identifier used
+    rubric_version: Mapped[int] = mapped_column(Integer, default=1)            # Rubric version at time of interview
+    integrity_flags: Mapped[Any] = mapped_column(JSON, default=list)           # Advisory integrity flags
+    percentile: Mapped[Optional[float]] = mapped_column(Float, nullable=True)              # Peer percentile at finish
+
+    # ── Phase 3 additions ─────────────────────────────────────────────────────
+    improvement_plan: Mapped[Any] = mapped_column(JSON, default=list)          # Post-interview coaching plan
+    admin_notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)              # Recruiter notes
+    admin_overrides: Mapped[Any] = mapped_column(JSON, default=list)           # Human override records
+
+    answers: Mapped[List["V2Answer"]] = relationship(
         "V2Answer", back_populates="interview", cascade="all, delete-orphan"
     )
 
@@ -36,27 +50,50 @@ class V2Interview(Base):
 class V2Answer(Base):
     __tablename__ = "v2_answers"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    interview_id = Column(Integer, ForeignKey("v2_interviews.id"), nullable=False, index=True)
-    question_index = Column(Integer, nullable=False)
-    question_text = Column(Text, default="")
-    skill = Column(String, default="")
-    topic = Column(String, default="")
-    difficulty = Column(String, default="")
-    candidate_answer = Column(Text, default="")
-    semantic_score = Column(Float, default=0.0)
-    concept_score = Column(Float, default=0.0)
-    keyword_score = Column(Float, default=0.0)
-    final_score = Column(Float, default=0.0)
-    covered_concepts = Column(JSON, default=list)
-    missing_concepts = Column(JSON, default=list)
-    feedback = Column(Text, default="")
-    had_followup = Column(Boolean, default=False)
-    followup_question = Column(Text, nullable=True)
-    followup_answer = Column(Text, nullable=True)
-    followup_score = Column(Float, nullable=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    interview_id: Mapped[int] = mapped_column(Integer, ForeignKey("v2_interviews.id"), nullable=False, index=True)
+    question_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    question_text: Mapped[str] = mapped_column(Text, default="")
+    skill: Mapped[str] = mapped_column(String, default="")
+    topic: Mapped[str] = mapped_column(String, default="")
+    difficulty: Mapped[str] = mapped_column(String, default="")
+    candidate_answer: Mapped[str] = mapped_column(Text, default="")
+    semantic_score: Mapped[float] = mapped_column(Float, default=0.0)
+    concept_score: Mapped[float] = mapped_column(Float, default=0.0)
+    keyword_score: Mapped[float] = mapped_column(Float, default=0.0)
+    final_score: Mapped[float] = mapped_column(Float, default=0.0)
+    covered_concepts: Mapped[Any] = mapped_column(JSON, default=list)
+    missing_concepts: Mapped[Any] = mapped_column(JSON, default=list)
+    feedback: Mapped[str] = mapped_column(Text, default="")
+    had_followup: Mapped[bool] = mapped_column(Boolean, default=False)
+    followup_question: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    followup_answer: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    followup_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
 
-    interview = relationship("V2Interview", back_populates="answers")
+    # ── Phase 2 fields ────────────────────────────────────────────────────────
+    confidence: Mapped[float] = mapped_column(Float, default=0.0)       # 0.0–1.0 evaluation confidence
+    justification: Mapped[Optional[str]] = mapped_column(Text, nullable=True)    # Quoted fragment justifying score
+
+    # ── Phase 3 fields ────────────────────────────────────────────────────────
+    communication_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)       # 0.0–1.0
+    communication_breakdown: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)    # {length, structure, vocabulary, filler}
+    ai_detection_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)        # 0.0–1.0 AI probability
+    ai_detection_flags: Mapped[Any] = mapped_column(JSON, default=list)          # List of flag descriptions
+
+    interview: Mapped[V2Interview] = relationship("V2Interview", back_populates="answers")
+
+
+class AuditLog(Base):
+    """Append-only audit trail for all interview events."""
+    __tablename__ = "audit_logs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    actor_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)   # user_id who triggered action
+    action: Mapped[str] = mapped_column(String, nullable=False)                  # e.g. "interview.started"
+    entity_type: Mapped[str] = mapped_column(String, nullable=False)             # e.g. "V2Interview"
+    entity_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)  # e.g. interview_id
+    details: Mapped[Any] = mapped_column(JSON, default=dict)                     # Additional context
+    created_at: Mapped[Any] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
 # ── Pydantic Request / Response Models ────────────────────────────────────────
@@ -73,12 +110,22 @@ class ParseResumeResponse(BaseModel):
     resume_quality_score: int = 85
 
 
+class ParseJDResponse(BaseModel):
+    role: str
+    skills: List[str]
+    seniority: Optional[str] = None
+    key_requirements: List[str] = []
+
+
 class StartInterviewRequest(BaseModel):
     predicted_role: str
     skills: List[str]
     name: Optional[str] = None
     email: Optional[str] = None
-    interview_mode: str = "Technical"  # "Technical" or "HR"
+    interview_mode: str = "Technical"   # "Technical" or "HR"
+    jd_skills: List[str] = []          # Optional skills from JD
+    jd_role: Optional[str] = None      # Optional role from JD
+    rubric_id: str = "auto"            # Rubric to use; "auto" = resolved from mode
 
 
 class StartInterviewResponse(BaseModel):
@@ -86,6 +133,7 @@ class StartInterviewResponse(BaseModel):
     predicted_role: str
     candidate_name: Optional[str]
     questions: List[dict]
+    rubric_id: str
 
 
 class SubmitAnswerRequest(BaseModel):
@@ -94,6 +142,7 @@ class SubmitAnswerRequest(BaseModel):
     answer: str
     is_follow_up: bool = False
     time_taken: int = 0
+    integrity_flags: List[dict] = []   # Tab-switch events from client
 
 
 class SubmitAnswerResponse(BaseModel):
@@ -105,13 +154,18 @@ class SubmitAnswerResponse(BaseModel):
     covered_concepts: List[str]
     missing_concepts: List[str]
     feedback: str
+    confidence: float
+    justification: Optional[str]
     next_action: str          # "follow_up" | "next_question" | "finish"
     follow_up_question: Optional[str] = None
     questions_remaining: int
+    # Adaptive difficulty: new question if swapped
+    swapped_question: Optional[dict] = None
 
 
 class FinishInterviewRequest(BaseModel):
     interview_id: int
+    integrity_flags: List[dict] = []   # Final batch of integrity events
 
 
 class QuestionReport(BaseModel):
@@ -125,6 +179,8 @@ class QuestionReport(BaseModel):
     covered_concepts: List[str]
     missing_concepts: List[str]
     feedback: str
+    confidence: float
+    justification: Optional[str]
     candidate_answer: str
     had_followup: bool
     followup_question: Optional[str]
@@ -140,3 +196,29 @@ class FinishInterviewResponse(BaseModel):
     strengths: List[str]
     weaknesses: List[str]
     questions: List[Any]
+    percentile: Optional[float] = None
+    integrity_flags: List[dict] = []
+
+
+class HintRequest(BaseModel):
+    interview_id: int
+    question_index: int
+
+
+class HintResponse(BaseModel):
+    hint: str
+
+
+class RubricCriteria(BaseModel):
+    name: str
+    weight: float
+    description: str
+
+
+class RubricResponse(BaseModel):
+    id: str
+    name: str
+    version: int
+    description: str
+    criteria: List[RubricCriteria]
+    weights: dict    # Maps evaluator components to weights

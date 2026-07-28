@@ -1,200 +1,199 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from "axios"
+import axios from 'axios'
 import { ServerUrl } from '../App'
 import V2Layout from '../components/V2Layout'
-import { FaSpinner, FaChartPie, FaChartLine, FaChartBar, FaBullseye } from 'react-icons/fa'
-import { 
+import { FaSpinner, FaChartPie, FaChartLine, FaBullseye } from 'react-icons/fa'
+import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, PieChart, Pie, Cell
+  BarChart, Bar, PieChart, Pie, Cell,
 } from 'recharts'
 
-const COLORS = ['#10b981', '#3b82f6', '#eab308', '#a855f7', '#ef4444', '#f97316']
+const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444', '#f97316']
 
 export default function Analytics() {
-    const [interviews, setInterviews] = useState([])
-    const [loading, setLoading] = useState(true)
-    const navigate = useNavigate()
+  const [interviews, setInterviews] = useState([])
+  const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
 
-    useEffect(() => {
-        const getMyInterviews = async () => {
-            try {
-                const result = await axios.get(ServerUrl + "/api/v2/interview/history", { withCredentials: true })
-                setInterviews(result.data)
-            } catch (error) {
-                console.log(error)
-            } finally {
-                setLoading(false)
-            }
-        }
-        getMyInterviews()
-    }, [])
+  useEffect(() => {
+    const getMyInterviews = async () => {
+      try {
+        const result = await axios.get(ServerUrl + '/api/v2/interview/history', { withCredentials: true })
+        setInterviews(result.data || [])
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    getMyInterviews()
+  }, [])
 
-    const completed = interviews.filter(i => i.status === 'completed')
+  const completed = interviews.filter(i => i.status === 'completed')
 
-    // ── DATA PREP FOR CHARTS ──────────────────────────────────────────────────
-    
-    // 1. Score Trend (Over Time)
-    const trendData = completed.map(i => ({
-        date: new Date(i.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-        score: i.finalScore || 0
-    })).reverse() // Chronological order
+  const trendData = completed.map(i => ({
+    date: new Date(i.createdAt || i.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+    score: i.finalScore ?? i.final_score ?? 0,
+  })).reverse()
 
-    // 2. Role Distribution
-    const roleCounts = completed.reduce((acc, curr) => {
-        const role = curr.role || 'Other'
-        acc[role] = (acc[role] || 0) + 1
-        return acc
-    }, {})
-    const roleData = Object.entries(roleCounts).map(([name, value]) => ({ name, value }))
+  const roleCounts = completed.reduce((acc, curr) => {
+    const role = curr.role || curr.predicted_role || 'Technical'
+    acc[role] = (acc[role] || 0) + 1
+    return acc
+  }, {})
+  const roleData = Object.entries(roleCounts).map(([name, value]) => ({ name, value }))
 
-    // 3. Score Distribution (Buckets)
-    const buckets = { '90-100 (Excellent)': 0, '75-89 (Good)': 0, '60-74 (Average)': 0, '0-59 (Needs Work)': 0 }
-    completed.forEach(i => {
-        const s = i.finalScore || 0
-        if (s >= 90) buckets['90-100 (Excellent)']++
-        else if (s >= 75) buckets['75-89 (Good)']++
-        else if (s >= 60) buckets['60-74 (Average)']++
-        else buckets['0-59 (Needs Work)']++
-    })
-    const distributionData = Object.entries(buckets).map(([name, count]) => ({ name, count }))
+  const buckets = { '8.0–10 (Excellent)': 0, '6.5–7.9 (Good)': 0, '5.0–6.4 (Average)': 0, '0.0–4.9 (Needs Work)': 0 }
+  completed.forEach(i => {
+    const s = i.finalScore ?? i.final_score ?? 0
+    if (s >= 8.0) buckets['8.0–10 (Excellent)']++
+    else if (s >= 6.5) buckets['6.5–7.9 (Good)']++
+    else if (s >= 5.0) buckets['5.0–6.4 (Average)']++
+    else buckets['0.0–4.9 (Needs Work)']++
+  })
+  const distributionData = Object.entries(buckets).map(([name, count]) => ({ name, count }))
 
-    // 4. Overall Stats
-    const avgScore = completed.length > 0 
-        ? Math.round(completed.reduce((sum, i) => sum + (i.finalScore || 0), 0) / completed.length) 
-        : 0
-    const highestScore = completed.length > 0 ? Math.max(...completed.map(i => i.finalScore || 0)) : 0
+  const avgScore = completed.length > 0
+    ? (completed.reduce((sum, i) => sum + (i.finalScore ?? i.final_score ?? 0), 0) / completed.length).toFixed(1)
+    : '0.0'
+  const highestScore = completed.length > 0
+    ? Math.max(...completed.map(i => i.finalScore ?? i.final_score ?? 0)).toFixed(1)
+    : '0.0'
 
-    return (
-        <V2Layout title="Performance Analytics" subtitle="Deep insights into your interview performance and progress">
-            <div className="flex-1 w-full p-4 lg:p-8">
-                <div className="max-w-6xl mx-auto space-y-8">
-                    
-                    {loading ? (
-                        <div className="flex flex-col items-center justify-center h-64 text-gray-400">
-                            <FaSpinner className="animate-spin text-3xl mb-4 text-green-500" />
-                            <p>Analyzing data...</p>
-                        </div>
-                    ) : completed.length === 0 ? (
-                        <div className="bg-white border border-gray-100 p-12 rounded-2xl shadow-sm text-center flex flex-col items-center justify-center">
-                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                                <FaChartPie className="text-gray-300 text-2xl" />
-                            </div>
-                            <h3 className="text-lg font-bold text-gray-800 mb-2">Not enough data</h3>
-                            <p className="text-gray-500 max-w-sm mb-6">Complete at least one mock interview to unlock detailed performance analytics.</p>
-                            <button onClick={() => navigate('/v2/interview')} className="px-6 py-2.5 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition">
-                                Start Interview
-                            </button>
-                        </div>
-                    ) : (
-                        <>
-                            {/* Summary Cards */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-4">
-                                    <div className="w-14 h-14 bg-green-50 rounded-xl flex items-center justify-center text-green-600 text-xl"><FaChartLine /></div>
-                                    <div>
-                                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Average Score</p>
-                                        <h3 className="text-2xl font-bold text-gray-900">{avgScore} / 100</h3>
-                                    </div>
-                                </div>
-                                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-4">
-                                    <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl"><FaBullseye /></div>
-                                    <div>
-                                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Highest Score</p>
-                                        <h3 className="text-2xl font-bold text-gray-900">{highestScore} / 100</h3>
-                                    </div>
-                                </div>
-                                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-4">
-                                    <div className="w-14 h-14 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 text-xl"><FaChartPie /></div>
-                                    <div>
-                                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Completed Interviews</p>
-                                        <h3 className="text-2xl font-bold text-gray-900">{completed.length}</h3>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                
-                                {/* Line Chart: Score Trend */}
-                                <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                                    <div className="mb-6">
-                                        <h3 className="font-bold text-gray-900">Score Trend Over Time</h3>
-                                        <p className="text-xs text-gray-500 mt-1">Track your progress across all recent interviews</p>
-                                    </div>
-                                    <div className="h-[250px] w-full">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <AreaChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                                <defs>
-                                                    <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                                                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                                                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                                                    </linearGradient>
-                                                </defs>
-                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8'}} dy={10} />
-                                                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8'}} domain={[0, 100]} />
-                                                <Tooltip contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px -2px rgb(0 0 0 / 0.1)'}} />
-                                                <Area type="monotone" dataKey="score" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorScore)" activeDot={{r: 6, fill: '#10b981', stroke: '#fff', strokeWidth: 2}} />
-                                            </AreaChart>
-                                        </ResponsiveContainer>
-                                    </div>
-                                </div>
-
-                                {/* Pie Chart: Interviews by Role */}
-                                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col">
-                                    <div className="mb-2">
-                                        <h3 className="font-bold text-gray-900">Interviews by Role</h3>
-                                    </div>
-                                    <div className="flex-1 flex flex-col items-center justify-center relative">
-                                        <div className="w-[180px] h-[180px]">
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <PieChart>
-                                                    <Pie data={roleData} cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={2} dataKey="value" stroke="none">
-                                                        {roleData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-                                                    </Pie>
-                                                    <Tooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 10px rgb(0 0 0 / 0.1)', fontSize: '12px'}} />
-                                                </PieChart>
-                                            </ResponsiveContainer>
-                                        </div>
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                            <span className="text-2xl font-bold text-gray-900 leading-none">{completed.length}</span>
-                                            <span className="text-[10px] text-gray-500 font-medium mt-1">Total</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Bar Chart: Score Distribution */}
-                                <div className="lg:col-span-3 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                                    <div className="mb-6">
-                                        <h3 className="font-bold text-gray-900">Score Distribution</h3>
-                                        <p className="text-xs text-gray-500 mt-1">Breakdown of your performance buckets</p>
-                                    </div>
-                                    <div className="h-[200px] w-full">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <BarChart data={distributionData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8'}} dy={10} />
-                                                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8'}} allowDecimals={false} />
-                                                <Tooltip cursor={{fill: '#f8fafc'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 10px rgb(0 0 0 / 0.1)', fontSize: '12px'}} />
-                                                <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                                                    {distributionData.map((entry, index) => (
-                                                        <Cell key={`cell-${index}`} fill={
-                                                            entry.name.includes('Excellent') ? '#10b981' : 
-                                                            entry.name.includes('Good') ? '#3b82f6' : 
-                                                            entry.name.includes('Average') ? '#eab308' : '#ef4444'
-                                                        } />
-                                                    ))}
-                                                </Bar>
-                                            </BarChart>
-                                        </ResponsiveContainer>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </>
-                    )}
-                </div>
+  return (
+    <V2Layout title="Performance Analytics" subtitle="Deep insights into your interview performance, skill breakdown, and progress">
+      <div className="p-6 lg:p-8 max-w-6xl mx-auto w-full">
+        <div className="space-y-6">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center h-64 text-gray-400">
+              <FaSpinner className="animate-spin text-3xl mb-3 text-green-600" />
+              <p className="text-sm font-medium">Analyzing performance metrics...</p>
             </div>
-        </V2Layout>
-    )
+          ) : completed.length === 0 ? (
+            <div className="bg-white border border-gray-200 p-12 rounded-3xl shadow-xs text-center flex flex-col items-center justify-center">
+              <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 text-gray-400">
+                <FaChartPie size={24} />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Not enough data</h3>
+              <p className="text-gray-500 text-sm max-w-sm mb-6">
+                Complete at least one mock interview to unlock full analytics, trend graphs, and domain distribution reports.
+              </p>
+              <button
+                onClick={() => navigate('/v2/interview')}
+                className="px-6 py-3 bg-green-600 text-white font-bold text-sm rounded-xl hover:bg-green-700 transition cursor-pointer shadow-sm"
+              >
+                Start Practice Session
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* Summary Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-xs flex items-center gap-4">
+                  <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-green-600 text-xl border border-green-100">
+                    <FaChartLine />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Average Score</p>
+                    <h3 className="text-2xl font-bold text-gray-900">{avgScore} / 10</h3>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-xs flex items-center gap-4">
+                  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl border border-blue-100">
+                    <FaBullseye />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Highest Score</p>
+                    <h3 className="text-2xl font-bold text-gray-900">{highestScore} / 10</h3>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-xs flex items-center gap-4">
+                  <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 text-xl border border-purple-100">
+                    <FaChartPie />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Completed Sessions</p>
+                    <h3 className="text-2xl font-bold text-gray-900">{completed.length}</h3>
+                  </div>
+                </div>
+              </div>
+
+              {/* Main Charts */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Score History */}
+                <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-xs">
+                  <h3 className="font-bold text-gray-900 text-base mb-4">Score History (Chronological)</h3>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={trendData}>
+                        <defs>
+                          <linearGradient id="scoreColor" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
+                            <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                        <XAxis dataKey="date" stroke="#94a3b8" tick={{ fontSize: 11 }} />
+                        <YAxis domain={[0, 10]} stroke="#94a3b8" tick={{ fontSize: 11 }} />
+                        <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0' }} />
+                        <Area type="monotone" dataKey="score" stroke="#10b981" strokeWidth={2.5} fillOpacity={1} fill="url(#scoreColor)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Score Distribution */}
+                <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-xs">
+                  <h3 className="font-bold text-gray-900 text-base mb-4">Score Range Distribution</h3>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={distributionData} layout="vertical">
+                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                        <XAxis type="number" stroke="#94a3b8" tick={{ fontSize: 11 }} />
+                        <YAxis dataKey="name" type="category" stroke="#94a3b8" tick={{ fontSize: 10 }} width={120} />
+                        <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0' }} />
+                        <Bar dataKey="count" fill="#3b82f6" radius={[0, 8, 8, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+
+              {/* Roles Breakdown */}
+              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-xs">
+                <h3 className="font-bold text-gray-900 text-base mb-4">Interviews by Job Domain</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                  <div className="h-56">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie data={roleData} cx="50%" cy="50%" innerRadius={50} outerRadius={75} dataKey="value" stroke="none">
+                          {roleData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                        </Pie>
+                        <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0' }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  <div className="space-y-3">
+                    {roleData.map((r, i) => (
+                      <div key={i} className="flex justify-between items-center text-xs p-2.5 bg-gray-50 rounded-xl border border-gray-100">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                          <span className="font-semibold text-gray-900">{r.name}</span>
+                        </div>
+                        <span className="font-bold text-gray-700">{r.value} session(s)</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </V2Layout>
+  )
 }

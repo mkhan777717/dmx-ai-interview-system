@@ -6,12 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <title>InterviewIQ.AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap" rel="stylesheet" />
+    <title>InterviewIQ.AI — AI-Powered Interview Platform</title>
+    <meta name="description" content="Practice interviews, screen candidates, and get AI-powered feedback with InterviewIQ." />
+    <!-- Force light mode before any rendering — prevents dark flash -->
+    <script>
+      (function() {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.style.colorScheme = 'light';
+        try { localStorage.setItem('app-theme', 'light'); } catch(e){}
+      })();
+    </script>
+    <style>
+      /* Critical above-fold: prevent FOUC on white background */
+      html, body { background: #f4f6f8; color: #0f172a; }
+    </style>
   </head>
   <body>
     <div id="root"></div>
-
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
