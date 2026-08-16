@@ -186,8 +186,8 @@ const TruGenVideoInterviewer = forwardRef(function TruGenVideoInterviewer(
 
   // ── Render ────────────────────────────────────────────────────────────────
 
-  const fallbackImageSrc = persona?.avatarUrl || persona?.avatarFallback || 'https://assets.trugen.ai/images/avatarImages/matt.jpeg';
-  const fallbackVideoSrc = persona?.idleVideoUrl || 'https://assets.trugen.ai/videos/avatar-videos/matt_wide.mp4';
+  const fallbackImageSrc = persona?.avatarUrl || persona?.avatarFallback || 'https://assets.trugen.ai/images/avatarImages/mike-wide.jpg';
+  const fallbackVideoSrc = persona?.idleVideoUrl || 'https://assets.trugen.ai/videos/avatar-videos/mike_wide.mp4';
 
   // Fallback UI: no LiveKit token (credentials not configured or network error)
   if (liveKitError || !token) {
@@ -299,7 +299,7 @@ function TruGenVideoTrack({ fallbackImageSrc, fallbackVideoSrc, avatarState, per
             width: '100%', height: '100%', objectFit: 'cover',
           }}
           onError={(e) => {
-            e.target.src = 'https://assets.trugen.ai/images/avatarImages/matt.jpeg';
+            e.target.src = 'https://assets.trugen.ai/images/avatarImages/mike-wide.jpg';
           }}
         />
         <video
