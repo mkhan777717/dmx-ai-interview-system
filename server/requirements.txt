@@ -29,4 +29,3 @@ livekit-api
 livekit-agents
 livekit-plugins-trugen
 openai
-razorpay

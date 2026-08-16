@@ -12,7 +12,7 @@ from app.routes import transcribe, tts
 from app.routes import admin
 from app.routes import superadmin
 from app.routes import recruiter
-from app.routes import livekit, payment
+from app.routes import livekit
 from app.routes.avatar import router as avatar_router
 from app.routes.meeting import router as meeting_router
 
@@ -74,7 +74,6 @@ app.include_router(recruiter.router,   prefix="/api/recruiter",   tags=["Recruit
 app.include_router(avatar_router,      prefix="/api/avatar",      tags=["Avatar"])
 app.include_router(meeting_router,     prefix="/api/meeting",     tags=["Meeting"])
 app.include_router(livekit.router,     prefix="/api/livekit",     tags=["LiveKit"])
-app.include_router(payment.router,     prefix="/api/payment",     tags=["Payment"])
 
 
 @app.get("/")

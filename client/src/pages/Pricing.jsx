@@ -2,104 +2,59 @@ import React, { useState } from 'react'
 import { FaArrowLeft, FaCheckCircle } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
-import axios from 'axios'
-import { ServerUrl } from '../App'
-import { useDispatch } from 'react-redux'
-import { setUserData } from '../redux/userSlice'
 
 function Pricing() {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
-  const [selectedPlan, setSelectedPlan] = useState('basic')
-  const [loadingPlan, setLoadingPlan] = useState(null)
+  const [selectedPlan, setSelectedPlan] = useState('free')
 
   const plans = [
     {
       id: 'free',
-      name: 'Free Starter',
-      price: '₹0',
-      credits: 100,
-      description: 'Perfect for beginners trying out AI interview practice.',
+      name: 'Community',
+      price: 'Free',
+      credits: 'Unlimited',
+      description: 'Ideal for candidates preparing for upcoming technical interviews.',
       features: [
-        '100 AI Interview Credits',
-        'Standard Technical & HR Questions',
-        'Basic Performance Report',
-        'Voice & Text Practice',
+        'AI Interview Voice & Avatar Room',
+        'Standard Technical & Behavioral Questions',
+        'Dynamic Question Generation & Real-Time Hints',
+        'Instant Detailed Performance Scorecard',
       ],
       default: true,
     },
     {
-      id: 'basic',
-      name: 'Starter Pack',
-      price: '₹100',
-      credits: 150,
-      description: 'Great for focused practice and skill improvement.',
+      id: 'pro',
+      name: 'Pro Candidate',
+      price: 'Free in Beta',
+      credits: 'Unlimited',
+      description: 'Full access to all personas, system design, and coding rounds.',
       features: [
-        '150 AI Interview Credits',
-        'Detailed Communication & Delivery Report',
-        'Full Performance Analytics',
-        'Unlimited Interview History',
+        'All 3 AI Avatars (Alex, Sophia, Marcus)',
+        'Monaco DSA & System Design Code Editor',
+        'Groq Whisper Fast STT & Natural Voice TTS',
+        'Peer Percentile Benchmarking',
       ],
       badge: 'Popular',
     },
     {
-      id: 'pro',
-      name: 'Pro Pack',
-      price: '₹500',
-      credits: 650,
-      description: 'Best value for active job seekers & intensive practice.',
+      id: 'enterprise',
+      name: 'Enterprise & Teams',
+      price: 'Custom',
+      credits: 'Unlimited',
+      description: 'For recruiters and organizations conducting high-volume candidate evaluations.',
       features: [
-        '650 AI Interview Credits',
-        'Human-like AI Avatar Interviewer',
-        'Deep Rubric & Integrity Flags',
-        'Priority AI Processing Speed',
+        'Custom Job Description & Rubric Builder',
+        'Recruiter & Candidate Assessment Dashboard',
+        'Candidate Integrity & Anti-Cheat Audit Logs',
+        'Role-Based Access Control (RBAC)',
       ],
-      badge: 'Best Value',
+      badge: 'Teams',
     },
   ]
 
-  const handlePayment = async (plan) => {
-    try {
-      setLoadingPlan(plan.id)
-
-      const amount = plan.id === 'basic' ? 100 : plan.id === 'pro' ? 500 : 0
-
-      const result = await axios.post(
-        ServerUrl + '/api/payment/order',
-        { planId: plan.id, amount, credits: plan.credits },
-        { withCredentials: true }
-      )
-
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: result.data.amount,
-        currency: 'INR',
-        name: 'InterviewIQ.AI',
-        description: `${plan.name} - ${plan.credits} Credits`,
-        order_id: result.data.id,
-        handler: async function (response) {
-          const verifypay = await axios.post(
-            ServerUrl + '/api/payment/verify',
-            response,
-            { withCredentials: true }
-          )
-          dispatch(setUserData(verifypay.data.user))
-          alert('Payment Successful 🎉 Credits Added!')
-          navigate('/dashboard')
-        },
-        theme: {
-          color: '#10b981',
-        },
-      }
-
-      const rzp = new window.Razorpay(options)
-      rzp.open()
-
-      setLoadingPlan(null)
-    } catch (error) {
-      console.error(error)
-      setLoadingPlan(null)
-    }
+  const handleSelect = (plan) => {
+    setSelectedPlan(plan.id)
+    navigate('/v2/interview')
   }
 
   return (
@@ -108,24 +63,19 @@ function Pricing() {
       <div className="max-w-6xl mx-auto mb-12 flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
-          className="p-2.5 rounded-xl bg-white border border-gray-200 shadow-xs hover:bg-gray-50 transition cursor-pointer text-gray-700 flex items-center gap-2 text-xs font-semibold"
+          className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900 transition cursor-pointer"
         >
           <FaArrowLeft /> Back
         </button>
+      </div>
 
-        <div className="text-center flex-1 max-w-xl">
-          <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 uppercase tracking-wide">
-            Pricing Plans
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mt-2">
-            Simple, Transparent Pricing
-          </h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Choose the right plan to get additional AI credits for practice sessions.
-          </p>
-        </div>
-
-        <div className="w-16" />
+      <div className="max-w-3xl mx-auto text-center mb-14">
+        <h1 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+          Simple, Transparent Plans
+        </h1>
+        <p className="mt-3 text-sm text-gray-500 max-w-lg mx-auto">
+          Practice technical, behavioral, and system design interviews with lifelike AI avatars.
+        </p>
       </div>
 
       {/* Cards */}
@@ -137,12 +87,12 @@ function Pricing() {
             <motion.div
               key={plan.id}
               whileHover={{ y: -4 }}
-              onClick={() => !plan.default && setSelectedPlan(plan.id)}
+              onClick={() => setSelectedPlan(plan.id)}
               className={`relative rounded-3xl p-8 transition-all border ${
                 isSelected
                   ? 'border-emerald-500 shadow-xl bg-white ring-2 ring-emerald-500/20'
                   : 'border-gray-200 bg-white shadow-xs'
-              } ${plan.default ? 'cursor-default' : 'cursor-pointer'}`}
+              } cursor-pointer`}
             >
               {plan.badge && (
                 <div className="absolute top-6 right-6 bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-xs">
@@ -152,7 +102,7 @@ function Pricing() {
 
               {plan.default && (
                 <div className="absolute top-6 right-6 bg-gray-100 text-gray-600 text-xs font-bold px-3 py-1 rounded-full">
-                  Default
+                  Free
                 </div>
               )}
 
@@ -163,7 +113,7 @@ function Pricing() {
                   {plan.price}
                 </span>
                 <p className="text-gray-500 text-xs font-semibold mt-1">
-                  {plan.credits} AI Credits
+                  {plan.credits} Practice Sessions
                 </p>
               </div>
 
@@ -180,30 +130,19 @@ function Pricing() {
                 ))}
               </div>
 
-              {!plan.default && (
-                <button
-                  disabled={loadingPlan === plan.id}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    if (!isSelected) {
-                      setSelectedPlan(plan.id)
-                    } else {
-                      handlePayment(plan)
-                    }
-                  }}
-                  className={`w-full mt-8 py-3 rounded-xl font-bold text-xs transition cursor-pointer shadow-xs ${
-                    isSelected
-                      ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                      : 'bg-gray-100 text-gray-800 hover:bg-emerald-50 hover:text-emerald-700'
-                  }`}
-                >
-                  {loadingPlan === plan.id
-                    ? 'Processing...'
-                    : isSelected
-                    ? 'Proceed to Pay'
-                    : 'Select Plan'}
-                </button>
-              )}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleSelect(plan)
+                }}
+                className={`w-full mt-8 py-3 rounded-xl font-bold text-xs transition cursor-pointer shadow-xs ${
+                  isSelected
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    : 'bg-gray-100 text-gray-800 hover:bg-emerald-50 hover:text-emerald-700'
+                }`}
+              >
+                Start Practice Now
+              </button>
             </motion.div>
           )
         })}
