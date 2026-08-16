@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse
 import os
@@ -5,19 +6,22 @@ import subprocess
 import uuid
 import shutil
 
-app = FastAPI(title="Wav2Lip Avatar Service")
-
 # We expect an idle video to exist at this path
 BASE_VIDEO_PATH = "/app/input/idle.mp4"
 WAV2LIP_SCRIPT = "/app/Wav2Lip/inference.py"
 CHECKPOINT_PATH = "/app/Wav2Lip/checkpoints/wav2lip_gan.pth"
 
-@app.on_event("startup")
-async def startup_event():
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     print("Wav2Lip Service Started")
     if not os.path.exists(BASE_VIDEO_PATH):
         print(f"WARNING: Base video not found at {BASE_VIDEO_PATH}. "
               f"You must supply an idle.mp4 to generate videos.")
+    yield
+
+
+app = FastAPI(title="Wav2Lip Avatar Service", lifespan=lifespan)
 
 @app.get("/health")
 def health():
