@@ -134,7 +134,7 @@ async def start_trugen_avatar_session(
         .with_name("Trugen Avatar")
         .with_grants(api.VideoGrants(
             room_join=True,
-            room=str(room_name),
+            room=room_name,
             can_publish=True,
             can_subscribe=True,
         ))
