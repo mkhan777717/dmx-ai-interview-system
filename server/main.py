@@ -5,12 +5,16 @@ from contextlib import asynccontextmanager
 import os
 
 from app.config.database import connect_db, close_db
+from app.config.settings import settings
 from app.routes import auth, user, interview
 from app.routes import v2_interview
 from app.routes import transcribe, tts
 from app.routes import admin
 from app.routes import superadmin
 from app.routes import recruiter
+from app.routes import livekit
+from app.routes.avatar import router as avatar_router
+from app.routes.meeting import router as meeting_router
 
 # ── Model imports — ensures SQLAlchemy registers all tables on startup ─────────
 import app.models.v2_interview   # noqa: F401
@@ -22,6 +26,9 @@ from app.models.v2_interview import AuditLog  # noqa: F401
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await connect_db()
+    # Initialise avatar Redis cache (falls back to memory if unavailable)
+    from app.services.avatar_cache import init_cache
+    await init_cache(settings.REDIS_URL)
     yield
     await close_db()
 
@@ -64,6 +71,9 @@ app.include_router(tts.router,         prefix="/api/v2",          tags=["TTS"])
 app.include_router(admin.router,       prefix="/api/admin",       tags=["Admin (Recruiter + Super Admin)"])
 app.include_router(superadmin.router,  prefix="/api/superadmin",  tags=["Super Admin"])
 app.include_router(recruiter.router,   prefix="/api/recruiter",   tags=["Recruiter"])
+app.include_router(avatar_router,      prefix="/api/avatar",      tags=["Avatar"])
+app.include_router(meeting_router,     prefix="/api/meeting",     tags=["Meeting"])
+app.include_router(livekit.router,     prefix="/api/livekit",     tags=["LiveKit"])
 
 
 @app.get("/")

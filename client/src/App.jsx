@@ -17,6 +17,8 @@ import AdminDashboard from './pages/AdminDashboard'
 import RecruiterDashboard from './pages/RecruiterDashboard'
 import SuperAdminDashboard from './pages/SuperAdminDashboard'
 import Forbidden      from './pages/Forbidden'
+import MeetingRoom    from './pages/MeetingRoom'
+import TestAvatar     from './pages/TestAvatar'
 
 // RBAC
 import RoleGuard from './components/RoleGuard'
@@ -50,6 +52,9 @@ function App() {
         <Route path='/auth'    element={<Auth />} />
         <Route path='/pricing' element={<Pricing />} />
         <Route path='/403'     element={<Forbidden />} />
+        
+        {/* Testing Route */}
+        <Route path='/test-avatar' element={<TestAvatar />} />
 
         {/* ── Candidate Protected Routes (Requires Auth) ── */}
         <Route
@@ -97,6 +102,14 @@ function App() {
           element={
             <RoleGuard>
               <V2Interview />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path='/meeting'
+          element={
+            <RoleGuard>
+              <MeetingRoom />
             </RoleGuard>
           }
         />

@@ -1,47 +1,51 @@
-# 🎯 InterviewIQ v2.0 - AI-Powered Interview Preparation Platform
+# 🎯 InterviewIQ v2.0 — AI-Powered Real-Time Interview Platform
 
-InterviewIQ is an end-to-end, enterprise-grade AI interview candidate assessment and preparation platform. Built with **FastAPI (Python 3.13)**, **PostgreSQL (SQLAlchemy 2.0 AsyncPG)**, and **React 19 (Vite)**, it provides dynamic question selection, real-time candidate evaluation, adaptive difficulty scaling, automated follow-up question generation, peer percentile benchmarking, and role-based access control (RBAC).
+InterviewIQ is an enterprise-grade AI technical & behavioral interview platform. Built with **FastAPI (Python 3.13)**, **PostgreSQL (SQLAlchemy 2.0 AsyncPG)**, **LiveKit Real-Time WebRTC**, **TruGen.AI Video Avatars**, and **React 19 (Vite 7)**.
 
 ---
 
 ## 🌟 Key Features
 
+### 🎭 Real-Time AI Video Avatar (TruGen.AI & LiveKit)
+- **Real-Time Lip-Sync Video**: Live interactive video avatar powered by TruGen.AI and LiveKit Agents.
+- **Dynamic Interviewer Personas**:
+  - **Alex Vance** (`Technical & System Design`)
+  - **Sophia Chen** (`Behavioral & Culture Fit`)
+  - **Marcus Brody** (`Executive & Leadership`)
+- **Seamless Degradation**: Layered fallback ensuring uninterrupted interview flow (LiveKit WebRTC Video Track ➔ High-Definition Video Loop ➔ Audio Speech Synthesis).
+
+### 🎙️ Voice & Audio Pipeline
+- **Speech-to-Text (STT)**: Sub-second audio transcription via Groq Whisper (`whisper-large-v3-turbo`).
+- **Natural Text-to-Speech (TTS)**: High-quality WAV audio synthesized with OpenAI TTS / Groq Orpheus.
+- **Audio-Driven Viseme Lip-Sync**: Real-time waveform visualizers and speech gating for natural conversational turns.
+
 ### 🏢 Multi-Role Access Control (RBAC)
-- **Candidate**: Personal interview practice, real-time feedback, detailed performance scorecards, and AI coaching plans.
-- **Recruiter**: Job description parsing, rubric configuration, interview invite distribution, and candidate evaluation reports.
-- **SuperAdmin**: System-wide platform metrics, user management, recruiter provisioning, impersonation audit trail, and global configuration.
+- **Candidate**: Interactive voice/coding interview rooms, real-time feedback, detailed performance scorecards, and tailored coaching insights.
+- **Recruiter**: Job description parsing, rubric configuration, candidate evaluation metrics, and score overrides.
+- **SuperAdmin**: Platform analytics, organization management, recruiter provisioning, and audit logs.
 
-### 🤖 Adaptive AI Assessment Engine
-- **Sentence Transformers Semantic Scoring**: Evaluates candidate responses against rubric-weighted reference answers, covering semantic relevance, key concepts, and domain keywords.
-- **Adaptive Difficulty Adjustment**: Automatically monitors candidate performance (`consecutive_good` count) to swap technical questions to higher or lower difficulty tiers dynamically.
-- **Automated Follow-up Generation**: Triggers tailored follow-up questions when candidate answers reveal missing core concepts.
-- **AI Answer & Fraud Heuristics**: Heuristic analysis detecting copy-pasted or LLM-generated responses based on response length, completion time, and structural patterns.
-- **Peer Percentile Benchmarking**: Dynamically ranks candidate final scores against peers interviewing for identical roles.
-
-### 📄 Resume & JD Intelligence
-- **PDF Resume Parsing**: Powered by PyMuPDF (`fitz`) for skill extraction, candidate contact detection, and target role prediction.
-- **Job Description Parsing**: Extracts key required technical skills, experience requirements, and maps them to tailored interview rubrics.
-
-### 🎙️ Audio & Voice Support
-- **Speech-to-Text**: Voice transcription routes powered by Groq Whisper (`groq`).
-- **Text-to-Speech**: Speech synthesis endpoints for voice-driven interview simulation.
+### 🤖 Adaptive Assessment Engine
+- **Sentence Transformers Semantic Scoring**: Real-time answer evaluation across relevance, technical depth, and communication clarity.
+- **Adaptive Difficulty Adjustment**: Automatically adapts question difficulty based on consecutive candidate responses.
+- **Automated Follow-ups**: Generates targeted follow-up questions when responses miss core technical concepts.
+- **Anti-Cheat Integrity Tracking**: Monitors and logs candidate tab switches and session anomalies.
 
 ---
 
 ## 🛠️ Technology Stack
 
-### Backend (FastAPI)
-- **Framework**: FastAPI (Python 3.13) with full async/await architecture
-- **Database**: PostgreSQL with SQLAlchemy 2.0 (`asyncpg` engine) & Alembic migrations
-- **Authentication**: JWT token-based authentication with HTTP-only cookies and Google OAuth support
-- **NLP / ML**: `sentence-transformers`, `spacy`, `scikit-learn`, `numpy`, `pandas`, `PyMuPDF`, `groq`
-- **Validation & OpenAPI**: Pydantic v2 with auto-generated Swagger UI (`/docs`)
+### Backend
+- **Framework**: FastAPI (Python 3.13, async/await)
+- **Database & ORM**: PostgreSQL with SQLAlchemy 2.0 (`asyncpg` async engine) & Alembic
+- **WebRTC & Avatars**: LiveKit (`livekit-api`, `livekit-agents`, `livekit-plugins-trugen`)
+- **NLP & AI**: OpenRouter AI, Groq SDK, Sentence-Transformers, PyMuPDF, Scikit-Learn
+- **Cache**: Redis / In-Memory fallback cache
 
-### Frontend (React SPA)
-- **Core**: React 19, React Router v7, JavaScript (ES modules)
-- **Build System**: Vite 7
+### Frontend
+- **Framework**: React 19, Vite 7, React Router v7
 - **State Management**: Redux Toolkit & React-Redux
-- **Styling & UI**: Vanilla CSS & TailwindCSS v4 with Motion animations, React Icons, Circular Progressbar, Monaco Code Editor, and Recharts.
+- **Styling & UI**: TailwindCSS v4, Motion animations, React Icons, Monaco Code Editor, Recharts
+- **LiveKit Client**: `livekit-client`, `@livekit/components-react`
 
 ---
 
@@ -49,27 +53,27 @@ InterviewIQ is an end-to-end, enterprise-grade AI interview candidate assessment
 
 ```
 .
-├── client/                     # Frontend Application (React + Vite)
+├── client/                     # Frontend Application (React 19 + Vite 7)
 │   ├── src/
-│   │   ├── components/         # Navigation, banners, modal components
-│   │   ├── pages/              # AdminDashboard, CandidateDashboard, Analytics, Interview Room
-│   │   ├── redux/              # Redux Toolkit slices & store definition
+│   │   ├── components/         # TruGenVideoInterviewer, HumanAvatar, Monaco Editor, V2Room
+│   │   ├── pages/              # V2Interview, Dashboard, Recruiter, SuperAdmin, MeetingRoom
+│   │   ├── redux/              # Redux Toolkit slices & store
 │   │   └── App.jsx             # Main routing and auth wrappers
-│   ├── package.json            # Frontend scripts and dependencies
-│   └── vite.config.js          # Vite build configuration
+│   ├── package.json            # Frontend dependencies
+│   └── vite.config.js          # Vite build & COOP headers configuration
 │
-└── server/                     # Backend Application (FastAPI + PostgreSQL)
-    ├── app/
-    │   ├── config/             # Database connection, JWT handler, environment settings
-    │   ├── middleware/         # Auth & RBAC role-verification middleware
-    │   ├── models/             # SQLAlchemy ORM models (V2Interview, V2Answer, AuditLog, etc.)
-    │   ├── routes/             # API Router endpoints (auth, interview, admin, superadmin, etc.)
-    │   └── services/           # AI services (resume_parser, jd_parser, evaluator, rubric_service)
-    ├── main.py                 # Application entry point & FastAPI setup
-    ├── requirements.txt        # Python package dependencies
-    ├── seed_superadmin.py      # Seed script for initial SuperAdmin user
-    ├── start.sh                # Server launch script
-    └── venv/                   # Active Python 3.13 virtual environment
+├── server/                     # Backend Application (FastAPI + PostgreSQL)
+│   ├── app/
+│   │   ├── config/             # Settings, database connection, JWT handler
+│   │   ├── middleware/         # RBAC role authentication middleware
+│   │   ├── models/             # SQLAlchemy ORM models (User, V2Interview, Organization)
+│   │   ├── routes/             # API routes (v2_interview, tts, transcribe, livekit, etc.)
+│   │   └── services/           # AI services (evaluator, question_selector, avatar_service)
+│   ├── main.py                 # FastAPI application entry point
+│   ├── requirements.txt        # Python package dependencies
+│   └── seed_superadmin.py      # Database seed script for SuperAdmin account
+│
+└── avatar-service/             # Optional Wav2Lip containerized video generation service
 ```
 
 ---
@@ -77,9 +81,9 @@ InterviewIQ is an end-to-end, enterprise-grade AI interview candidate assessment
 ## 🚀 Quick Start Guide
 
 ### Prerequisites
-- **Python**: Version `3.12` or `3.13`
-- **Node.js**: Version `18+` (npm v9+)
-- **PostgreSQL**: Version `14+` running locally or accessible via remote URL
+- **Python**: `3.12` or `3.13`
+- **Node.js**: `18+` (npm v9+)
+- **PostgreSQL**: `14+` running locally or via cloud connection
 
 ---
 
@@ -89,29 +93,34 @@ InterviewIQ is an end-to-end, enterprise-grade AI interview candidate assessment
 # Navigate to the server directory
 cd server
 
-# Activate the virtual environment
+# Create and activate virtual environment
+python3 -m venv venv
 source venv/bin/activate
 
-# Install dependencies (if setting up fresh environment)
+# Install dependencies
 pip install -r requirements.txt
 
-# Configure environment variables in server/.env
-# Example .env configuration:
+# Create server/.env file and configure your API keys:
 # PORT=8000
-# DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/interviewiq
+# DATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5432/interviewiq
 # JWT_SECRET=your_super_secret_jwt_key
+# OPENROUTER_API_KEY=your_openrouter_api_key
 # GROQ_API_KEY=your_groq_api_key
+# TRUGEN_API_KEY=your_trugen_api_key
+# LIVEKIT_API_KEY=your_livekit_api_key
+# LIVEKIT_API_SECRET=your_livekit_api_secret
+# LIVEKIT_URL=wss://your-project.livekit.cloud
 
-# Run database seed (creates default admin accounts if needed)
+# Run migrations and seed SuperAdmin user
 python seed_superadmin.py
 
-# Start the FastAPI backend server
-python main.py
+# Start the FastAPI server
+python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-- **Backend API Base URL**: `http://localhost:8000`
-- **Interactive Swagger Documentation**: `http://localhost:8000/docs`
-- **API Health Check**: `http://localhost:8000/api/health`
+- **API Base URL**: `http://localhost:8000`
+- **Interactive Swagger Docs**: `http://localhost:8000/docs`
+- **Health Check**: `http://localhost:8000/api/health`
 
 ---
 
@@ -121,42 +130,46 @@ python main.py
 # Navigate to the client directory
 cd client
 
-# Install Node.js dependencies
+# Install dependencies
 npm install
 
-# Start the Vite development server
+# Start development server
 npm run dev
 ```
 
-- **Frontend Application URL**: `http://localhost:5173` (or `http://localhost:5174` if 5173 is occupied)
+- **Frontend App**: `http://localhost:5173`
 
 ---
 
-## 🔒 API Endpoints Overview
+## 🔒 API Routes Summary
 
 | Method | Endpoint | Access | Description |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/api/health` | Public | Backend health and RBAC status check |
-| `POST` | `/api/auth/google` | Public | Authenticate user via Google OAuth |
-| `POST` | `/api/v2/resume/parse` | Candidate / Recruiter | Upload PDF resume for parsing and skill extraction |
-| `POST` | `/api/v2/jd/parse` | Candidate / Recruiter | Parse Job Description text for key skills |
-| `POST` | `/api/v2/interview/start` | Candidate | Initialize personalized interview session |
-| `POST` | `/api/v2/interview/submit` | Candidate | Submit main or follow-up answer for AI evaluation |
-| `POST` | `/api/v2/interview/finish` | Candidate | Complete session, generate report & peer percentile |
-| `GET` | `/api/v2/interview/report/{id}` | Candidate / Recruiter | Fetch complete candidate report |
-| `GET` | `/api/v2/rubrics` | Candidate / Recruiter | List available assessment rubrics |
-| `GET` | `/api/admin/metrics` | Recruiter / Admin | View candidate performance & platform metrics |
-| `GET` | `/api/superadmin/users` | SuperAdmin | Manage system users and recruiter privileges |
+| `GET` | `/api/health` | Public | System health check and RBAC status |
+| `POST` | `/api/auth/google` | Public | Google OAuth login & JWT issuance |
+| `GET` | `/api/livekit/token/{room}` | Candidate / Auth | Issue LiveKit token & trigger TruGen cloud avatar |
+| `POST` | `/api/v2/speak` | Public / Auth | Text-to-Speech audio synthesis (WAV) |
+| `POST` | `/api/v2/transcribe` | Public / Auth | Groq Whisper speech-to-text transcription |
+| `POST` | `/api/v2/interview/start` | Candidate | Start dynamic AI interview session |
+| `POST` | `/api/v2/interview/submit` | Candidate | Submit candidate answer for real-time scoring |
+| `POST` | `/api/v2/interview/hint` | Candidate | Request contextual guidance & hint |
+| `POST` | `/api/v2/interview/finish` | Candidate | Complete interview and generate scorecard |
+| `GET` | `/api/recruiter/candidates` | Recruiter | View candidate submissions and reports |
+| `GET` | `/api/superadmin/users` | SuperAdmin | Platform administration & user management |
 
 ---
 
-## 🧪 Testing & Code Quality
-
-To verify backend type safety using Pyright:
+## 🧪 Testing & Verification
 
 ```bash
+# Run client linter and production build
+cd client
+npm run lint
+npm run build
+
+# Verify backend routes and imports
 cd server
-venv/bin/pyright app/routes/v2_interview.py
+python -c "import main; print('Backend modules OK')"
 ```
 
 ---

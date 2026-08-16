@@ -20,3 +20,12 @@ sentence-transformers==5.6.0
 spacy==3.8.14
 spacy-legacy==3.0.12
 spacy-loggers==1.0.5
+# Avatar module
+redis>=5.0.1
+aiofiles>=23.2.1
+groq>=0.28.0
+
+livekit-api
+livekit-agents
+livekit-plugins-trugen
+openai
