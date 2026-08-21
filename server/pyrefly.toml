@@ -1,4 +1,4 @@
-python_interpreter = "venv/bin/python3"
+python_interpreter = "/Users/praveenkumar/Downloads/AI_based_interview-main/server/venv/bin/python3"
 
 [tool.pyrefly]
-python_interpreter = "venv/bin/python3"
+python_interpreter = "/Users/praveenkumar/Downloads/AI_based_interview-main/server/venv/bin/python3"

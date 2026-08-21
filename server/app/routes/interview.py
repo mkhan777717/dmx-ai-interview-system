@@ -220,7 +220,7 @@ async def submit_answer(
         if not interview:
             raise HTTPException(status_code=404, detail="Interview not found")
 
-        qs = list(interview.questions)  # materialise to plain list for len/index
+        qs = list(interview.questions)  # type: ignore[arg-type]  # materialise to plain list for len/index
 
         if request.questionIndex < 0 or request.questionIndex >= len(qs):
             raise HTTPException(status_code=400, detail="Invalid question index")
@@ -306,7 +306,7 @@ async def finish_interview(
         if not interview:
             raise HTTPException(status_code=404, detail="Interview not found")
 
-        questions = list(interview.questions)
+        questions = list(interview.questions)  # type: ignore[arg-type]
         total_questions = len(questions)
 
         if total_questions == 0:
@@ -402,7 +402,7 @@ async def get_interview_report(
         if not interview:
             raise HTTPException(status_code=404, detail="Interview not found")
 
-        questions = list(interview.questions)
+        questions = list(interview.questions)  # type: ignore[arg-type]
         total_questions = len(questions)
 
         if total_questions == 0:
