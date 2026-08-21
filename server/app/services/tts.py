@@ -36,7 +36,7 @@ _openai_client = None
 def get_openai_client() -> OpenAI:
     global _openai_client
     if _openai_client is None:
-        api_key = os.getenv("OPENAI_API_KEY", "").strip()
+        api_key = settings.OPENAI_API_KEY.strip()
         if not api_key:
             raise ValueError(
                 "OPENAI_API_KEY not set. Add it to server/.env and restart the server."
