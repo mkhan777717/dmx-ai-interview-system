@@ -117,15 +117,29 @@ class ParseJDResponse(BaseModel):
     key_requirements: List[str] = []
 
 
+from pydantic import BaseModel, model_validator
+
 class StartInterviewRequest(BaseModel):
-    predicted_role: str
-    skills: List[str]
+    predicted_role: Optional[str] = None
+    role: Optional[str] = None
+    skills: List[str] = []
     name: Optional[str] = None
     email: Optional[str] = None
     interview_mode: str = "Technical"   # "Technical" or "HR"
     jd_skills: List[str] = []          # Optional skills from JD
     jd_role: Optional[str] = None      # Optional role from JD
     rubric_id: str = "auto"            # Rubric to use; "auto" = resolved from mode
+
+    @model_validator(mode="before")
+    @classmethod
+    def reconcile_role(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            role_val = data.get("predicted_role") or data.get("role") or "Software Engineer"
+            data["predicted_role"] = str(role_val)
+            data["role"] = str(role_val)
+            if not data.get("skills"):
+                data["skills"] = []
+        return data
 
 
 class StartInterviewResponse(BaseModel):

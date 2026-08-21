@@ -73,6 +73,19 @@ function ResumeUpload({ onStart, onResumeParsed }) {
     }
   }
 
+function formatApiError(err, fallback = 'An unexpected error occurred.') {
+  if (!err) return fallback
+  const detail = err.response?.data?.detail || err.response?.data?.message || err.message
+  if (typeof detail === 'string') return detail
+  if (Array.isArray(detail)) {
+    return detail.map(d => (typeof d === 'string' ? d : d.msg || d.loc?.join('.') || JSON.stringify(d))).join(', ')
+  }
+  if (detail && typeof detail === 'object') {
+    return detail.msg || JSON.stringify(detail)
+  }
+  return fallback
+}
+
   const handleParse = async (f) => {
     setParsing(true)
     setError(null)
@@ -90,7 +103,7 @@ function ResumeUpload({ onStart, onResumeParsed }) {
       setStep(4)
       setTimeout(() => setStep(5), 400)
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to parse resume. Please try again.')
+      setError(formatApiError(err, 'Failed to parse resume. Please try again.'))
       setStep(1)
     } finally {
       setParsing(false)
@@ -113,20 +126,26 @@ function ResumeUpload({ onStart, onResumeParsed }) {
   const handleStart = async () => {
     if (!resumeData || starting) return
     setStarting(true)
+    setError(null)
     try {
-      const res = await axios.post(ServerUrl + '/api/v2/interview/start', {
-        role: resumeData.predicted_role || 'Software Engineer',
+      const payload = {
+        predicted_role: resumeData.predicted_role || resumeData.role || 'Software Engineer',
+        role: resumeData.predicted_role || resumeData.role || 'Software Engineer',
+        skills: Array.isArray(resumeData.skills) ? resumeData.skills : [],
+        name: resumeData.name || null,
+        email: resumeData.email || null,
         experience_level: resumeData.experience_tier || 'Mid-Level',
-        skills: resumeData.skills || [],
-        projects: resumeData.projects || [],
+        projects: Array.isArray(resumeData.projects) ? resumeData.projects : [],
         resume_text: resumeData.raw_text_summary || '',
-        interview_mode: interviewMode,
+        interview_mode: interviewMode || 'Technical',
         jd_skills: jdData?.skills || [],
         jd_role: jdData?.role || null,
-      }, { withCredentials: true })
+        rubric_id: 'auto',
+      }
+      const res = await axios.post(ServerUrl + '/api/v2/interview/start', payload, { withCredentials: true })
       onStart({ ...res.data, resumeData, mode: interviewMode })
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to start interview.')
+      setError(formatApiError(err, 'Failed to start interview.'))
       setStarting(false)
     }
   }
@@ -182,7 +201,7 @@ function ResumeUpload({ onStart, onResumeParsed }) {
                 )}
                 {error && (
                   <p className="mt-4 text-xs font-medium text-rose-300 bg-rose-500/10 p-3 rounded-xl border border-rose-500/20">
-                    ⚠️ {error}
+                    ⚠️ {typeof error === 'string' ? error : JSON.stringify(error)}
                   </p>
                 )}
               </div>
