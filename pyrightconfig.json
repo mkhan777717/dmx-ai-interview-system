@@ -1,0 +1,15 @@
+{
+  "venvPath": "server",
+  "venv": "venv",
+  "pythonPath": "server/venv/bin/python3",
+  "extraPaths": [
+    "server"
+  ],
+  "include": [
+    "server"
+  ],
+  "exclude": [
+    "server/venv",
+    "**/node_modules"
+  ]
+}
