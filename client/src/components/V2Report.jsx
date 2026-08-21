@@ -172,7 +172,7 @@ function V2Report({ reportData, onRestart }) {
           <div style={{ width: 280, flexShrink: 0 }} className="w-full md:w-[280px] flex flex-col gap-4">
 
             {/* Overall Performance card */}
-            <div className="bg-white dark:bg-[#131c2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-6 text-center shadow-sm transition-colors duration-300">
+            <div className="glass-card-static rounded-3xl p-6 text-center">
               <p className="text-xs text-gray-500 dark:text-slate-400 mb-4 font-medium">
                 Overall Performance
               </p>
@@ -203,8 +203,8 @@ function V2Report({ reportData, onRestart }) {
             </div>
 
             {/* Skill Evaluation */}
-            <div className="bg-white dark:bg-[#131c2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-5 shadow-sm transition-colors duration-300">
-              <p className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
+            <div className="glass-card-static rounded-3xl p-6">
+              <p className="text-sm font-bold text-slate-900 mb-4 font-['Outfit']">
                 Skill Evaluation
               </p>
               {skillRows.map(({ label, score }) => (
@@ -214,14 +214,14 @@ function V2Report({ reportData, onRestart }) {
 
             {/* Strengths */}
             {strengths.length > 0 && (
-              <div className="bg-white dark:bg-[#131c2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-5 shadow-sm transition-colors duration-300">
-                <p className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+              <div className="glass-card-static rounded-3xl p-6">
+                <p className="text-sm font-bold text-slate-900 mb-3 font-['Outfit']">
                   ✅ Strengths
                 </p>
                 {strengths.map(s => (
                   <div key={s} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                     <span style={{ width: 6, height: 6, borderRadius: '50%', background: GREEN, marginTop: 5, flexShrink: 0 }} />
-                    <span className="text-xs text-gray-700 dark:text-slate-300 leading-relaxed">{s}</span>
+                    <span className="text-xs text-slate-700 leading-relaxed font-medium">{s}</span>
                   </div>
                 ))}
               </div>
@@ -229,14 +229,14 @@ function V2Report({ reportData, onRestart }) {
 
             {/* Weaknesses */}
             {weaknesses.length > 0 && (
-              <div className="bg-white dark:bg-[#131c2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-5 shadow-sm transition-colors duration-300">
-                <p className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+              <div className="glass-card-static rounded-3xl p-6">
+                <p className="text-sm font-bold text-slate-900 mb-3 font-['Outfit']">
                   ⚠️ Areas to Improve
                 </p>
                 {weaknesses.map(w => (
                   <div key={w} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                     <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', marginTop: 5, flexShrink: 0 }} />
-                    <span className="text-xs text-gray-700 dark:text-slate-300 leading-relaxed">{w}</span>
+                    <span className="text-xs text-slate-700 leading-relaxed font-medium">{w}</span>
                   </div>
                 ))}
               </div>
@@ -244,67 +244,67 @@ function V2Report({ reportData, onRestart }) {
           </div>
 
           {/* ── RIGHT COLUMN ────────────────────────────────────────── */}
-          <div style={{ flex: 1 }} className="w-full flex flex-col gap-4">
+          <div style={{ flex: 1 }} className="w-full flex flex-col gap-5">
 
             {/* Communication & Delivery Metrics Card (Tone, Pacing, Confidence) */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm space-y-4">
+            <div className="glass-card-static rounded-3xl p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-bold text-gray-900">Communication & Delivery Metrics</h3>
-                  <p className="text-xs text-gray-500">Real-time analysis of tone, pacing, and speech confidence</p>
+                  <h3 className="text-sm font-bold text-slate-900 font-['Outfit']">Communication & Delivery Metrics</h3>
+                  <p className="text-xs text-slate-500">Real-time analysis of tone, pacing, and speech confidence</p>
                 </div>
-                <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-bold">
+                <span className="px-3 py-1 rounded-full bg-emerald-500/15 text-teal-900 border border-emerald-500/20 text-[10px] font-bold">
                   91% Clear Delivery
                 </span>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
-                <div className="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Tone & Pitch</p>
-                  <p className="text-sm font-bold text-emerald-600 mt-1">Confident & Professional</p>
+                <div className="p-3.5 glass-panel-subtle rounded-2xl text-center">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tone & Pitch</p>
+                  <p className="text-sm font-bold text-teal-800 mt-1">Confident & Clear</p>
                 </div>
 
-                <div className="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pacing (WPM)</p>
-                  <p className="text-sm font-bold text-gray-900 mt-1">142 WPM <span className="text-[10px] font-normal text-emerald-600">(Optimal)</span></p>
+                <div className="p-3.5 glass-panel-subtle rounded-2xl text-center">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pacing (WPM)</p>
+                  <p className="text-sm font-bold text-slate-900 mt-1">142 WPM <span className="text-[10px] font-normal text-teal-700">(Optimal)</span></p>
                 </div>
 
-                <div className="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Speech Confidence</p>
-                  <p className="text-sm font-bold text-emerald-600 mt-1">91.4% Index</p>
+                <div className="p-3.5 glass-panel-subtle rounded-2xl text-center">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Confidence Index</p>
+                  <p className="text-sm font-bold text-teal-800 mt-1">91.4% Score</p>
                 </div>
               </div>
 
               {/* Delivery vs Content Scoring Split */}
-              <div className="space-y-2 pt-2 border-t border-gray-100">
-                <div className="flex justify-between text-xs text-gray-700">
+              <div className="space-y-2 pt-2 border-t border-slate-200/60">
+                <div className="flex justify-between text-xs text-slate-700 font-medium">
                   <span className="font-semibold">Answer Content Score</span>
-                  <span className="font-bold text-emerald-600">{overall_score.toFixed(1)} / 10</span>
+                  <span className="font-bold text-teal-800">{overall_score.toFixed(1)} / 10</span>
                 </div>
-                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                   <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min((overall_score / 10) * 100, 100)}%` }} />
                 </div>
 
-                <div className="flex justify-between text-xs text-gray-700 pt-1">
+                <div className="flex justify-between text-xs text-slate-700 pt-1 font-medium">
                   <span className="font-semibold">Speech & Delivery Score</span>
-                  <span className="font-bold text-teal-600">{(overall_score * 0.96).toFixed(1)} / 10</span>
+                  <span className="font-bold text-teal-700">{(overall_score * 0.96).toFixed(1)} / 10</span>
                 </div>
-                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                   <div className="h-full bg-teal-500 rounded-full" style={{ width: `${Math.min((overall_score * 9.6), 100)}%` }} />
                 </div>
               </div>
             </div>
 
             {/* Performance Trend & Session-over-Session Progress Chart */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+            <div className="glass-card-static rounded-3xl p-6">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <p className="text-sm font-bold text-gray-900">
+                  <p className="text-sm font-bold text-slate-900 font-['Outfit']">
                     Session-over-Session Progress
                   </p>
                   <p className="text-xs text-slate-500">Track improvement across every question and practice session</p>
                 </div>
-                <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+                <span className="text-xs font-bold text-teal-800 bg-emerald-500/15 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
                   ↑ +14.2% Growth
                 </span>
               </div>
@@ -312,7 +312,7 @@ function V2Report({ reportData, onRestart }) {
             </div>
 
             {/* Question Breakdown */}
-            <div className="bg-white dark:bg-[#131c2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-5 shadow-sm transition-colors duration-300">
+            <div className="glass-card-static rounded-3xl p-6">
               <p className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
                 Question Breakdown
               </p>

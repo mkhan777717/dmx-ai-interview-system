@@ -82,26 +82,26 @@ function Auth({ isModel = false }) {
         initial={{ opacity: 0, y: isModel ? 0 : 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: 'easeOut' }}
-        className={`w-full max-w-md relative z-10 bg-white/95 backdrop-blur-xl rounded-3xl border border-slate-200/90 shadow-2xl shadow-emerald-950/5 ${
+        className={`w-full max-w-md relative z-10 glass-panel rounded-3xl border border-white/90 shadow-2xl ${
           isModel ? 'p-6 sm:p-8' : 'p-8 sm:p-10'
         }`}
       >
         {/* Brand Logo & Pill */}
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-[11px] font-bold text-emerald-800 mb-4 shadow-2xs">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-bold text-teal-900 mb-4 shadow-2xs">
             <BsStars className="text-emerald-600" /> AI-Powered Interview System
           </div>
 
           <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-10 h-10 bg-gradient-to-tr from-emerald-600 to-teal-500 text-white rounded-2xl flex items-center justify-center shadow-md shadow-emerald-600/25">
+            <div className="w-10 h-10 bg-gradient-to-br from-teal-800 to-teal-950 text-emerald-300 rounded-2xl flex items-center justify-center shadow-md shadow-teal-950/20">
               <BsRobot size={20} />
             </div>
-            <h2 className="font-extrabold text-2xl tracking-tight text-slate-900">
+            <h2 className="font-extrabold text-2xl tracking-tight text-slate-900 font-['Outfit']">
               InterviewIQ<span className="text-emerald-600">.AI</span>
             </h2>
           </div>
 
-          <h1 className="text-xl font-bold text-slate-900 mt-2">
+          <h1 className="text-xl font-bold text-slate-900 mt-2 font-['Outfit']">
             Welcome to your career prep 👋
           </h1>
           <p className="text-xs text-slate-500 mt-1 max-w-xs leading-relaxed">
@@ -114,7 +114,7 @@ function Auth({ isModel = false }) {
           <button
             onClick={handleGoogleAuth}
             disabled={loading}
-            className="w-full py-3.5 px-4 bg-white hover:bg-slate-50 active:bg-slate-100 border-2 border-slate-200 hover:border-emerald-400 text-slate-800 font-bold text-sm rounded-2xl flex items-center justify-center gap-3 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed group"
+            className="w-full py-3.5 px-4 bg-white/90 hover:bg-white active:bg-slate-50 border border-slate-200 hover:border-emerald-400 text-slate-800 font-bold text-sm rounded-2xl flex items-center justify-center gap-3 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed group"
           >
             {loading ? (
               <svg className="animate-spin w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24">
@@ -130,9 +130,9 @@ function Auth({ isModel = false }) {
 
         {/* Error Alert */}
         {error && (
-          <div className="mt-4 px-4 py-3 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-2.5">
-            <span className="text-red-500 mt-0.5 shrink-0">⚠️</span>
-            <p className="text-xs font-semibold text-red-700 leading-relaxed">{error}</p>
+          <div className="mt-4 px-4 py-3 bg-rose-50 border border-rose-200 rounded-2xl flex items-start gap-2.5">
+            <span className="text-rose-500 mt-0.5 shrink-0">⚠️</span>
+            <p className="text-xs font-semibold text-rose-700 leading-relaxed">{error}</p>
           </div>
         )}
 

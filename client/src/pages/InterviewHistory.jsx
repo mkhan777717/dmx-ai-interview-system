@@ -35,17 +35,17 @@ function InterviewHistory() {
             <p className="text-sm font-medium">Loading history...</p>
           </div>
         ) : interviews.length === 0 ? (
-          <div className="bg-white border border-gray-200 p-12 rounded-3xl shadow-xs text-center flex flex-col items-center justify-center">
-            <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 text-gray-400">
+          <div className="glass-card-static p-12 rounded-3xl text-center flex flex-col items-center justify-center">
+            <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4 text-slate-400">
               <FaHistory size={24} />
             </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-1">No completed interviews yet</h3>
-            <p className="text-gray-500 text-sm max-w-sm mb-6">
+            <h3 className="text-lg font-bold text-slate-900 mb-1 font-['Outfit']">No completed interviews yet</h3>
+            <p className="text-slate-500 text-xs max-w-sm mb-6 leading-relaxed">
               Complete your first AI mock interview to receive detailed rubric feedback, communication metrics, and progress tracking.
             </p>
             <button
               onClick={() => navigate('/v2/interview')}
-              className="px-6 py-3 bg-green-600 text-white font-bold text-sm rounded-xl hover:bg-green-700 transition cursor-pointer shadow-sm"
+              className="px-6 py-3.5 glass-btn-primary font-bold text-xs rounded-2xl transition cursor-pointer shadow-md"
             >
               Start Interview Now
             </button>
@@ -61,40 +61,40 @@ function InterviewHistory() {
                 <div
                   key={index}
                   onClick={() => navigate(`/report/${reportId}`)}
-                  className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs hover:shadow-md hover:border-green-300 transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 group"
+                  className="glass-card p-5 rounded-3xl cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 group"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-teal-900 text-emerald-400 flex items-center justify-center font-bold text-lg shrink-0 shadow-xs">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-800 to-teal-950 text-emerald-300 flex items-center justify-center font-bold text-lg shrink-0 shadow-xs">
                       {roleName.charAt(0)}
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-gray-900 group-hover:text-green-700 transition-colors">
+                      <h3 className="text-base font-bold text-slate-900 group-hover:text-teal-800 transition-colors font-['Outfit']">
                         {roleName}
                       </h3>
-                      <div className="flex items-center gap-3 text-xs font-medium text-gray-500 mt-1">
+                      <div className="flex items-center gap-3 text-xs font-semibold text-slate-500 mt-1">
                         <span className="flex items-center gap-1.5">
-                          <FaCalendarAlt className="text-gray-400" />
+                          <FaCalendarAlt className="text-slate-400" />
                           {new Date(item.createdAt || item.created_at).toLocaleDateString()}
                         </span>
-                        <span className="w-1 h-1 rounded-full bg-gray-300" />
-                        <span>{item.mode || item.interview_mode || 'Technical'} Mode</span>
+                        <span className="w-1 h-1 rounded-full bg-slate-300" />
+                        <span className="text-teal-700 font-bold">{item.mode || item.interview_mode || 'Technical'} Mode</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-6 border-t md:border-t-0 border-gray-100 pt-3 md:pt-0">
+                  <div className="flex items-center gap-6 border-t md:border-t-0 border-slate-100 pt-3 md:pt-0">
                     <div className="text-right">
-                      <p className="text-base font-bold text-gray-900">
+                      <p className="text-base font-extrabold text-slate-900 font-['Outfit']">
                         {score.toFixed(1)} / 10
                       </p>
-                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wide">
+                      <p className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wider">
                         Score
                       </p>
                     </div>
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-50 text-green-700 border border-green-100 flex items-center gap-1.5">
-                      <FaCheckCircle className="text-green-600" /> Completed
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-teal-900 border border-emerald-500/20 flex items-center gap-1.5">
+                      <FaCheckCircle className="text-emerald-600" /> Completed
                     </span>
-                    <div className="w-8 h-8 rounded-full bg-gray-50 group-hover:bg-green-50 group-hover:text-green-700 flex items-center justify-center text-gray-400 transition-colors">
+                    <div className="w-8 h-8 rounded-full glass-pill group-hover:bg-emerald-500/15 group-hover:text-teal-900 flex items-center justify-center text-slate-400 transition-all">
                       <BsArrowRight />
                     </div>
                   </div>

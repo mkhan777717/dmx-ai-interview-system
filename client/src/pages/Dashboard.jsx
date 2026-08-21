@@ -18,7 +18,7 @@ import axios from 'axios'
 import { ServerUrl } from '../App'
 import { useNavigate } from 'react-router-dom'
 
-const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444']
+const COLORS = ['#0f766e', '#6366f1', '#f59e0b', '#8b5cf6', '#ef4444']
 
 export default function Dashboard() {
   const { userData } = useSelector((state) => state.user)
@@ -83,10 +83,10 @@ export default function Dashboard() {
 
   const headerLeft = (
     <div>
-      <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+      <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2 font-['Outfit']">
         Welcome back, {userData?.name?.split(' ')[0] || 'User'}! 👋
       </h1>
-      <p className="text-gray-500 text-xs mt-0.5">Here is your practice performance summary for today.</p>
+      <p className="text-slate-500 text-xs mt-0.5">Here is your practice performance summary for today.</p>
     </div>
   )
 
@@ -94,38 +94,38 @@ export default function Dashboard() {
     <div className="flex items-center gap-3">
       <button
         onClick={() => navigate('/v2/interview')}
-        className="flex items-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs rounded-xl shadow-xs transition cursor-pointer"
+        className="flex items-center gap-1.5 px-4.5 py-2 glass-btn-primary font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
       >
-        <BsStars size={13} /> Start New Practice
+        <BsStars size={13} /> Start Practice Session
       </button>
     </div>
   )
 
   return (
     <V2Layout headerLeft={headerLeft} headerRight={headerRight}>
-      <div className="p-6 lg:p-8 max-w-[1600px] mx-auto w-full space-y-6">
+      <div className="p-2 lg:p-4 max-w-[1600px] mx-auto w-full space-y-6">
 
         {/* ── TOP STATS ──────────────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {[
-            { label: 'Total Interviews', val: interviews.length.toString(), inc: 'All Time', icn: <FaCalendarCheck size={18} />, c: 'text-green-600', bg: 'bg-green-50' },
-            { label: 'Completed', val: completed.length.toString(), inc: 'All Time', icn: <FaChartLine size={18} />, c: 'text-purple-600', bg: 'bg-purple-50' },
-            { label: 'Avg. Score', val: `${avgScore}%`, inc: 'Average', icn: <FaRegClock size={18} />, c: 'text-amber-600', bg: 'bg-amber-50' },
-            { label: 'Total Time', val: `${hours}h ${mins}m`, inc: 'Estimated', icn: <FaRegClock size={18} />, c: 'text-blue-600', bg: 'bg-blue-50' },
+            { label: 'Total Interviews', val: interviews.length.toString(), inc: 'All Time', icn: <FaCalendarCheck size={18} />, c: 'text-teal-700', bg: 'bg-emerald-500/15' },
+            { label: 'Completed', val: completed.length.toString(), inc: 'All Time', icn: <FaChartLine size={18} />, c: 'text-indigo-600', bg: 'bg-indigo-500/15' },
+            { label: 'Avg. Score', val: `${avgScore}%`, inc: 'Average', icn: <FaRegClock size={18} />, c: 'text-amber-600', bg: 'bg-amber-500/15' },
+            { label: 'Total Time', val: `${hours}h ${mins}m`, inc: 'Estimated', icn: <FaRegClock size={18} />, c: 'text-teal-800', bg: 'bg-teal-500/15' },
           ].map((stat, i) => (
-            <div key={i} className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs">
+            <div key={i} className="glass-card-static rounded-3xl p-5.5">
               <div className="flex items-center justify-between mb-3">
-                <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${stat.bg} ${stat.c}`}>
+                <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${stat.bg} ${stat.c}`}>
                   {stat.icn}
                 </div>
                 <div className="text-right">
-                  <p className="text-xs font-semibold text-gray-500 mb-0.5">{stat.label}</p>
-                  <h3 className="text-2xl font-bold text-gray-900">{stat.val}</h3>
+                  <p className="text-xs font-bold text-slate-400 mb-0.5">{stat.label}</p>
+                  <h3 className="text-2xl font-extrabold text-slate-900 font-['Outfit']">{stat.val}</h3>
                 </div>
               </div>
-              <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-xs">
-                <span className="text-emerald-600 font-semibold">Active Tracker</span>
-                <span className="text-gray-400">{stat.inc}</span>
+              <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between text-xs font-medium">
+                <span className="text-teal-700 font-bold">Active Tracker</span>
+                <span className="text-slate-400">{stat.inc}</span>
               </div>
             </div>
           ))}
@@ -138,12 +138,12 @@ export default function Dashboard() {
           <div className="xl:col-span-2 space-y-6">
 
             {/* Recent Interviews */}
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-xs">
+            <div className="glass-card-static rounded-3xl p-6">
               <div className="flex justify-between items-center mb-5">
-                <h3 className="font-bold text-gray-900 text-base">Recent Interview Reports</h3>
+                <h3 className="font-bold text-slate-900 text-base font-['Outfit']">Recent Interview Reports</h3>
                 <button
                   onClick={() => navigate('/history')}
-                  className="text-xs font-semibold text-green-700 hover:text-green-800 flex items-center gap-1.5 cursor-pointer"
+                  className="text-xs font-bold text-teal-800 hover:text-teal-950 flex items-center gap-1.5 cursor-pointer glass-pill px-3 py-1 rounded-full"
                 >
                   View All <BsArrowRight />
                 </button>
@@ -152,7 +152,7 @@ export default function Dashboard() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 pb-3">
+                    <tr className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider border-b border-slate-200/60 pb-3">
                       <th className="pb-3 font-semibold">Role</th>
                       <th className="pb-3 font-semibold">Type</th>
                       <th className="pb-3 font-semibold">Score</th>
@@ -161,38 +161,38 @@ export default function Dashboard() {
                       <th className="pb-3 font-semibold">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50">
+                  <tbody className="divide-y divide-slate-100">
                     {recentInterviews.length > 0 ? (
                       recentInterviews.map((row, i) => {
                         const scorePct = Math.round(((row.finalScore || row.final_score || 0) * 10))
                         return (
                           <tr
                             key={i}
-                            className="group hover:bg-gray-50/80 transition cursor-pointer"
+                            className="group hover:bg-slate-100/60 transition cursor-pointer"
                             onClick={() => navigate(`/report/${row.id || row._id}`)}
                           >
                             <td className="py-3.5">
-                              <span className="font-semibold text-sm text-gray-900">{row.role || row.predicted_role || 'Technical Interview'}</span>
+                              <span className="font-bold text-sm text-slate-900">{row.role || row.predicted_role || 'Technical Interview'}</span>
                             </td>
                             <td className="py-3.5">
-                              <span className="px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">
+                              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-50 text-teal-800 border border-teal-200">
                                 {row.mode || row.interview_mode || 'Technical'}
                               </span>
                             </td>
                             <td className="py-3.5">
-                              <span className={`font-bold text-sm ${scorePct >= 80 ? 'text-green-600' : scorePct >= 60 ? 'text-blue-600' : 'text-amber-600'}`}>
+                              <span className={`font-extrabold text-sm ${scorePct >= 80 ? 'text-teal-700' : scorePct >= 60 ? 'text-indigo-600' : 'text-amber-600'}`}>
                                 {scorePct}%
                               </span>
                             </td>
-                            <td className="py-3.5 text-xs text-gray-500">
+                            <td className="py-3.5 text-xs text-slate-500 font-medium">
                               {new Date(row.createdAt || row.created_at).toLocaleDateString()}
                             </td>
                             <td className="py-3.5">
-                              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-100">
+                              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-teal-900 border border-emerald-500/20">
                                 Completed
                               </span>
                             </td>
-                            <td className="py-3.5 text-xs font-semibold text-blue-600 hover:underline">
+                            <td className="py-3.5 text-xs font-bold text-teal-700 hover:underline">
                               Report →
                             </td>
                           </tr>
@@ -200,8 +200,8 @@ export default function Dashboard() {
                       })
                     ) : (
                       <tr>
-                        <td colSpan="6" className="py-10 text-center text-gray-400 text-sm">
-                          No recent practice sessions. Click <strong>"Start New Practice"</strong> to begin!
+                        <td colSpan="6" className="py-10 text-center text-slate-400 text-sm">
+                          No recent practice sessions. Click <strong>"Start Practice Session"</strong> to begin!
                         </td>
                       </tr>
                     )}
@@ -214,27 +214,27 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
               {/* Score Trend */}
-              <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-xs">
-                <h3 className="font-bold text-gray-900 text-sm mb-4">Score Trend</h3>
+              <div className="glass-card-static rounded-3xl p-6">
+                <h3 className="font-bold text-slate-900 text-sm mb-4 font-['Outfit']">Score Progression</h3>
                 <div className="h-[180px] w-full">
                   {scoreTrendData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={scoreTrendData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                         <defs>
                           <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                            <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                            <stop offset="5%" stopColor="#0f766e" stopOpacity={0.4} />
+                            <stop offset="95%" stopColor="#0f766e" stopOpacity={0} />
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                         <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} dy={8} />
                         <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} />
-                        <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0' }} />
-                        <Area type="monotone" dataKey="score" stroke="#10b981" strokeWidth={2.5} fillOpacity={1} fill="url(#colorScore)" />
+                        <Tooltip contentStyle={{ borderRadius: '14px', border: '1px solid rgba(255,255,255,0.8)', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)' }} />
+                        <Area type="monotone" dataKey="score" stroke="#0f766e" strokeWidth={2.5} fillOpacity={1} fill="url(#colorScore)" />
                       </AreaChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
                       <FaChartLine size={28} className="mb-2 opacity-30" />
                       <p className="text-xs">No score data available yet.</p>
                     </div>
@@ -243,22 +243,22 @@ export default function Dashboard() {
               </div>
 
               {/* Roles Distribution */}
-              <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-xs flex flex-col">
-                <h3 className="font-bold text-gray-900 text-sm mb-4">Interviews by Domain</h3>
+              <div className="glass-card-static rounded-3xl p-6 flex flex-col">
+                <h3 className="font-bold text-slate-900 text-sm mb-4 font-['Outfit']">Interviews by Domain</h3>
                 <div className="flex-1 flex items-center justify-between">
                   {roleData.length > 0 ? (
                     <>
                       <div className="relative w-[120px] h-[120px] shrink-0">
                         <ResponsiveContainer width="100%" height="100%">
                           <PieChart>
-                            <Pie data={roleData} cx="50%" cy="50%" innerRadius={35} outerRadius={50} paddingAngle={2} dataKey="value" stroke="none">
+                            <Pie data={roleData} cx="50%" cy="50%" innerRadius={35} outerRadius={50} paddingAngle={3} dataKey="value" stroke="none">
                               {roleData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                             </Pie>
                           </PieChart>
                         </ResponsiveContainer>
                         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                          <span className="text-lg font-bold text-gray-900 leading-none">{completed.length}</span>
-                          <span className="text-[9px] text-gray-500 font-medium">Total</span>
+                          <span className="text-lg font-extrabold text-slate-900 leading-none font-['Outfit']">{completed.length}</span>
+                          <span className="text-[9px] text-slate-400 font-semibold">Total</span>
                         </div>
                       </div>
                       <div className="flex-1 pl-4 space-y-2">
@@ -266,15 +266,15 @@ export default function Dashboard() {
                           <div key={i} className="flex justify-between items-center text-xs">
                             <div className="flex items-center gap-2">
                               <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                              <span className="text-gray-700 font-medium truncate max-w-[100px]">{r.name}</span>
+                              <span className="text-slate-700 font-medium truncate max-w-[100px]">{r.name}</span>
                             </div>
-                            <span className="text-gray-500 font-bold">{r.value}</span>
+                            <span className="text-slate-600 font-bold">{r.value}</span>
                           </div>
                         ))}
                       </div>
                     </>
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
                       <p className="text-xs">No role data available yet.</p>
                     </div>
                   )}
@@ -288,33 +288,33 @@ export default function Dashboard() {
           <div className="xl:col-span-1 space-y-6">
 
             {/* Performance Overview Gauge */}
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-xs">
-              <h3 className="font-bold text-gray-900 text-sm mb-4">Skill Performance Rating</h3>
+            <div className="glass-card-static rounded-3xl p-6">
+              <h3 className="font-bold text-slate-900 text-sm mb-4 font-['Outfit']">Skill Performance Rating</h3>
               <div className="flex items-center gap-5">
                 <div className="relative w-22 h-22 shrink-0">
                   <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="#f1f5f9" strokeWidth="12" />
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="#10b981" strokeWidth="12" strokeDasharray={`${(251.2 * avgScore) / 100} 251.2`} strokeLinecap="round" />
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#e2e8f0" strokeWidth="12" />
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#0f766e" strokeWidth="12" strokeDasharray={`${(251.2 * avgScore) / 100} 251.2`} strokeLinecap="round" />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-lg font-bold text-gray-900 leading-none">{avgScore}%</span>
-                    <span className="text-[8px] text-gray-400">Avg Score</span>
+                    <span className="text-lg font-extrabold text-slate-900 leading-none font-['Outfit']">{avgScore}%</span>
+                    <span className="text-[8px] text-slate-400 font-semibold">Avg Score</span>
                   </div>
                 </div>
 
                 <div className="flex-1 space-y-2">
                   {[
                     { label: 'Excellent (80%+)', val: exc, c: 'bg-emerald-500' },
-                    { label: 'Good (60-79%)', val: good, c: 'bg-blue-500' },
+                    { label: 'Good (60-79%)', val: good, c: 'bg-indigo-500' },
                     { label: 'Average (40-59%)', val: avg, c: 'bg-amber-500' },
-                    { label: 'Needs Practice (<40%)', val: needs, c: 'bg-red-500' },
+                    { label: 'Needs Practice (<40%)', val: needs, c: 'bg-rose-500' },
                   ].map((leg, i) => (
                     <div key={i} className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full ${leg.c}`} />
-                        <span className="text-gray-600 font-medium">{leg.label}</span>
+                        <span className="text-slate-600 font-medium">{leg.label}</span>
                       </div>
-                      <span className="font-bold text-gray-900">{leg.val}</span>
+                      <span className="font-bold text-slate-900">{leg.val}</span>
                     </div>
                   ))}
                 </div>
@@ -322,13 +322,13 @@ export default function Dashboard() {
             </div>
 
             {/* AI Insights & Coaching */}
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-xs space-y-4">
-              <h3 className="font-bold text-gray-900 text-sm flex items-center gap-2">
-                <BsStars className="text-green-500" /> AI Practice Recommendations
+            <div className="glass-card-static rounded-3xl p-6 space-y-4">
+              <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2 font-['Outfit']">
+                <BsStars className="text-teal-700" /> AI Practice Recommendations
               </h3>
 
-              <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-3.5 flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+              <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-start gap-3">
+                <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-teal-900 flex items-center justify-center shrink-0">
                   <FaChartLine size={14} />
                 </div>
                 <div>
@@ -339,8 +339,8 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="bg-blue-50 border border-blue-100 rounded-xl p-3.5 flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+              <div className="p-3.5 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-start gap-3">
+                <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-900 flex items-center justify-center shrink-0">
                   <HiOutlineLightBulb size={16} />
                 </div>
                 <div>
@@ -353,7 +353,7 @@ export default function Dashboard() {
 
               <button
                 onClick={() => navigate('/v2/interview')}
-                className="w-full py-2.5 bg-gray-900 hover:bg-black text-white font-semibold rounded-xl text-xs transition cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3 glass-btn-primary font-bold rounded-2xl text-xs transition cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>Practice Recommended Role</span>
                 <BsArrowRight />
