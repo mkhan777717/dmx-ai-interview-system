@@ -17,8 +17,11 @@ import {
 import axios from 'axios'
 import { ServerUrl } from '../App'
 import { useNavigate } from 'react-router-dom'
+import GradientButton from '../components/ui/GradientButton'
+import Badge from '../components/ui/Badge'
+import GlassCard from '../components/ui/GlassCard'
 
-const COLORS = ['#0f766e', '#6366f1', '#f59e0b', '#8b5cf6', '#ef4444']
+const COLORS = ['#06b6d4', '#3b82f6', '#6366f1', '#10b981', '#f59e0b']
 
 export default function Dashboard() {
   const { userData } = useSelector((state) => state.user)
@@ -83,285 +86,298 @@ export default function Dashboard() {
 
   const headerLeft = (
     <div>
-      <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2 font-['Outfit']">
+      <h1 className="text-xl font-bold text-white flex items-center gap-2 font-['Outfit']">
         Welcome back, {userData?.name?.split(' ')[0] || 'User'}! 👋
       </h1>
-      <p className="text-slate-500 text-xs mt-0.5">Here is your practice performance summary for today.</p>
+      <p className="text-slate-400 text-xs mt-0.5">Here is your practice performance summary for today.</p>
     </div>
   )
 
   const headerRight = (
     <div className="flex items-center gap-3">
-      <button
+      <GradientButton
         onClick={() => navigate('/v2/interview')}
-        className="flex items-center gap-1.5 px-4.5 py-2 glass-btn-primary font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
+        size="sm"
+        icon={BsStars}
       >
-        <BsStars size={13} /> Start Practice Session
-      </button>
+        Start Practice Session
+      </GradientButton>
     </div>
   )
 
   return (
     <V2Layout headerLeft={headerLeft} headerRight={headerRight}>
-      <div className="p-2 lg:p-4 max-w-[1600px] mx-auto w-full space-y-6">
+      <div className="space-y-6 max-w-[1400px] mx-auto w-full">
 
-        {/* ── TOP STATS ──────────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {[
-            { label: 'Total Interviews', val: interviews.length.toString(), inc: 'All Time', icn: <FaCalendarCheck size={18} />, c: 'text-teal-700', bg: 'bg-emerald-500/15' },
-            { label: 'Completed', val: completed.length.toString(), inc: 'All Time', icn: <FaChartLine size={18} />, c: 'text-indigo-600', bg: 'bg-indigo-500/15' },
-            { label: 'Avg. Score', val: `${avgScore}%`, inc: 'Average', icn: <FaRegClock size={18} />, c: 'text-amber-600', bg: 'bg-amber-500/15' },
-            { label: 'Total Time', val: `${hours}h ${mins}m`, inc: 'Estimated', icn: <FaRegClock size={18} />, c: 'text-teal-800', bg: 'bg-teal-500/15' },
-          ].map((stat, i) => (
-            <div key={i} className="glass-card-static rounded-3xl p-5.5">
-              <div className="flex items-center justify-between mb-3">
-                <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${stat.bg} ${stat.c}`}>
-                  {stat.icn}
-                </div>
-                <div className="text-right">
-                  <p className="text-xs font-bold text-slate-400 mb-0.5">{stat.label}</p>
-                  <h3 className="text-2xl font-extrabold text-slate-900 font-['Outfit']">{stat.val}</h3>
-                </div>
-              </div>
-              <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between text-xs font-medium">
-                <span className="text-teal-700 font-bold">Active Tracker</span>
-                <span className="text-slate-400">{stat.inc}</span>
+        {/* ── TOP STAT CARDS ──────────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+          {/* Card 1: Completed */}
+          <div className="glass-card-static rounded-3xl p-5 relative overflow-hidden group hover:border-cyan-500/30 transition-all duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Completed Sessions</span>
+              <div className="w-9 h-9 rounded-2xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 flex items-center justify-center">
+                <FaCalendarCheck size={14} />
               </div>
             </div>
-          ))}
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-extrabold text-white font-['Outfit']">{completed.length}</span>
+              <span className="text-xs text-cyan-400 font-bold bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
+                +12% this week
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mt-2 font-medium">Recorded full evaluations</p>
+          </div>
+
+          {/* Card 2: Avg Score */}
+          <div className="glass-card-static rounded-3xl p-5 relative overflow-hidden group hover:border-blue-500/30 transition-all duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Average Score</span>
+              <div className="w-9 h-9 rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center justify-center">
+                <FaChartLine size={14} />
+              </div>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-extrabold text-white font-['Outfit']">{avgScore > 0 ? avgScore : '—'}%</span>
+              <span className="text-xs text-blue-400 font-bold bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20">
+                {avgScore >= 75 ? 'Ready for Offer' : 'Keep Practicing'}
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mt-2 font-medium">Across all technical rounds</p>
+          </div>
+
+          {/* Card 3: Practice Hours */}
+          <div className="glass-card-static rounded-3xl p-5 relative overflow-hidden group hover:border-indigo-500/30 transition-all duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Time in Studio</span>
+              <div className="w-9 h-9 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center">
+                <FaRegClock size={14} />
+              </div>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-extrabold text-white font-['Outfit']">{hours}h {mins}m</span>
+              <span className="text-xs text-indigo-400 font-bold bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-500/20">
+                Active Streak
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mt-2 font-medium">Real-time speech & code</p>
+          </div>
+
+          {/* Card 4: Top Skill Tier */}
+          <div className="glass-card-static rounded-3xl p-5 relative overflow-hidden group hover:border-emerald-500/30 transition-all duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Top Role Readiness</span>
+              <div className="w-9 h-9 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
+                <BsStars size={14} />
+              </div>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-xl font-extrabold text-white font-['Outfit'] truncate max-w-[160px]">
+                {roleData[0]?.name || 'Full-Stack'}
+              </span>
+            </div>
+            <p className="text-xs text-emerald-400 mt-2 font-semibold">Tier 1 Target Alignment</p>
+          </div>
         </div>
 
-        {/* ── MAIN GRID ──────────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {/* ── CHARTS ROW ─────────────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          {/* LEFT COLUMN */}
-          <div className="xl:col-span-2 space-y-6">
+          {/* Performance Trend Area Chart */}
+          <div className="lg:col-span-2 glass-card-static rounded-3xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-base font-bold text-white font-['Outfit']">Score Progression Over Time</h3>
+                <p className="text-xs text-slate-400 mt-0.5">Historical average scores across completed interview sessions</p>
+              </div>
+              <Badge variant="cyan">7 Sessions</Badge>
+            </div>
 
-            {/* Recent Interviews */}
-            <div className="glass-card-static rounded-3xl p-6">
-              <div className="flex justify-between items-center mb-5">
-                <h3 className="font-bold text-slate-900 text-base font-['Outfit']">Recent Interview Reports</h3>
-                <button
-                  onClick={() => navigate('/history')}
-                  className="text-xs font-bold text-teal-800 hover:text-teal-950 flex items-center gap-1.5 cursor-pointer glass-pill px-3 py-1 rounded-full"
-                >
-                  View All <BsArrowRight />
-                </button>
+            <div className="h-64 w-full">
+              {scoreTrendData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={scoreTrendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.4} />
+                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0.0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                    <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
+                    <YAxis domain={[0, 100]} stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#0b1120',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '12px',
+                        fontSize: '12px',
+                        color: '#f8fafc',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="score"
+                      stroke="#06b6d4"
+                      strokeWidth={3}
+                      fillOpacity={1}
+                      fill="url(#scoreGradient)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center text-slate-500 text-xs font-medium">
+                  Complete your first interview session to render progression trend.
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Role Distribution Pie Chart */}
+          <div className="glass-card-static rounded-3xl p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-bold text-white font-['Outfit']">Practice by Role</h3>
+                <span className="text-xs text-slate-400 font-semibold">{completed.length} Sessions</span>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider border-b border-slate-200/60 pb-3">
-                      <th className="pb-3 font-semibold">Role</th>
-                      <th className="pb-3 font-semibold">Type</th>
-                      <th className="pb-3 font-semibold">Score</th>
-                      <th className="pb-3 font-semibold">Date</th>
-                      <th className="pb-3 font-semibold">Status</th>
-                      <th className="pb-3 font-semibold">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {recentInterviews.length > 0 ? (
-                      recentInterviews.map((row, i) => {
-                        const scorePct = Math.round(((row.finalScore || row.final_score || 0) * 10))
-                        return (
-                          <tr
-                            key={i}
-                            className="group hover:bg-slate-100/60 transition cursor-pointer"
-                            onClick={() => navigate(`/report/${row.id || row._id}`)}
-                          >
-                            <td className="py-3.5">
-                              <span className="font-bold text-sm text-slate-900">{row.role || row.predicted_role || 'Technical Interview'}</span>
-                            </td>
-                            <td className="py-3.5">
-                              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-50 text-teal-800 border border-teal-200">
-                                {row.mode || row.interview_mode || 'Technical'}
-                              </span>
-                            </td>
-                            <td className="py-3.5">
-                              <span className={`font-extrabold text-sm ${scorePct >= 80 ? 'text-teal-700' : scorePct >= 60 ? 'text-indigo-600' : 'text-amber-600'}`}>
-                                {scorePct}%
-                              </span>
-                            </td>
-                            <td className="py-3.5 text-xs text-slate-500 font-medium">
-                              {new Date(row.createdAt || row.created_at).toLocaleDateString()}
-                            </td>
-                            <td className="py-3.5">
-                              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-teal-900 border border-emerald-500/20">
-                                Completed
-                              </span>
-                            </td>
-                            <td className="py-3.5 text-xs font-bold text-teal-700 hover:underline">
-                              Report →
-                            </td>
-                          </tr>
-                        )
-                      })
-                    ) : (
-                      <tr>
-                        <td colSpan="6" className="py-10 text-center text-slate-400 text-sm">
-                          No recent practice sessions. Click <strong>"Start Practice Session"</strong> to begin!
+              <div className="h-44 w-full flex items-center justify-center">
+                {roleData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={roleData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={45}
+                        outerRadius={70}
+                        paddingAngle={5}
+                        dataKey="value"
+                      >
+                        {roleData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: '#0b1120',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          borderRadius: '12px',
+                          fontSize: '12px',
+                          color: '#f8fafc',
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <p className="text-xs text-slate-500">No role data available</p>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2 pt-3 border-t border-white/8">
+              {roleData.slice(0, 3).map((r, i) => (
+                <div key={r.name} className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                    <span className="text-slate-300 font-medium truncate max-w-[130px]">{r.name}</span>
+                  </div>
+                  <span className="text-slate-400 font-bold">{r.value} session{r.value > 1 ? 's' : ''}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+
+        {/* ── RECENT SESSIONS TABLE ────────────────────────────────────────── */}
+        <div className="glass-card-static rounded-3xl p-6">
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <h3 className="text-base font-bold text-white font-['Outfit']">Recent Practice Sessions</h3>
+              <p className="text-xs text-slate-400 mt-0.5">Click any session to open the full diagnostic scorecard</p>
+            </div>
+            <button
+              onClick={() => navigate('/history')}
+              className="text-xs font-bold text-cyan-400 hover:text-cyan-300 transition flex items-center gap-1.5 cursor-pointer glass-pill px-3 py-1.5 rounded-full"
+            >
+              <span>View All History</span>
+              <BsArrowRight size={11} />
+            </button>
+          </div>
+
+          {recentInterviews.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-white/8 text-slate-400 font-bold uppercase tracking-wider text-[10px]">
+                    <th className="pb-3 px-3">Role & Track</th>
+                    <th className="pb-3 px-3">Mode</th>
+                    <th className="pb-3 px-3">Date</th>
+                    <th className="pb-3 px-3">Score</th>
+                    <th className="pb-3 px-3">Status</th>
+                    <th className="pb-3 px-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {recentInterviews.map((item, idx) => {
+                    const reportId = item.id || item._id
+                    const roleName = item.role || item.predicted_role || 'Technical Interview'
+                    const score = (item.finalScore ?? item.final_score ?? 0) * 10
+
+                    return (
+                      <tr
+                        key={idx}
+                        onClick={() => navigate(`/report/${reportId}`)}
+                        className="hover:bg-white/3 transition-colors cursor-pointer group"
+                      >
+                        <td className="py-3.5 px-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 text-cyan-300 flex items-center justify-center font-bold text-xs shrink-0 border border-cyan-500/30">
+                              {roleName.charAt(0)}
+                            </div>
+                            <span className="font-bold text-white group-hover:text-cyan-300 transition-colors">
+                              {roleName}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-3.5 px-3">
+                          <span className="px-2.5 py-1 rounded-md bg-white/5 text-slate-300 font-semibold text-[11px] border border-white/5">
+                            {item.mode || item.interview_mode || 'Technical'}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-3 text-slate-400 font-medium">
+                          {new Date(item.createdAt || item.created_at).toLocaleDateString()}
+                        </td>
+                        <td className="py-3.5 px-3">
+                          <span className="font-extrabold text-white font-['Outfit']">
+                            {Math.round(score)} / 100
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-3">
+                          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                            Completed
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-3 text-right">
+                          <span className="text-slate-400 group-hover:text-cyan-400 transition-colors font-bold text-xs">
+                            View Report →
+                          </span>
                         </td>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                    )
+                  })}
+                </tbody>
+              </table>
             </div>
-
-            {/* Charts Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-              {/* Score Trend */}
-              <div className="glass-card-static rounded-3xl p-6">
-                <h3 className="font-bold text-slate-900 text-sm mb-4 font-['Outfit']">Score Progression</h3>
-                <div className="h-[180px] w-full">
-                  {scoreTrendData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={scoreTrendData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
-                        <defs>
-                          <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#0f766e" stopOpacity={0.4} />
-                            <stop offset="95%" stopColor="#0f766e" stopOpacity={0} />
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} dy={8} />
-                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} />
-                        <Tooltip contentStyle={{ borderRadius: '14px', border: '1px solid rgba(255,255,255,0.8)', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)' }} />
-                        <Area type="monotone" dataKey="score" stroke="#0f766e" strokeWidth={2.5} fillOpacity={1} fill="url(#colorScore)" />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
-                      <FaChartLine size={28} className="mb-2 opacity-30" />
-                      <p className="text-xs">No score data available yet.</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Roles Distribution */}
-              <div className="glass-card-static rounded-3xl p-6 flex flex-col">
-                <h3 className="font-bold text-slate-900 text-sm mb-4 font-['Outfit']">Interviews by Domain</h3>
-                <div className="flex-1 flex items-center justify-between">
-                  {roleData.length > 0 ? (
-                    <>
-                      <div className="relative w-[120px] h-[120px] shrink-0">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <PieChart>
-                            <Pie data={roleData} cx="50%" cy="50%" innerRadius={35} outerRadius={50} paddingAngle={3} dataKey="value" stroke="none">
-                              {roleData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-                            </Pie>
-                          </PieChart>
-                        </ResponsiveContainer>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                          <span className="text-lg font-extrabold text-slate-900 leading-none font-['Outfit']">{completed.length}</span>
-                          <span className="text-[9px] text-slate-400 font-semibold">Total</span>
-                        </div>
-                      </div>
-                      <div className="flex-1 pl-4 space-y-2">
-                        {roleData.map((r, i) => (
-                          <div key={i} className="flex justify-between items-center text-xs">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                              <span className="text-slate-700 font-medium truncate max-w-[100px]">{r.name}</span>
-                            </div>
-                            <span className="text-slate-600 font-bold">{r.value}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
-                      <p className="text-xs">No role data available yet.</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
+          ) : (
+            <div className="text-center py-12 text-slate-400 text-xs">
+              <p>No practice sessions completed yet. Start your first session to begin tracking performance!</p>
             </div>
-          </div>
-
-          {/* RIGHT COLUMN */}
-          <div className="xl:col-span-1 space-y-6">
-
-            {/* Performance Overview Gauge */}
-            <div className="glass-card-static rounded-3xl p-6">
-              <h3 className="font-bold text-slate-900 text-sm mb-4 font-['Outfit']">Skill Performance Rating</h3>
-              <div className="flex items-center gap-5">
-                <div className="relative w-22 h-22 shrink-0">
-                  <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="#e2e8f0" strokeWidth="12" />
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="#0f766e" strokeWidth="12" strokeDasharray={`${(251.2 * avgScore) / 100} 251.2`} strokeLinecap="round" />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-lg font-extrabold text-slate-900 leading-none font-['Outfit']">{avgScore}%</span>
-                    <span className="text-[8px] text-slate-400 font-semibold">Avg Score</span>
-                  </div>
-                </div>
-
-                <div className="flex-1 space-y-2">
-                  {[
-                    { label: 'Excellent (80%+)', val: exc, c: 'bg-emerald-500' },
-                    { label: 'Good (60-79%)', val: good, c: 'bg-indigo-500' },
-                    { label: 'Average (40-59%)', val: avg, c: 'bg-amber-500' },
-                    { label: 'Needs Practice (<40%)', val: needs, c: 'bg-rose-500' },
-                  ].map((leg, i) => (
-                    <div key={i} className="flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${leg.c}`} />
-                        <span className="text-slate-600 font-medium">{leg.label}</span>
-                      </div>
-                      <span className="font-bold text-slate-900">{leg.val}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* AI Insights & Coaching */}
-            <div className="glass-card-static rounded-3xl p-6 space-y-4">
-              <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2 font-['Outfit']">
-                <BsStars className="text-teal-700" /> AI Practice Recommendations
-              </h3>
-
-              <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-start gap-3">
-                <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-teal-900 flex items-center justify-center shrink-0">
-                  <FaChartLine size={14} />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900">Technical Explanations</h4>
-                  <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
-                    Your System Design answers are strong. Focus on trade-off analysis during technical screens.
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-3.5 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-start gap-3">
-                <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-900 flex items-center justify-center shrink-0">
-                  <HiOutlineLightBulb size={16} />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900">Behavioral STAR Framework</h4>
-                  <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
-                    Structure your behavioral answers with Situation, Task, Action, and Result for higher scoring.
-                  </p>
-                </div>
-              </div>
-
-              <button
-                onClick={() => navigate('/v2/interview')}
-                className="w-full py-3 glass-btn-primary font-bold rounded-2xl text-xs transition cursor-pointer flex items-center justify-center gap-2"
-              >
-                <span>Practice Recommended Role</span>
-                <BsArrowRight />
-              </button>
-            </div>
-
-          </div>
+          )}
         </div>
+
       </div>
     </V2Layout>
   )

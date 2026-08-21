@@ -10,23 +10,26 @@ import {
   FaUsers, FaEnvelopeOpen, FaCheckCircle, FaSpinner, FaSearch,
   FaChartLine, FaPlus, FaTimes, FaUserCheck,
 } from 'react-icons/fa'
+import GradientButton from '../components/ui/GradientButton'
+import SecondaryButton from '../components/ui/SecondaryButton'
+import Badge from '../components/ui/Badge'
 
 // ── Stat Card ─────────────────────────────────────────────────────────────────
 function StatCard({ icon: Icon, label, value, color }) {
   const colors = {
-    blue:   { bg: 'bg-blue-50',   icon: 'text-blue-600',   border: 'border-blue-100' },
-    green:  { bg: 'bg-green-50',  icon: 'text-green-600',  border: 'border-green-100' },
-    amber:  { bg: 'bg-amber-50',  icon: 'text-amber-600',  border: 'border-amber-100' },
+    blue:   { bg: 'bg-cyan-500/10',   icon: 'text-cyan-400',   border: 'border-cyan-500/20' },
+    green:  { bg: 'bg-emerald-500/10',  icon: 'text-emerald-400',  border: 'border-emerald-500/20' },
+    amber:  { bg: 'bg-amber-500/10',  icon: 'text-amber-400',  border: 'border-amber-500/20' },
   }
   const c = colors[color] || colors.blue
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-4">
-      <div className={`w-12 h-12 ${c.bg} rounded-xl flex items-center justify-center ${c.icon} border ${c.border}`}>
+    <div className="glass-card-static rounded-3xl p-6 flex items-center gap-4 group hover:border-cyan-500/30 transition-all">
+      <div className={`w-12 h-12 ${c.bg} rounded-2xl flex items-center justify-center ${c.icon} border ${c.border} shrink-0`}>
         <Icon size={20} />
       </div>
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{label}</p>
-        <h3 className="text-2xl font-bold text-gray-900">{value}</h3>
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">{label}</p>
+        <h3 className="text-2xl font-extrabold text-white font-['Outfit']">{value}</h3>
       </div>
     </div>
   )
@@ -58,8 +61,8 @@ export default function RecruiterDashboard() {
         active: res.data.active_interviews || 0,
         avg_score: res.data.avg_organization_score,
       })
-    } catch (e) {
-      console.error(e)
+    } catch (err) {
+      console.error(err)
     } finally {
       setLoading(false)
     }
@@ -70,31 +73,29 @@ export default function RecruiterDashboard() {
   }, [])
 
   const handleSearch = (e) => {
-    const q = e.target.value
-    setSearch(q)
-    fetchCandidates(q)
+    e.preventDefault()
+    fetchCandidates(search)
   }
 
   const handleInvite = async (e) => {
     e.preventDefault()
     if (!inviteEmails.trim()) return
     setInviting(true)
-    setInviteResult(null)
     try {
-      const emailsList = inviteEmails
-        .split(/[\n,]+/)
-        .map(s => s.trim())
+      const emails = inviteEmails
+        .split(/[\n,]/)
+        .map(e => e.trim())
         .filter(Boolean)
 
-      const res = await axios.post(
-        `${ServerUrl}/api/recruiter/invite`,
-        { emails: emailsList, custom_message: inviteMessage },
-        { withCredentials: true }
-      )
-      setInviteResult(res.data)
+      const res = await axios.post(`${ServerUrl}/api/recruiter/invite`, {
+        emails,
+        custom_message: inviteMessage.trim() || undefined,
+      }, { withCredentials: true })
+
+      setInviteResult({ success: true, message: res.data.message, results: res.data.results })
       fetchCandidates()
     } catch (err) {
-      setInviteResult({ error: err.response?.data?.detail || 'Failed to send invitations.' })
+      setInviteResult({ error: err.response?.data?.detail || 'Failed to send invites.' })
     } finally {
       setInviting(false)
     }
@@ -109,13 +110,13 @@ export default function RecruiterDashboard() {
 
   return (
     <V2Layout
-      title="Recruiter Hub"
-      subtitle="Manage your organization's candidates, send interview invites, and track scores"
+      title="Recruiter Screening Hub"
+      subtitle="Review candidate scores, send assessment invites, and track team hiring metrics."
     >
-      <div className="p-6 lg:p-8 max-w-7xl mx-auto w-full space-y-6">
+      <div className="space-y-6 max-w-[1400px] mx-auto w-full">
 
-        {/* ── Top Stats Bar ── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* ── Stats Grid ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <StatCard
             icon={FaUsers}
             label="Total Candidates"
@@ -124,156 +125,155 @@ export default function RecruiterDashboard() {
           />
           <StatCard
             icon={FaUserCheck}
-            label="Active Interviews"
+            label="Active Screenings"
             value={stats.active}
-            color="amber"
+            color="green"
           />
           <StatCard
             icon={FaChartLine}
             label="Org Average Score"
             value={stats.avg_score != null ? `${stats.avg_score.toFixed(1)} / 10` : 'N/A'}
-            color="green"
+            color="amber"
           />
         </div>
 
-        {/* ── Action & Search Bar ── */}
-        <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm flex flex-wrap items-center justify-between gap-4">
-          <div className="relative flex-1 min-w-[240px] max-w-md">
-            <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
+        {/* ── Actions / Search ── */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <form onSubmit={handleSearch} className="relative w-full sm:w-80">
             <input
               type="text"
               value={search}
-              onChange={handleSearch}
-              placeholder="Search candidate by name or email..."
-              className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-green-500 transition-colors"
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search by candidate name or email..."
+              className="w-full pl-10 pr-4 py-2.5 glass-input rounded-2xl text-xs text-white placeholder-slate-500"
             />
-          </div>
+            <FaSearch className="absolute left-3.5 top-3.5 text-slate-400 text-xs" />
+          </form>
 
           <PermissionGuard roles={['RECRUITER', 'SUPER_ADMIN']}>
-            <button
+            <GradientButton
               onClick={() => setShowInviteModal(true)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold text-sm rounded-xl transition cursor-pointer shadow-sm"
+              size="sm"
+              icon={FaPlus}
             >
-              <FaPlus size={12} /> Invite Candidates
-            </button>
+              Invite Candidates
+            </GradientButton>
           </PermissionGuard>
         </div>
 
         {/* ── Candidates Table ── */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="glass-card-static rounded-3xl p-6 overflow-hidden">
           {loading ? (
-            <div className="flex items-center justify-center py-20 text-gray-400">
-              <FaSpinner className="animate-spin text-2xl text-green-500 mr-2" />
+            <div className="flex items-center justify-center py-20 text-slate-400">
+              <FaSpinner className="animate-spin text-2xl text-cyan-400 mr-2" />
               <span className="text-sm">Loading candidates...</span>
             </div>
           ) : candidates.length === 0 ? (
-            <div className="text-center py-16 text-gray-400">
-              <FaUsers size={36} className="mx-auto mb-3 opacity-30 text-gray-400" />
-              <p className="font-semibold text-gray-700 text-base">No candidates found</p>
-              <p className="text-xs text-gray-400 mt-1 max-w-sm mx-auto">
+            <div className="text-center py-16 text-slate-400">
+              <FaUsers size={36} className="mx-auto mb-3 opacity-30 text-slate-400" />
+              <p className="font-bold text-white text-base font-['Outfit']">No candidates found</p>
+              <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
                 Invite candidates to your organization to start reviewing their interview scores here.
               </p>
             </div>
           ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left">
-                  <thead>
-                    <tr className="bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                      <th className="px-6 py-3.5">Candidate</th>
-                      <th className="px-6 py-3.5">Role</th>
-                      <th className="px-6 py-3.5">Status</th>
-                      <th className="px-6 py-3.5">Score</th>
-                      <th className="px-6 py-3.5">Recommendation</th>
-                      <th className="px-6 py-3.5 text-right">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-50">
-                    {candidates.map(c => (
-                      <tr key={c.id} className="hover:bg-gray-50/60 transition">
-                        <td className="px-6 py-4">
-                          <div className="font-bold text-gray-900">{c.name}</div>
-                          <div className="text-xs text-gray-400">{c.email}</div>
-                        </td>
-                        <td className="px-6 py-4 text-gray-700 font-medium">
-                          {c.role || 'Candidate'}
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                            c.is_active
-                              ? 'bg-green-50 text-green-700 border border-green-100'
-                              : 'bg-gray-100 text-gray-500'
-                          }`}>
-                            {c.is_active ? 'Active' : 'Inactive'}
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead>
+                  <tr className="border-b border-white/8 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    <th className="pb-3 px-4">Candidate</th>
+                    <th className="pb-3 px-4">Role</th>
+                    <th className="pb-3 px-4">Status</th>
+                    <th className="pb-3 px-4">Score</th>
+                    <th className="pb-3 px-4">Recommendation</th>
+                    <th className="pb-3 px-4 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5 text-xs">
+                  {candidates.map(c => (
+                    <tr key={c.id} className="hover:bg-white/3 transition group">
+                      <td className="py-4 px-4">
+                        <div className="font-bold text-white group-hover:text-cyan-300 transition-colors font-['Outfit']">{c.name}</div>
+                        <div className="text-[11px] text-slate-400">{c.email}</div>
+                      </td>
+                      <td className="py-4 px-4 text-slate-300 font-medium">
+                        {c.role || 'Candidate'}
+                      </td>
+                      <td className="py-4 px-4">
+                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                          c.is_active
+                            ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/25'
+                            : 'bg-white/5 text-slate-400'
+                        }`}>
+                          {c.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 font-extrabold text-white font-['Outfit']">
+                        {c.latest_score != null ? `${c.latest_score.toFixed(1)} / 10` : '—'}
+                      </td>
+                      <td className="py-4 px-4">
+                        {c.hiring_recommendation ? (
+                          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-500/15 text-indigo-300 border border-indigo-500/25">
+                            {c.hiring_recommendation}
                           </span>
-                        </td>
-                        <td className="px-6 py-4 font-extrabold text-gray-900">
-                          {c.latest_score != null ? `${c.latest_score.toFixed(1)} / 10` : '—'}
-                        </td>
-                        <td className="px-6 py-4">
-                          {c.hiring_recommendation ? (
-                            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">
-                              {c.hiring_recommendation}
-                            </span>
-                          ) : (
-                            <span className="text-gray-400 text-xs font-medium">Pending</span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <button
-                            onClick={() => navigate('/admin')}
-                            className="text-xs font-semibold text-blue-600 hover:text-blue-800"
-                          >
-                            Pipeline →
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </>
+                        ) : (
+                          <span className="text-slate-500 text-[10px] font-medium">Pending</span>
+                        )}
+                      </td>
+                      <td className="py-4 px-4 text-right">
+                        <button
+                          onClick={() => navigate('/admin')}
+                          className="text-xs font-bold text-cyan-400 hover:text-cyan-300 cursor-pointer"
+                        >
+                          Pipeline →
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>
 
       {/* ── Invite Modal ── */}
       {showInviteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md">
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="w-full max-w-md bg-white rounded-2xl p-6 shadow-2xl border border-gray-200 relative"
+            className="w-full max-w-md bg-slate-950/90 rounded-3xl p-6 shadow-2xl border border-white/10 relative"
           >
-            <button onClick={closeModal} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 cursor-pointer p-1">
+            <button onClick={closeModal} className="absolute top-4 right-4 text-slate-400 hover:text-white cursor-pointer p-1">
               <FaTimes size={14} />
             </button>
 
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-green-100 border border-green-200 flex items-center justify-center text-green-600">
+              <div className="w-10 h-10 rounded-2xl bg-cyan-500/10 border border-cyan-500/25 flex items-center justify-center text-cyan-400">
                 <FaEnvelopeOpen size={16} />
               </div>
               <div>
-                <h3 className="font-bold text-lg text-gray-900">Invite Candidates</h3>
-                <p className="text-xs text-gray-500">Enter emails separated by commas or new lines</p>
+                <h3 className="font-bold text-lg text-white font-['Outfit']">Invite Candidates</h3>
+                <p className="text-xs text-slate-400">Enter emails separated by commas or new lines</p>
               </div>
             </div>
 
             {inviteResult ? (
               <div>
-                <div className={`border rounded-xl p-4 mb-4 ${inviteResult.error ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200'}`}>
+                <div className={`border rounded-2xl p-4 mb-4 ${inviteResult.error ? 'bg-rose-500/10 border-rose-500/20' : 'bg-cyan-500/10 border-cyan-500/20'}`}>
                   {inviteResult.error ? (
-                    <p className="text-red-700 font-semibold text-sm">{inviteResult.error}</p>
+                    <p className="text-rose-300 font-bold text-xs">{inviteResult.error}</p>
                   ) : (
                     <>
-                      <p className="font-semibold text-green-800 mb-2 flex items-center gap-2 text-sm">
-                        <FaCheckCircle className="text-green-600" /> {inviteResult.message}
+                      <p className="font-bold text-cyan-300 mb-2 flex items-center gap-2 text-xs">
+                        <FaCheckCircle className="text-cyan-400" /> {inviteResult.message}
                       </p>
                       <div className="space-y-1.5">
                         {(inviteResult.results || []).map((r, i) => (
-                          <p key={i} className="text-xs text-gray-700">
+                          <p key={i} className="text-xs text-slate-300">
                             <strong>{r.email}</strong>:{' '}
-                            <span className={r.status === 'invited' ? 'text-green-600 font-semibold' : 'text-gray-500'}>
+                            <span className={r.status === 'invited' ? 'text-cyan-400 font-bold' : 'text-slate-500'}>
                               {r.status}
                             </span>
                           </p>
@@ -284,7 +284,7 @@ export default function RecruiterDashboard() {
                 </div>
                 <button
                   onClick={closeModal}
-                  className="w-full py-2.5 bg-gray-900 hover:bg-black text-white font-semibold rounded-xl text-sm transition cursor-pointer"
+                  className="w-full py-2.5 btn-glass font-bold rounded-xl text-xs transition cursor-pointer"
                 >
                   Close
                 </button>
@@ -292,43 +292,42 @@ export default function RecruiterDashboard() {
             ) : (
               <form onSubmit={handleInvite} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">Candidate Email Address(es)</label>
+                  <label className="block text-xs font-bold text-slate-300 mb-1.5">Candidate Email Address(es)</label>
                   <textarea
                     rows={3}
                     value={inviteEmails}
                     onChange={e => setInviteEmails(e.target.value)}
                     placeholder="candidate1@example.com, candidate2@example.com"
                     required
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-green-500 transition-colors resize-none"
+                    className="w-full p-3 glass-input rounded-xl text-xs text-white placeholder-slate-500 resize-none font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">Custom Invitation Note (Optional)</label>
+                  <label className="block text-xs font-bold text-slate-300 mb-1.5">Custom Invitation Note (Optional)</label>
                   <input
                     type="text"
                     value={inviteMessage}
                     onChange={e => setInviteMessage(e.target.value)}
                     placeholder="e.g. Please complete your technical screen by Friday"
-                    className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-green-500 transition-colors"
+                    className="w-full px-3 py-2.5 glass-input rounded-xl text-xs text-white placeholder-slate-500"
                   />
                 </div>
 
                 <div className="flex justify-end gap-3 pt-2">
-                  <button
-                    type="button"
+                  <SecondaryButton
                     onClick={closeModal}
-                    className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 transition cursor-pointer"
+                    size="sm"
                   >
                     Cancel
-                  </button>
-                  <button
+                  </SecondaryButton>
+                  <GradientButton
                     type="submit"
                     disabled={inviting || !inviteEmails.trim()}
-                    className="px-5 py-2.5 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-semibold text-sm rounded-xl transition cursor-pointer flex items-center gap-2 shadow-sm"
+                    size="sm"
                   >
-                    {inviting ? <><FaSpinner className="animate-spin" /> Sending...</> : 'Send Invites'}
-                  </button>
+                    {inviting ? <><FaSpinner className="animate-spin mr-1" /> Sending...</> : 'Send Invites'}
+                  </GradientButton>
                 </div>
               </form>
             )}

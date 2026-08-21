@@ -292,15 +292,15 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
           <div className="glass-card-static rounded-3xl p-6 transition-all duration-300">
             <div className="flex justify-between items-center mb-4">
               <div className="flex gap-2">
-                <span className="px-3 py-1 bg-purple-500/10 text-purple-700 text-xs font-bold rounded-full border border-purple-500/20 flex items-center gap-1">
-                  ✦ {isFollowUpPhase ? 'Follow-up' : currentQ?.category || 'Warm-up / Behavioral'}
+                <span className="px-3 py-1 bg-cyan-500/10 text-cyan-300 text-xs font-bold rounded-full border border-cyan-500/25 flex items-center gap-1">
+                  ✦ {isFollowUpPhase ? 'Follow-up' : currentQ?.category || 'Technical / Core'}
                 </span>
-                <span className="px-3 py-1 bg-amber-500/10 text-amber-700 text-xs font-bold rounded-full border border-amber-500/20 flex items-center gap-1">
+                <span className="px-3 py-1 bg-indigo-500/10 text-indigo-300 text-xs font-bold rounded-full border border-indigo-500/25 flex items-center gap-1">
                   ✦ {currentQ?.difficulty || 'Medium'}
                 </span>
               </div>
-              <div className="text-xs text-slate-500 font-semibold flex items-center gap-1.5 glass-pill px-3 py-1 rounded-full">
-                <svg className="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <div className="text-xs text-slate-400 font-semibold flex items-center gap-1.5 glass-pill px-3 py-1 rounded-full">
+                <svg className="w-3.5 h-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 Expected: {Math.floor(initTime/60)} min
               </div>
             </div>
@@ -309,7 +309,7 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
               <motion.h2 
                 key={`${qIndex}-${isFollowUpPhase}`}
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                className="text-xl md:text-2xl font-bold text-slate-900 leading-snug font-['Outfit']"
+                className="text-xl md:text-2xl font-bold text-white leading-snug font-['Outfit']"
               >
                 {currentQ?.question}
               </motion.h2>
@@ -318,8 +318,8 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
 
           {/* Answer Card */}
           <div className="glass-card-static rounded-3xl p-6 flex flex-col flex-1 transition-all duration-300">
-            <div className="flex border-b border-slate-200/70 mb-4">
-              <button className="px-4 py-2 border-b-2 border-emerald-600 text-teal-900 font-bold text-xs uppercase tracking-wider">
+            <div className="flex border-b border-white/10 mb-4">
+              <button className="px-4 py-2 border-b-2 border-cyan-400 text-cyan-300 font-bold text-xs uppercase tracking-wider">
                 Type / Voice Answer
               </button>
             </div>
@@ -329,16 +329,16 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
                 <div className="flex flex-col gap-2.5 h-full">
                   {/* Language selector */}
                   <div className="flex items-center gap-2 mb-1">
-                    <FaCode className="text-indigo-600 text-sm" />
-                    <span className="text-xs font-bold text-slate-700">Language:</span>
+                    <FaCode className="text-cyan-400 text-sm" />
+                    <span className="text-xs font-bold text-slate-300">Language:</span>
                     {['python', 'javascript', 'java', 'cpp'].map(lang => (
                       <button
                         key={lang}
                         onClick={() => setCodeLang(lang)}
                         className={`px-3 py-0.5 rounded-full text-[11px] font-bold border transition-all cursor-pointer ${
                           codeLang === lang
-                            ? 'bg-indigo-600 border-indigo-600 text-white shadow-xs'
-                            : 'glass-pill text-slate-600 hover:border-indigo-300'
+                            ? 'bg-cyan-500 border-cyan-500 text-slate-950 shadow-xs font-extrabold'
+                            : 'glass-pill text-slate-400 hover:border-cyan-500/30'
                         }`}
                       >
                         {lang === 'cpp' ? 'C++' : lang.charAt(0).toUpperCase() + lang.slice(1)}
@@ -346,9 +346,9 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
                     ))}
                   </div>
                   {/* Monaco Editor */}
-                  <div className="rounded-2xl overflow-hidden border border-indigo-200/80 shadow-xs" style={{ height: 240 }}>
+                  <div className="rounded-2xl overflow-hidden border border-white/10 shadow-xs" style={{ height: 240 }}>
                     <Suspense fallback={
-                      <div className="h-full flex items-center justify-center bg-slate-900 text-slate-400 text-sm">
+                      <div className="h-full flex items-center justify-center bg-slate-950 text-slate-400 text-sm">
                         <FaSpinner className="animate-spin mr-2" /> Loading editor...
                       </div>
                     }>
@@ -357,7 +357,7 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
                         language={codeLang}
                         value={codeValue}
                         onChange={v => setCodeValue(v || '')}
-                        theme="light"
+                        theme="vs-dark"
                         options={{
                           minimap: { enabled: false },
                           fontSize: 13,
@@ -376,7 +376,7 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
                     onChange={e => setTranscript(e.target.value)}
                     placeholder="Explain your approach, time/space complexity..."
                     rows={3}
-                    className="w-full resize-none outline-none text-slate-900 p-3.5 rounded-2xl glass-input text-xs font-mono"
+                    className="w-full resize-none outline-none text-white p-3.5 rounded-2xl glass-input text-xs font-mono placeholder-slate-500"
                   />
                 </div>
               ) : (
@@ -389,17 +389,18 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
                       micOn ? 'Listening... your words will appear here automatically' :
                       'Type your answer here or click Start Recording to speak...'
                     }
-                    disabled={isSpeaking}
-                    className={`w-full h-full min-h-[200px] resize-none text-slate-900 p-4.5 rounded-2xl glass-input text-sm leading-relaxed transition-all duration-300 ${
-                      micOn 
-                        ? 'border-emerald-500 bg-emerald-50/40 glow-border-emerald' 
-                        : ''
-                    }`}
+                    rows={6}
+                    className="w-full h-full min-h-[160px] resize-none outline-none text-white p-4 rounded-2xl glass-input text-sm leading-relaxed placeholder-slate-500"
                   />
-                  <div className="absolute bottom-4 left-4 text-xs font-bold text-slate-400">Words: {fullAnswer.split(/\s+/).filter(w => w.length > 0).length}</div>
+                  {micOn && (
+                    <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-rose-500/15 border border-rose-500/30 rounded-full px-3 py-1 text-xs font-bold text-rose-300">
+                      <span className="w-2 h-2 rounded-full bg-rose-400 animate-ping" />
+                      Listening...
+                    </div>
+                  )}
                   {/* Processing badge */}
                   {processing && (
-                    <div className="absolute bottom-4 right-4 bg-amber-50 border border-amber-200 rounded-full px-3 py-1 text-xs font-bold text-amber-700 flex items-center gap-1.5 shadow-xs">
+                    <div className="absolute bottom-4 right-4 bg-cyan-500/10 border border-cyan-500/20 rounded-full px-3 py-1 text-xs font-bold text-cyan-300 flex items-center gap-1.5 shadow-xs">
                       <FaSpinner className="animate-spin" size={11} /> Transcribing...
                     </div>
                   )}
@@ -409,7 +410,7 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
 
             {/* Error */}
             {micError && (
-              <div className="bg-rose-50 border border-rose-200 rounded-2xl p-3.5 mb-4 text-xs font-bold text-rose-700 flex justify-between items-center">
+              <div className="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-3.5 mb-4 text-xs font-bold text-rose-300 flex justify-between items-center">
                 <span>⚠️ {micError}</span>
                 <button onClick={() => setMicError('')} className="cursor-pointer">✕</button>
               </div>
@@ -422,21 +423,21 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
                 disabled={isSpeaking}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-xs transition-all cursor-pointer ${
                   micOn 
-                    ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20 animate-pulse' 
-                    : 'glass-pill text-slate-700 hover:border-slate-300'
+                    ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/30 animate-pulse' 
+                    : 'glass-pill text-slate-300 hover:border-cyan-500/40'
                 }`}
               >
                 {micOn ? (
                   <><div className="w-2.5 h-2.5 rounded-full bg-white animate-ping"></div> Stop Recording</>
                 ) : (
-                  <><FaMicrophone className="text-emerald-600" /> Start Recording</>
+                  <><FaMicrophone className="text-cyan-400" /> Start Recording</>
                 )}
               </button>
 
               <div className="flex items-center gap-2.5 glass-pill px-4.5 py-2 rounded-full">
-                <svg className="w-4 h-4 text-teal-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 <div className="flex flex-col">
-                  <span className="text-xs font-bold text-slate-800 leading-tight">
+                  <span className="text-xs font-bold text-white leading-tight">
                     {Math.floor((initTime - timeLeft)/60).toString().padStart(2, '0')}:{(initTime - timeLeft)%60 | 0} / {Math.floor(initTime/60).toString().padStart(2, '0')}:{(initTime%60).toString().padStart(2,'0')}
                   </span>
                   <span className="text-[9px] text-slate-400 font-semibold">Elapsed / Expected</span>
@@ -446,7 +447,7 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
               <button
                 onClick={handleSubmit}
                 disabled={submitting || !fullAnswer || finishLoading || isSpeaking}
-                className="flex-1 md:flex-none flex items-center justify-center gap-2 glass-btn-primary disabled:opacity-50 disabled:cursor-not-allowed px-8 py-3 rounded-2xl font-bold text-xs cursor-pointer shadow-md"
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 btn-gradient disabled:opacity-50 disabled:cursor-not-allowed px-8 py-3 rounded-2xl font-bold text-xs cursor-pointer shadow-lg"
               >
                 {submitting ? <><FaSpinner className="animate-spin" /> Evaluating...</> :
                  finishLoading ? <><FaSpinner className="animate-spin" /> Finishing...</> :
@@ -455,18 +456,18 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
               </button>
             </div>
 
-            <hr className="my-5 border-slate-200/60" />
+            <hr className="my-5 border-white/8" />
             
             {/* Functional Hint & Skip Buttons */}
             <div className="flex items-center justify-between">
-              <div className="text-xs text-slate-500 flex items-center gap-1.5">
-                <span className="text-teal-700 font-bold">💡 Need guidance?</span> View a hint or skip forward.
+              <div className="text-xs text-slate-400 flex items-center gap-1.5">
+                <span className="text-cyan-400 font-bold">💡 Need guidance?</span> View a hint or skip forward.
               </div>
               <div className="flex gap-2.5">
                 <button 
                   onClick={handleGetHint}
                   disabled={isSpeaking || submitting}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-amber-300/80 bg-amber-50/80 text-amber-800 text-xs font-bold hover:bg-amber-100 transition cursor-pointer"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-300 text-xs font-bold hover:bg-amber-500/20 transition cursor-pointer"
                 >
                   <FaLightbulb /> Hint
                 </button>
@@ -489,35 +490,35 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
           
           {/* Interview Timeline */}
           <div className="glass-card-static rounded-3xl p-6">
-            <h3 className="text-slate-900 font-bold text-base mb-5 font-['Outfit']">Interview Timeline</h3>
-            <div className="space-y-5 relative before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
+            <h3 className="text-white font-bold text-base mb-5 font-['Outfit']">Interview Timeline</h3>
+            <div className="space-y-5 relative before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/10 before:to-transparent">
               
               <div className="relative flex items-start gap-3.5">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-teal-600 to-emerald-600 text-white flex items-center justify-center shadow-xs z-10 shrink-0 mt-0.5"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"/></svg></div>
+                <div className="w-6 h-6 rounded-full bg-cyan-500 text-slate-950 flex items-center justify-center font-bold text-xs shadow-xs z-10 shrink-0 mt-0.5"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"/></svg></div>
                 <div>
-                  <p className="text-xs font-bold text-slate-800 leading-tight">Resume Uploaded</p>
-                  <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">Completed</p>
+                  <p className="text-xs font-bold text-white leading-tight">Resume Uploaded</p>
+                  <p className="text-[10px] text-cyan-400 font-semibold mt-0.5">Completed</p>
                 </div>
               </div>
 
               <div className="relative flex items-start gap-3.5">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-teal-600 to-emerald-600 text-white flex items-center justify-center shadow-xs z-10 shrink-0 mt-0.5"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"/></svg></div>
+                <div className="w-6 h-6 rounded-full bg-cyan-500 text-slate-950 flex items-center justify-center font-bold text-xs shadow-xs z-10 shrink-0 mt-0.5"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"/></svg></div>
                 <div>
-                  <p className="text-xs font-bold text-slate-800 leading-tight">Role Detected</p>
-                  <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">Completed</p>
+                  <p className="text-xs font-bold text-white leading-tight">Role Detected</p>
+                  <p className="text-[10px] text-cyan-400 font-semibold mt-0.5">Completed</p>
                 </div>
               </div>
 
               {questions.map((_, i) => (
                 <div key={i} className="relative flex items-start gap-3.5">
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center shadow-xs z-10 shrink-0 mt-0.5 ${
-                    i < qIndex ? 'bg-gradient-to-br from-teal-600 to-emerald-600 text-white' : i === qIndex ? 'bg-emerald-500/20 border-2 border-emerald-600 text-teal-800 ring-2 ring-emerald-500/20' : 'glass-pill border border-slate-200'
+                    i < qIndex ? 'bg-cyan-500 text-slate-950 font-bold' : i === qIndex ? 'bg-cyan-500/20 border-2 border-cyan-400 text-cyan-300 ring-2 ring-cyan-500/20' : 'glass-pill border border-white/10'
                   }`}>
                     {i < qIndex && <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"/></svg>}
                   </div>
                   <div>
-                    <p className={`text-xs leading-tight ${i === qIndex ? 'font-bold text-teal-900' : i < qIndex ? 'font-bold text-slate-700' : 'font-medium text-slate-400'}`}>Question {i+1}</p>
-                    <p className={`text-[10px] mt-0.5 ${i === qIndex ? 'text-teal-700 font-bold' : 'text-slate-400'}`}>
+                    <p className={`text-xs leading-tight ${i === qIndex ? 'font-bold text-cyan-300' : i < qIndex ? 'font-bold text-slate-300' : 'font-medium text-slate-500'}`}>Question {i+1}</p>
+                    <p className={`text-[10px] mt-0.5 ${i === qIndex ? 'text-cyan-400 font-bold' : 'text-slate-500'}`}>
                       {i < qIndex ? 'Completed' : i === qIndex ? 'In Progress' : 'Pending'}
                     </p>
                   </div>
@@ -525,10 +526,10 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
               ))}
               
               <div className="relative flex items-start gap-3.5">
-                <div className="w-6 h-6 rounded-full glass-pill border border-slate-200 shadow-xs z-10 shrink-0 mt-0.5"></div>
+                <div className="w-6 h-6 rounded-full glass-pill border border-white/10 shadow-xs z-10 shrink-0 mt-0.5"></div>
                 <div>
-                  <p className="text-xs font-medium text-slate-400 leading-tight">Final Scorecard</p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">Pending</p>
+                  <p className="text-xs font-medium text-slate-500 leading-tight">Final Scorecard</p>
+                  <p className="text-[10px] text-slate-500 mt-0.5">Pending</p>
                 </div>
               </div>
             </div>
@@ -538,24 +539,24 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
           {feedback && (
             <motion.div 
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              className="glass-card-static rounded-3xl p-6 border-emerald-500/30"
+              className="glass-card-static rounded-3xl p-6 border-cyan-500/30"
             >
-              <h3 className="text-teal-900 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 mb-2">
-                <BsStars className="text-emerald-500" /> AI Instant Evaluation
+              <h3 className="text-cyan-300 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 mb-2">
+                <BsStars className="text-cyan-400" /> AI Instant Evaluation
               </h3>
-              <p className="text-xs text-slate-700 leading-relaxed">{feedback.feedback}</p>
+              <p className="text-xs text-slate-300 leading-relaxed">{feedback.feedback}</p>
 
               {/* Justification quote */}
               {feedback.justification && (
-                <p className="mt-2 text-xs text-slate-500 italic border-l-2 border-emerald-400 pl-2">
+                <p className="mt-2 text-xs text-slate-400 italic border-l-2 border-cyan-400 pl-2">
                   {feedback.justification}
                 </p>
               )}
 
-              <div className="mt-3 pt-3 border-t border-slate-200/60 flex justify-between items-center text-xs">
+              <div className="mt-3 pt-3 border-t border-white/8 flex justify-between items-center text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="text-slate-500 font-medium">Score:</span>
-                  <span className="font-bold text-teal-800">{(feedback.final_score).toFixed(1)} / 10</span>
+                  <span className="text-slate-400 font-medium">Score:</span>
+                  <span className="font-bold text-cyan-300">{(feedback.final_score).toFixed(1)} / 10</span>
                 </div>
                 {/* Confidence badge */}
                 {feedback.confidence !== undefined && (
@@ -563,10 +564,10 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
                     title="Evaluation confidence"
                     className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                       feedback.confidence >= 0.7
-                        ? 'bg-emerald-500/15 text-teal-900 border border-emerald-500/20'
+                        ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30'
                         : feedback.confidence >= 0.4
-                        ? 'bg-amber-500/15 text-amber-900 border border-amber-500/20'
-                        : 'glass-pill text-slate-600'
+                        ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                        : 'glass-pill text-slate-400'
                     }`}
                   >
                     {Math.round(feedback.confidence * 100)}% confidence
@@ -579,7 +580,7 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
           {/* Integrity flag indicator (subtle, non-blocking) */}
           {integrityFlags.length > 0 && (
             <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-3.5">
-              <p className="text-xs text-amber-900 font-medium">
+              <p className="text-xs text-amber-300 font-medium">
                 ⚠️ {integrityFlags.length} tab-switch event{integrityFlags.length !== 1 ? 's' : ''} detected during this session.
               </p>
             </div>
@@ -592,37 +593,37 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
       {/* ── HINT MODAL ──────────────────────────────────────────────────────── */}
       <AnimatePresence>
         {hintModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md glass-panel rounded-3xl p-6 shadow-2xl relative border border-white/90"
+              className="w-full max-w-md rounded-3xl p-6 shadow-2xl relative border border-white/10 bg-slate-950/90 backdrop-blur-2xl"
             >
               <button 
                 onClick={() => setHintModalOpen(false)}
-                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 transition cursor-pointer"
+                className="absolute top-4 right-4 text-slate-400 hover:text-white p-1.5 transition cursor-pointer"
               >
                 <FaTimes size={15} />
               </button>
 
-              <div className="flex items-center gap-3 text-amber-700 mb-4">
-                <div className="p-2.5 bg-amber-500/15 border border-amber-500/20 rounded-2xl">
+              <div className="flex items-center gap-3 text-amber-300 mb-4">
+                <div className="p-2.5 bg-amber-500/15 border border-amber-500/25 rounded-2xl">
                   <FaLightbulb size={20} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-base text-slate-900 font-['Outfit']">Question Guidance & Hint</h3>
-                  <p className="text-xs text-amber-800">Tailored to help frame your answer</p>
+                  <h3 className="font-bold text-base text-white font-['Outfit']">Question Guidance & Hint</h3>
+                  <p className="text-xs text-amber-300/80">Tailored to help frame your answer</p>
                 </div>
               </div>
 
-              <div className="bg-amber-50/60 border border-amber-200/60 rounded-2xl p-4 mb-6">
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 mb-6">
                 {hintLoading ? (
-                  <div className="flex items-center justify-center py-4 text-amber-800 text-xs font-semibold gap-2">
+                  <div className="flex items-center justify-center py-4 text-amber-300 text-xs font-semibold gap-2">
                     <FaSpinner className="animate-spin" /> Generating tailored hint...
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-800 leading-relaxed font-medium">
+                  <p className="text-xs text-slate-200 leading-relaxed font-medium">
                     {hintText}
                   </p>
                 )}
@@ -632,7 +633,7 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
                 <button
                   onClick={() => avatarRef.current?.speak(hintText)}
                   disabled={hintLoading || !hintText}
-                  className="flex items-center gap-2 px-3.5 py-2 glass-pill text-amber-900 text-xs font-bold rounded-xl transition cursor-pointer"
+                  className="flex items-center gap-2 px-3.5 py-2 glass-pill text-amber-300 text-xs font-bold rounded-xl transition cursor-pointer"
                 >
                   <FaVolumeUp /> Listen
                 </button>
@@ -645,14 +646,14 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
                       setHintModalOpen(false)
                     }}
                     disabled={hintLoading || !hintText}
-                    className="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl transition cursor-pointer shadow-xs"
+                    className="px-3.5 py-2 bg-amber-600 hover:bg-amber-500 text-slate-950 text-xs font-extrabold rounded-xl transition cursor-pointer shadow-xs"
                   >
                     Use in Answer
                   </button>
 
                   <button
                     onClick={() => setHintModalOpen(false)}
-                    className="px-4 py-2 glass-btn-primary text-xs font-bold rounded-xl transition cursor-pointer"
+                    className="px-4 py-2 btn-gradient text-xs font-bold rounded-xl transition cursor-pointer"
                   >
                     Got It
                   </button>

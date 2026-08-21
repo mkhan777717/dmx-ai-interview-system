@@ -1,8 +1,8 @@
 import React, { useRef } from 'react'
 import { motion } from 'motion/react'
 
-const GREEN = '#10b981'
-const sc = (s) => s >= 7 ? GREEN : s >= 5 ? '#f59e0b' : '#ef4444'
+const CYAN = '#06b6d4'
+const sc = (s) => s >= 7 ? '#06b6d4' : s >= 5 ? '#f59e0b' : '#ef4444'
 
 // ── Circular gauge ─────────────────────────────────────────────────────────
 function Gauge({ score, max = 10 }) {
@@ -12,7 +12,7 @@ function Gauge({ score, max = 10 }) {
   return (
     <div style={{ position: 'relative', width: 130, height: 130 }}>
       <svg width="130" height="130" style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx="65" cy="65" r={r} fill="none" stroke="#e5e7eb" strokeWidth="8" />
+        <circle cx="65" cy="65" r={r} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
         <circle cx="65" cy="65" r={r} fill="none" stroke={color} strokeWidth="8"
           strokeLinecap="round"
           strokeDasharray={`${pct * circ} ${circ}`}
@@ -23,10 +23,10 @@ function Gauge({ score, max = 10 }) {
         position: 'absolute', inset: 0,
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       }}>
-        <span style={{ fontSize: 26, fontWeight: 700, color, lineHeight: 1 }}>
+        <span style={{ fontSize: 28, fontWeight: 800, color, lineHeight: 1, fontFamily: 'Outfit' }}>
           {score.toFixed(1)}
         </span>
-        <span style={{ fontSize: 12, color: '#9ca3af' }}>{max === 10 ? '/10' : `/${max}`}</span>
+        <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>{max === 10 ? '/10' : `/${max}`}</span>
       </div>
     </div>
   )
@@ -55,8 +55,8 @@ function LineChart({ scores }) {
         const y = pad.t + iH - ((v - minS) / (maxS - minS)) * iH
         return (
           <g key={v}>
-            <line x1={pad.l} x2={W - pad.r} y1={y} y2={y} stroke="#f3f4f6" strokeWidth="1" />
-            <text x={pad.l - 6} y={y + 4} textAnchor="end" fontSize="10" fill="#9ca3af">{v}</text>
+            <line x1={pad.l} x2={W - pad.r} y1={y} y2={y} stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+            <text x={pad.l - 6} y={y + 4} textAnchor="end" fontSize="10" fill="#64748b">{v}</text>
           </g>
         )
       })}
@@ -64,17 +64,17 @@ function LineChart({ scores }) {
       {scores.map((_, i) => (
         <text key={i}
           x={pad.l + (scores.length === 1 ? iW / 2 : (i / (scores.length - 1)) * iW)}
-          y={H - 6} textAnchor="middle" fontSize="10" fill="#9ca3af">
+          y={H - 6} textAnchor="middle" fontSize="10" fill="#94a3b8" fontWeight="600">
           Q{i + 1}
         </text>
       ))}
       {/* Area fill */}
-      <path d={areaPath} fill={GREEN} opacity="0.12" />
+      <path d={areaPath} fill={CYAN} opacity="0.15" />
       {/* Line */}
-      <path d={linePath} fill="none" stroke={GREEN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={linePath} fill="none" stroke={CYAN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       {/* Dots */}
       {pts.map((p, i) => (
-        <circle key={i} cx={p.x} cy={p.y} r="4" fill={GREEN} stroke="#fff" strokeWidth="2" />
+        <circle key={i} cx={p.x} cy={p.y} r="4" fill={CYAN} stroke="#050811" strokeWidth="2" />
       ))}
     </svg>
   )
@@ -87,10 +87,10 @@ function SkillBar({ label, score }) {
   return (
     <div style={{ marginBottom: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-        <span style={{ fontSize: 13, color: '#374151' }}>{label}</span>
-        <span style={{ fontSize: 13, fontWeight: 600, color }}>{score.toFixed(1)}</span>
+        <span style={{ fontSize: 13, color: '#cbd5e1', fontWeight: 500 }}>{label}</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color }}>{score.toFixed(1)}</span>
       </div>
-      <div style={{ height: 7, background: '#e5e7eb', borderRadius: 6, overflow: 'hidden' }}>
+      <div style={{ height: 7, background: 'rgba(255,255,255,0.08)', borderRadius: 6, overflow: 'hidden' }}>
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
@@ -132,7 +132,6 @@ function V2Report({ reportData, onRestart }) {
                                                'Significant gaps identified — more preparation recommended.'
 
   // Build skill rows for left panel
-  // Use skill_breakdown if available, else derive from scores
   const skillRows = Object.keys(skill_breakdown).length > 0
     ? Object.entries(skill_breakdown).map(([k, v]) => ({ label: k, score: v.score }))
     : [
@@ -145,7 +144,7 @@ function V2Report({ reportData, onRestart }) {
   const handlePrint = () => window.print()
 
   return (
-    <div className="font-['Inter',sans-serif] text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <div className="font-['Plus_Jakarta_Sans',sans-serif] text-slate-100 transition-colors duration-300">
       <div style={{ maxWidth: 1100, margin: '0 auto' }} ref={printRef}>
 
         {/* ── Header ────────────────────────────────────────────────── */}
@@ -156,10 +155,10 @@ function V2Report({ reportData, onRestart }) {
           <div>
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={handlePrint} className="bg-green-600 text-white rounded-lg px-4 py-2 text-xs font-semibold hover:bg-green-700 transition cursor-pointer">
+            <button onClick={handlePrint} className="btn-gradient rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer shadow-md">
               Download PDF
             </button>
-            <button onClick={onRestart} className="bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 border border-gray-200 dark:border-slate-700 rounded-lg px-4 py-2 text-xs font-semibold hover:bg-gray-50 dark:hover:bg-slate-700 transition cursor-pointer">
+            <button onClick={onRestart} className="btn-glass rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer">
               New Interview
             </button>
           </div>
@@ -220,8 +219,8 @@ function V2Report({ reportData, onRestart }) {
                 </p>
                 {strengths.map(s => (
                   <div key={s} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: GREEN, marginTop: 5, flexShrink: 0 }} />
-                    <span className="text-xs text-slate-700 leading-relaxed font-medium">{s}</span>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: CYAN, marginTop: 5, flexShrink: 0 }} />
+                    <span className="text-xs text-slate-300 leading-relaxed font-medium">{s}</span>
                   </div>
                 ))}
               </div>
@@ -349,8 +348,8 @@ function V2Report({ reportData, onRestart }) {
                           {q.question}
                         </p>
                         {q.feedback && (
-                          <p className="text-xs text-gray-600 dark:text-slate-300 leading-relaxed">
-                            <span style={{ color: GREEN, fontWeight: 600 }}>AI Feedback: </span>
+                          <p className="text-xs text-slate-300 leading-relaxed">
+                            <span style={{ color: CYAN, fontWeight: 600 }}>AI Feedback: </span>
                             {q.feedback}
                           </p>
                         )}
@@ -391,16 +390,16 @@ function V2Report({ reportData, onRestart }) {
 
         {/* Integrity Advisory Panel */}
         {integrity_flags && integrity_flags.length > 0 && (
-          <div className="mt-5 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/40 rounded-2xl p-5">
-            <p className="text-sm font-semibold text-orange-800 dark:text-orange-300 mb-2 flex items-center gap-2">
+          <div className="mt-5 bg-amber-500/10 border border-amber-500/25 rounded-3xl p-5">
+            <p className="text-sm font-bold text-amber-300 mb-2 flex items-center gap-2 font-['Outfit']">
               ⚠️ Session Integrity Advisory
             </p>
-            <p className="text-xs text-orange-700 dark:text-orange-400 mb-3">
+            <p className="text-xs text-amber-200/80 mb-3">
               The following events were recorded during this session. These are advisory flags only and do not affect your score.
             </p>
             <div className="flex flex-wrap gap-2">
               {integrity_flags.map((f, i) => (
-                <span key={i} className="inline-block bg-orange-100 dark:bg-orange-900/40 border border-orange-200 dark:border-orange-800/50 text-orange-800 dark:text-orange-300 text-[11px] font-medium px-3 py-1 rounded-full">
+                <span key={i} className="inline-block bg-amber-500/20 border border-amber-500/30 text-amber-200 text-[11px] font-semibold px-3 py-1 rounded-full">
                   {f.type === 'tab_switch' ? `Tab switch at Q${(f.question_index ?? 0) + 1} (${f.elapsed_seconds ?? '?'}s)` : f.type}
                 </span>
               ))}
@@ -410,11 +409,11 @@ function V2Report({ reportData, onRestart }) {
 
         {/* Communication Quality Breakdown */}
         {avg_communication_score != null && (
-          <div className="mt-6 bg-white dark:bg-[#131c2e] rounded-2xl p-6 border border-gray-200 dark:border-slate-800 shadow-sm">
-            <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+          <div className="mt-6 glass-card-static rounded-3xl p-6">
+            <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2 font-['Outfit']">
               💬 Communication Quality
-              <span className="ml-auto text-sm font-normal text-gray-500 dark:text-slate-400">
-                Avg: <span className="font-semibold text-blue-600 dark:text-blue-400">{(avg_communication_score * 10).toFixed(1)}/10</span>
+              <span className="ml-auto text-sm font-normal text-slate-400">
+                Avg: <span className="font-bold text-cyan-300">{(avg_communication_score * 10).toFixed(1)}/10</span>
               </span>
             </h3>
             {/* Per-question communication breakdown */}
@@ -425,17 +424,17 @@ function V2Report({ reportData, onRestart }) {
                   .filter(v => v != null)
                 const avg = values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0
                 const pct = Math.round(avg * 100)
-                const color = pct >= 70 ? '#10b981' : pct >= 45 ? '#f59e0b' : '#ef4444'
+                const color = pct >= 70 ? '#06b6d4' : pct >= 45 ? '#f59e0b' : '#ef4444'
                 const labels = { length: 'Length Fit', structure: 'Structure', vocabulary: 'Vocabulary', filler: 'Filler Words' }
                 const icons = { length: '📏', structure: '📐', vocabulary: '📚', filler: '🔇' }
                 return (
-                  <div key={dim} className="flex flex-col items-center bg-gray-50 dark:bg-slate-900/50 rounded-xl p-4 gap-2">
+                  <div key={dim} className="flex flex-col items-center glass-panel-subtle rounded-2xl p-4 gap-2">
                     <span className="text-xl">{icons[dim]}</span>
-                    <span className="text-xs font-semibold text-gray-600 dark:text-slate-400">{labels[dim]}</span>
-                    <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-1.5">
+                    <span className="text-xs font-semibold text-slate-300">{labels[dim]}</span>
+                    <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
                       <div className="h-1.5 rounded-full transition-all duration-700" style={{ width: `${pct}%`, background: color }} />
                     </div>
-                    <span className="text-sm font-bold" style={{ color }}>{pct}%</span>
+                    <span className="text-sm font-extrabold font-['Outfit']" style={{ color }}>{pct}%</span>
                   </div>
                 )
               })}
@@ -445,37 +444,37 @@ function V2Report({ reportData, onRestart }) {
 
         {/* Personalized Improvement Plan */}
         {improvement_plan && improvement_plan.length > 0 && (
-          <div className="mt-6 bg-white dark:bg-[#131c2e] rounded-2xl p-6 border border-gray-200 dark:border-slate-800 shadow-sm">
-            <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+          <div className="mt-6 glass-card-static rounded-3xl p-6">
+            <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2 font-['Outfit']">
               📈 Personalized Improvement Plan
-              <span className="ml-2 text-[11px] font-medium bg-blue-100 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full">{improvement_plan.length} focus areas</span>
+              <span className="ml-2 text-[11px] font-medium bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 px-2.5 py-0.5 rounded-full">{improvement_plan.length} focus areas</span>
             </h3>
             <div className="flex flex-col gap-3">
               {improvement_plan.map((item, i) => {
                 const priorityConfig = {
-                  high: { bg: 'bg-red-50 dark:bg-red-950/30', border: 'border-red-200 dark:border-red-900/50', badge: 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300', label: '🔴 High Priority' },
-                  medium: { bg: 'bg-amber-50 dark:bg-amber-950/30', border: 'border-amber-200 dark:border-amber-900/50', badge: 'bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300', label: '🟡 Medium Priority' },
-                  low: { bg: 'bg-green-50 dark:bg-green-950/30', border: 'border-green-200 dark:border-green-900/50', badge: 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300', label: '🟢 Low Priority' },
+                  high: { bg: 'bg-rose-500/10', border: 'border-rose-500/20', badge: 'bg-rose-500/20 text-rose-300 border border-rose-500/30', label: '🔴 High Priority' },
+                  medium: { bg: 'bg-amber-500/10', border: 'border-amber-500/20', badge: 'bg-amber-500/20 text-amber-300 border border-amber-500/30', label: '🟡 Medium Priority' },
+                  low: { bg: 'bg-cyan-500/10', border: 'border-cyan-500/20', badge: 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30', label: '🟢 Low Priority' },
                 }
                 const cfg = priorityConfig[item.priority] || priorityConfig.medium
                 return (
-                  <div key={i} className={`${cfg.bg} border ${cfg.border} rounded-xl p-4`}>
+                  <div key={i} className={`${cfg.bg} border ${cfg.border} rounded-2xl p-4`}>
                     <div className="flex items-start justify-between gap-3 mb-2">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-gray-900 dark:text-white text-sm">{item.skill}</span>
+                        <span className="font-bold text-white text-sm font-['Outfit']">{item.skill}</span>
                         {item.topics?.map(t => (
-                          <span key={t} className="text-[10px] font-medium bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 px-2 py-0.5 rounded-full">{t}</span>
+                          <span key={t} className="text-[10px] font-medium bg-white/5 text-slate-300 px-2 py-0.5 rounded-full border border-white/5">{t}</span>
                         ))}
                       </div>
                       <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${cfg.badge}`}>
                         {cfg.label}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-700 dark:text-slate-300 mb-3 leading-relaxed">{item.suggestion}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      <span className="text-[10px] font-semibold text-gray-500 dark:text-slate-400">Resources:</span>
+                    <p className="text-xs text-slate-300 mb-3 leading-relaxed">{item.suggestion}</p>
+                    <div className="flex flex-wrap gap-1.5 items-center">
+                      <span className="text-[10px] font-bold text-slate-400">Resources:</span>
                       {item.resources?.map(r => (
-                        <span key={r} className="text-[10px] font-medium bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900/50 px-2 py-0.5 rounded-full">{r}</span>
+                        <span key={r} className="text-[10px] font-medium bg-cyan-500/10 text-cyan-300 border border-cyan-500/25 px-2 py-0.5 rounded-full">{r}</span>
                       ))}
                     </div>
                   </div>
@@ -487,19 +486,19 @@ function V2Report({ reportData, onRestart }) {
 
         {/* AI Detection Advisory */}
         {ai_flagged_count > 0 && (
-          <div className="mt-5 bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-900/40 rounded-2xl p-5">
-            <p className="text-sm font-semibold text-purple-800 dark:text-purple-300 mb-2">
+          <div className="mt-5 bg-indigo-500/10 border border-indigo-500/25 rounded-3xl p-5">
+            <p className="text-sm font-bold text-indigo-300 mb-2 font-['Outfit']">
               🛡️ AI-Assisted Answer Advisory
             </p>
-            <p className="text-xs text-purple-700 dark:text-purple-400 mb-3">
+            <p className="text-xs text-indigo-200/80 mb-3">
               {ai_flagged_count} answer{ai_flagged_count > 1 ? 's' : ''} may have been AI-assisted based on writing patterns.
-              This is an advisory signal only and has no effect on your scores. Human reviewers may follow up.
+              This is an advisory signal only and has no effect on your scores.
             </p>
             <div className="flex flex-wrap gap-2">
               {(questions || [])
                 .filter(q => (q.ai_detection_score || 0) > 0.5)
                 .map((q, i) => (
-                  <span key={i} className="inline-block bg-purple-100 dark:bg-purple-900/40 border border-purple-200 dark:border-purple-800/50 text-purple-800 dark:text-purple-300 text-[11px] font-medium px-3 py-1 rounded-full">
+                  <span key={i} className="inline-block bg-indigo-500/20 border border-indigo-500/30 text-indigo-200 text-[11px] font-semibold px-3 py-1 rounded-full">
                     Q{(q.question_index ?? i) + 1}: {Math.round((q.ai_detection_score || 0) * 100)}% AI probability
                   </span>
                 ))}

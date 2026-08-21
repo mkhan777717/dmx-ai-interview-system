@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Navbar from '../components/Navbar'
 import { useSelector } from 'react-redux'
-import { motion, AnimatePresence } from 'motion/react'
+import { motion } from 'motion/react'
 import { useNavigate } from 'react-router-dom'
 import AuthModel from '../components/AuthModel'
 import {
@@ -9,8 +9,19 @@ import {
   BsShieldCheck, BsArrowRight, BsGraphUpArrow, BsCpu, BsBriefcase,
   BsPersonWorkspace, BsAwardFill, BsChatQuote, BsCheckLg,
 } from 'react-icons/bs'
-import { HiArrowUpRight, HiSparkles } from 'react-icons/hi2'
-import { FaGraduationCap, FaBuilding, FaUserCheck, FaMicrophoneAlt } from 'react-icons/fa'
+import { HiArrowUpRight, HiSparkles, HiCheck, HiXMark } from 'react-icons/hi2'
+import { FaGraduationCap, FaBuilding, FaUserCheck, FaMicrophoneAlt, FaCode, FaChartLine } from 'react-icons/fa'
+
+// UI Components
+import GradientButton from '../components/ui/GradientButton'
+import SecondaryButton from '../components/ui/SecondaryButton'
+import Badge from '../components/ui/Badge'
+import GlassCard from '../components/ui/GlassCard'
+import StatCounter from '../components/ui/StatCounter'
+import SectionReveal from '../components/ui/SectionReveal'
+import BrowserMockup from '../components/ui/BrowserMockup'
+import StepTimeline from '../components/ui/StepTimeline'
+import Accordion from '../components/ui/Accordion'
 
 export default function Home() {
   const { userData } = useSelector((state) => state.user)
@@ -18,8 +29,6 @@ export default function Home() {
   const [selectedRole, setSelectedRole] = useState('Software Engineer')
   const [selectedLevel, setSelectedLevel] = useState('Mid-Level')
   const [selectedMode, setSelectedMode] = useState('Technical')
-  const [activeWorkflowTab, setActiveWorkflowTab] = useState('candidates')
-  const [demoPlaying, setDemoPlaying] = useState(false)
   const navigate = useNavigate()
 
   const handleStart = () => {
@@ -27,658 +36,415 @@ export default function Home() {
     navigate('/v2/interview')
   }
 
-  const handleHistory = () => {
-    if (!userData) return setShowAuth(true)
-    navigate('/history')
-  }
+  const workflowSteps = [
+    {
+      title: 'Resume & JD Parsing',
+      shortDesc: 'Instant skill vectorization',
+      heading: 'Deep ATS & Context Extraction',
+      description: 'Upload your resume PDF or paste target Job Description text. Our NLP engine extracts core skills, tech stacks, experience tier, and project domains in seconds.',
+      bullets: ['Automated ATS Quality Rating', 'Domain Keyword Matching', 'Experience Tier Normalization', 'Custom Rubric Configuration'],
+      codeSnippet: `> resume_parser.extract(pdf_stream)\n✓ Extracted: ["Python", "FastAPI", "React", "Docker", "PostgreSQL"]\n✓ Experience Tier: Mid-Senior (4+ YOE)\n✓ Target Role: Full-Stack Platform Engineer`,
+    },
+    {
+      title: 'Adaptive Question Gen',
+      shortDesc: 'Dynamically calibrated prompts',
+      heading: 'Custom Questions Tailored to Your Stack',
+      description: 'Generates tailored DSA, System Design, and STAR behavioral questions matched to your exact background, preventing generic interview questions.',
+      bullets: ['DSA Coding with Monaco IDE', 'System Design Scalability Rounds', 'Behavioral STAR Frameworks', 'Real-Time Hint Generator'],
+      codeSnippet: `> question_engine.generate(role="Full-Stack", mode="Technical")\n✓ Question: "Design an idempotent webhook dispatcher with dead-letter queue."\n✓ Estimated Time: 3 mins | Difficulty: Hard`,
+    },
+    {
+      title: 'Live Avatar Interview',
+      shortDesc: 'Voice, video & live code',
+      heading: 'Real-Time Conversational AI Avatar',
+      description: 'Engage with photorealistic AI avatar interviewers powered by high-speed speech-to-text, low-latency LLMs, and natural audio synthesis with echo-cancellation.',
+      bullets: ['Cloud Video Stream & Lip-Sync', 'Ultra-fast Groq Whisper Transcription', 'Interactive Live Coding Editor', 'Anti-Cheat Tab Integrity Auditing'],
+      codeSnippet: `> livekit_session.connect(room="interview_iq_v2")\n✓ WebRTC Stream Active: 60 FPS\n✓ Audio Engine: Whisper STT (280ms latency)\n✓ AI Interviewer: Speaking...`,
+    },
+    {
+      title: 'Rubric Scorecard',
+      shortDesc: 'Granular AI feedback',
+      heading: 'Instant Scorecard & Coaching Plan',
+      description: 'Get deep breakdowns across correctness, technical depth, communication pacing (WPM), confidence index, and personalized improvement roadmap.',
+      bullets: ['Per-Question Strengths & Gaps', 'Speech Pacing & Confidence Index', 'Percentile Ranking vs Peers', 'Personalized Resource Roadmap'],
+      codeSnippet: `> evaluation_engine.finish(interview_id=4021)\n✓ Overall Score: 8.8 / 10 (Top 8% for Role)\n✓ Technical: 9.1 | Delivery: 8.5 | Correctness: 8.9\n✓ Generated 4-week personalized study roadmap.`,
+    },
+  ]
+
+  const comparisonItems = [
+    {
+      feature: 'Question Generation',
+      traditional: 'Static generic question lists or memorized flashcards',
+      interviewIQ: 'Role-adaptive dynamic generation matching your resume & JD',
+    },
+    {
+      feature: 'Interviewer Experience',
+      traditional: 'Solo reading of text prompts with no speech feedback',
+      interviewIQ: 'Live interactive conversational avatar with voice & audio playback',
+    },
+    {
+      feature: 'Coding & Architecture',
+      traditional: 'Pen & paper or disconnected local scratchpads',
+      interviewIQ: 'Built-in Monaco IDE with multi-language code & system design modes',
+    },
+    {
+      feature: 'Evaluation & Coaching',
+      traditional: 'Vague self-assessment or expensive $250/hr human mock services',
+      interviewIQ: 'Instant scoring across technical depth, WPM pacing, and confidence',
+    },
+    {
+      feature: 'Integrity & Benchmarking',
+      traditional: 'No peer comparison or performance analytics',
+      interviewIQ: 'Role percentile rankings, progression analytics, and recruiter sharing',
+    },
+  ]
+
+  const faqItems = [
+    {
+      question: 'How does InterviewIQ personalize questions to my profile?',
+      answer: 'When you upload your resume or paste a target Job Description, InterviewIQ parses your technical skills, projects, and career level. It feeds these semantic vectors into our question generation engine to construct calibrated DSA, architecture, and behavioral prompts tailored precisely to your background.',
+    },
+    {
+      question: 'Do I need a webcam and microphone?',
+      answer: 'A microphone is recommended to practice spoken responses with Whisper transcription. The avatar video interviewer streams directly in your browser. If you prefer typing, you can also write your answers directly in text or through the integrated Monaco code editor.',
+    },
+    {
+      question: 'Can recruiters and hiring teams use InterviewIQ for candidate screening?',
+      answer: 'Yes! InterviewIQ includes a full Recruiter Screening Pipeline. Hiring managers can create custom assessment links, define target rubrics, invite candidates, and review standardized scoring reports with full audit logs and anti-cheat telemetry.',
+    },
+    {
+      question: 'What types of interview modes are supported?',
+      answer: 'InterviewIQ natively supports Technical (Coding & DSA), System Design (Architecture & Scalability), HR & Behavioral (STAR framework), and Data Science / Machine Learning interview rounds.',
+    },
+  ]
 
   return (
-    <div className="min-h-screen bg-[#FFFFFF] text-slate-900 font-['Inter',sans-serif] selection:bg-emerald-100 selection:text-emerald-900 relative overflow-hidden">
+    <div className="min-h-screen bg-[#050811] text-[#f8fafc] font-['Plus_Jakarta_Sans',sans-serif] selection:bg-cyan-500/25 selection:text-cyan-200 relative overflow-hidden dark-canvas">
 
-      {/* Ambient Background Mesh & Glow Effects */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[700px] pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[950px] h-[600px] bg-gradient-to-b from-emerald-100/70 via-teal-50/50 to-transparent rounded-full blur-3xl opacity-90" />
-        <div className="absolute top-[10%] left-[8%] w-[450px] h-[450px] bg-emerald-100/50 rounded-full blur-3xl" />
-        <div className="absolute top-[12%] right-[8%] w-[450px] h-[450px] bg-teal-100/40 rounded-full blur-3xl" />
-        <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:32px_32px] opacity-35" />
-      </div>
+      {/* Ambient background drifting blobs */}
+      <div className="ambient-blob bg-cyan-500/12 w-[650px] h-[650px] -top-40 left-1/2 -translate-x-1/2" />
+      <div className="ambient-blob bg-indigo-500/10 w-[550px] h-[550px] top-1/3 left-[-10%]" />
+      <div className="ambient-blob bg-blue-500/10 w-[550px] h-[550px] top-2/3 right-[-10%]" />
+
+      {/* Grid texture overlay */}
+      <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.04)_1px,transparent_1px)] [background-size:32px_32px] pointer-events-none opacity-40" />
 
       {/* ── NAVBAR ─────────────────────────────────────────────────────────── */}
       <Navbar />
 
-      <main className="pt-28 relative z-10">
+      <main className="pt-32 relative z-10 space-y-28 lg:space-y-36">
 
         {/* ── HERO SECTION ─────────────────────────────────────────────────── */}
-        <section className="px-6 pt-8 pb-20 max-w-7xl mx-auto">
-          <div className="text-center max-w-4xl mx-auto">
-
+        <section className="px-6 max-w-7xl mx-auto text-center">
+          <SectionReveal>
             {/* Top Pill Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-emerald-50 border border-emerald-200/80 text-xs font-semibold mb-8 shadow-xs"
-            >
-              <span className="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[10px] tracking-wide uppercase">
-                Train with AI
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-cyan-500/10 via-indigo-500/10 to-transparent border border-cyan-500/30 text-xs font-semibold mb-8 shadow-lg shadow-cyan-500/5">
+              <span className="px-2.5 py-0.5 rounded-full bg-cyan-500 text-slate-950 font-extrabold text-[10px] tracking-wider uppercase shadow-xs">
+                AI Studio 2.0
               </span>
-              <span className="text-slate-700">Perform 4x better in real interviews</span>
-            </motion.div>
+              <span className="text-slate-300">Next-Gen Real-Time Avatar Interviewer</span>
+            </div>
 
             {/* Main Headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-4xl sm:text-6xl lg:text-[68px] font-bold text-slate-900 leading-[1.08] tracking-tight mb-6"
-            >
-              Develop Job-Ready Talent with{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500">
-                AI-Powered
+            <h1 className="text-4xl sm:text-6xl lg:text-[72px] font-extrabold text-white leading-[1.06] tracking-tight max-w-5xl mx-auto mb-8 font-['Outfit']">
+              Master Technical Screens with{' '}
+              <span className="gradient-text">
+                Real-Time AI
               </span>{' '}
-              Interview Prep
-            </motion.h1>
+              Avatar Interviewers
+            </h1>
 
             {/* Sub-heading */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto mb-10"
-            >
-              InterviewIQ dynamically generates role-specific questions, evaluates content & tone in real-time, and delivers actionable performance scoring.
-            </motion.p>
+            <p className="text-lg sm:text-xl text-slate-400 leading-relaxed max-w-2xl mx-auto mb-10 font-normal">
+              Dynamically generate role-calibrated questions, speak with photorealistic avatars, and receive instantaneous performance scoring with actionable coaching.
+            </p>
 
             {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-wrap items-center justify-center gap-4 mb-12"
-            >
-              <button
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-14">
+              <GradientButton
                 onClick={handleStart}
-                className="flex items-center gap-2 px-8 py-4 rounded-xl bg-teal-900 hover:bg-teal-950 text-white font-bold text-base transition-all shadow-xl shadow-teal-900/15 hover:shadow-2xl hover:scale-[1.02] cursor-pointer group"
+                size="lg"
+                iconRight={HiArrowUpRight}
               >
-                <span>Start Free Practice</span>
-                <HiArrowUpRight className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-emerald-400" />
-              </button>
+                Start Practice Free
+              </GradientButton>
 
-              <button
-                onClick={() => setDemoPlaying(!demoPlaying)}
-                className="flex items-center gap-2.5 px-7 py-4 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-bold text-base transition-all shadow-xs cursor-pointer"
+              <SecondaryButton
+                onClick={() => {
+                  const el = document.getElementById('stages')
+                  el?.scrollIntoView({ behavior: 'smooth' })
+                }}
+                size="lg"
+                icon={BsPlayFill}
               >
-                <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                  <BsPlayFill size={16} className="ml-0.5" />
-                </div>
-                <span>Watch How It Works</span>
-              </button>
-            </motion.div>
+                Explore How It Works
+              </SecondaryButton>
+            </div>
 
             {/* Social Proof Stack */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex items-center justify-center gap-4 text-xs text-slate-500 font-medium"
-            >
-              <div className="flex -space-x-2 overflow-hidden">
+            <div className="flex items-center justify-center gap-4 text-xs text-slate-400 font-medium">
+              <div className="flex -space-x-2.5 overflow-hidden">
                 {['alex', 'sarah', 'michael', 'elena'].map((name, i) => (
                   <img
                     key={name}
-                    src={`https://ui-avatars.com/api/?name=${name}&background=${['064e3b','0d9488','15803d','047857'][i]}&color=fff&size=64`}
+                    src={`https://ui-avatars.com/api/?name=${name}&background=${['06b6d4','3b82f6','6366f1','0d9488'][i]}&color=050811&size=64`}
                     alt="User"
-                    className="inline-block h-8 w-8 rounded-full ring-2 ring-white"
+                    className="inline-block h-8 w-8 rounded-full ring-2 ring-slate-900 object-cover"
                   />
                 ))}
               </div>
               <div className="text-left">
-                <div className="flex items-center gap-1 text-amber-500 mb-0.5">
+                <div className="flex items-center gap-1 text-amber-400 mb-0.5 text-xs">
                   {'★'.repeat(5)}
-                  <span className="font-bold text-slate-800 ml-1">4.9/5</span>
+                  <span className="font-bold text-white ml-1">4.9/5 Rating</span>
                 </div>
-                <p className="text-slate-600">Trusted by 10,000+ candidates & hiring teams</p>
+                <p className="text-slate-400 text-[11px]">Over 10,000+ candidates screened & prepared</p>
               </div>
-            </motion.div>
+            </div>
+          </SectionReveal>
 
-          </div>
-
-          {/* ── HERO INTERACTIVE DASHBOARD PREVIEW ─────────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.4 }}
-            className="mt-14 relative max-w-6xl mx-auto"
-          >
-            {/* Ambient glow behind card */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-emerald-200/40 via-teal-100/30 to-blue-100/40 rounded-3xl blur-2xl -z-10 transform scale-95" />
-
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-[0_25px_70px_rgba(0,0,0,0.07)] p-6 sm:p-8 overflow-hidden">
-
-              {/* Mock App Header Bar */}
-              <div className="flex items-center justify-between pb-6 border-b border-slate-100 mb-6 flex-wrap gap-4">
-                <div className="flex items-center gap-3">
-                  <img
-                    src="https://ui-avatars.com/api/?name=Jasper+Ron&background=064e3b&color=10b981&size=64"
-                    alt="User"
-                    className="w-11 h-11 rounded-full object-cover border-2 border-emerald-100"
-                  />
-                  <div>
-                    <h3 className="font-bold text-slate-900 text-base">Welcome Back, Candidate! 👋</h3>
-                    <p className="text-xs text-slate-500">Ready to practice your next technical screen?</p>
+          {/* ── BROWSER DASHBOARD PREVIEW ─────────────────────────────────── */}
+          <SectionReveal delay={0.2} className="mt-16 max-w-6xl mx-auto">
+            <BrowserMockup url="app.interviewiq.ai/v2/interview-studio">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 text-left">
+                
+                {/* Left Live Avatar Mock */}
+                <div className="lg:col-span-7 bg-slate-950 rounded-2xl border border-white/10 p-6 relative overflow-hidden flex flex-col justify-between min-h-[320px]">
+                  <div className="flex items-center justify-between z-10">
+                    <span className="px-3 py-1 bg-cyan-500/20 text-cyan-300 text-xs font-bold rounded-full border border-cyan-500/30 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                      Live AI Interviewer
+                    </span>
+                    <span className="text-xs text-slate-400 font-mono">01:45 / 03:00</span>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-3">
-                  <div className="px-3.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                    100 AI Credits
-                  </div>
-                  <button
-                    onClick={handleStart}
-                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
-                  >
-                    <BsStars size={12} />
-                    Start Interview
-                  </button>
-                </div>
-              </div>
-
-              {/* Stats Cards Row */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-4">
-                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1">Total Mock Interviews</p>
-                  <p className="text-2xl font-extrabold text-slate-900">38</p>
-                  <span className="inline-block text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded mt-2">
-                    ↑ +12 this month
-                  </span>
-                </div>
-
-                <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-4">
-                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1">Average AI Score</p>
-                  <div className="flex items-baseline gap-2">
-                    <p className="text-2xl font-extrabold text-slate-900">8.7</p>
-                    <span className="text-xs text-slate-400 font-medium">/ 10</span>
-                  </div>
-                  <span className="inline-block text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded mt-2">
-                    ↑ 12.7% improvement
-                  </span>
-                </div>
-
-                <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-4">
-                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1">Practice Time</p>
-                  <p className="text-2xl font-extrabold text-slate-900">37h 21m</p>
-                  <span className="inline-block text-[10px] font-medium text-slate-500 mt-2">
-                    Last 30 Days
-                  </span>
-                </div>
-
-                <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-4">
-                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1">Streak</p>
-                  <div className="flex items-center gap-2">
-                    <p className="text-2xl font-extrabold text-slate-900">7 Days 🔥</p>
-                  </div>
-                  <span className="inline-block text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded mt-2">
-                    Active streak!
-                  </span>
-                </div>
-              </div>
-
-              {/* Active Practice Session Visualizer */}
-              <div className="bg-gradient-to-br from-teal-950 via-slate-900 to-teal-900 text-white rounded-2xl p-6 sm:p-8 relative overflow-hidden">
-                <div className="flex flex-col md:flex-row justify-between gap-6 relative z-10">
-
-                  {/* Left: AI Question Preview */}
-                  <div className="space-y-4 max-w-xl">
-                    <div className="flex items-center gap-2">
-                      <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold tracking-wide uppercase">
-                        Question 3 of 5 · Technical
-                      </span>
-                      <span className="text-xs text-slate-400 font-mono">Turn Latency: 320ms</span>
-                    </div>
-
-                    <h4 className="text-lg sm:text-xl font-bold leading-snug text-white">
-                      "Explain how you would design a rate limiter service for a high-traffic REST API in distributed environments."
-                    </h4>
-
-                    <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 space-y-2">
-                      <div className="flex items-center justify-between text-xs text-slate-300">
-                        <span className="flex items-center gap-1.5 font-medium">
-                          <FaMicrophoneAlt className="text-emerald-400 animate-pulse" /> Live Voice Processing...
-                        </span>
-                        <span className="text-emerald-400 font-bold">92% Answer Match</span>
-                      </div>
-                      <div className="flex items-center gap-1 h-5">
-                        {[12, 24, 8, 30, 18, 36, 14, 28, 22, 16, 32, 10, 20, 26, 12, 34, 18].map((h, i) => (
-                          <div
-                            key={i}
-                            className="flex-1 bg-emerald-400/80 rounded-full transition-all duration-300"
-                            style={{ height: `${h}px` }}
-                          />
-                        ))}
+                  <div className="my-auto py-8 text-center relative z-10">
+                    <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-cyan-500 to-indigo-600 p-0.5 shadow-xl shadow-cyan-500/20 mb-4">
+                      <div className="w-full h-full bg-slate-900 rounded-[22px] flex items-center justify-center text-cyan-300">
+                        <BsStars size={36} />
                       </div>
                     </div>
+                    <h4 className="text-lg font-bold text-white font-['Outfit']">Sophia — Lead AI Interviewer</h4>
+                    <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
+                      "Could you walk me through how you would handle cache invalidation in a distributed system?"
+                    </p>
                   </div>
 
-                  {/* Right: Live AI Evaluation Card */}
-                  <div className="w-full md:w-64 bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 space-y-3 shrink-0 flex flex-col justify-between">
-                    <p className="text-xs font-bold text-emerald-400 uppercase tracking-wider">AI Evaluation Matrix</p>
+                  <div className="flex items-center justify-between pt-4 border-t border-white/10 text-xs z-10">
+                    <span className="text-emerald-400 font-semibold flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400" /> Mic Active (Echo-Cancelled)
+                    </span>
+                    <span className="text-slate-400 font-mono text-[11px]">WebRTC 60 FPS</span>
+                  </div>
+                </div>
 
-                    <div className="space-y-2 text-xs">
+                {/* Right Metrics & Code IDE Mock */}
+                <div className="lg:col-span-5 flex flex-col gap-4">
+                  <div className="bg-slate-950/80 rounded-2xl border border-white/10 p-5 space-y-3">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Real-Time Evaluation Telemetry</p>
+                    <div className="space-y-2.5">
                       <div>
-                        <div className="flex justify-between text-slate-200 mb-1">
-                          <span>Semantic Accuracy</span>
-                          <span className="font-bold text-white">92%</span>
+                        <div className="flex justify-between text-xs font-semibold mb-1">
+                          <span className="text-slate-300">Technical Correctness</span>
+                          <span className="text-cyan-400">92%</span>
                         </div>
-                        <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
-                          <div className="h-full bg-emerald-400 rounded-full w-[92%]" />
+                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                          <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full w-[92%]" />
                         </div>
                       </div>
 
                       <div>
-                        <div className="flex justify-between text-slate-200 mb-1">
-                          <span>Concept Coverage</span>
-                          <span className="font-bold text-white">88%</span>
+                        <div className="flex justify-between text-xs font-semibold mb-1">
+                          <span className="text-slate-300">Speech Pacing (142 WPM)</span>
+                          <span className="text-emerald-400">Optimal</span>
                         </div>
-                        <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
-                          <div className="h-full bg-teal-400 rounded-full w-[88%]" />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between text-slate-200 mb-1">
-                          <span>Communication & Tone</span>
-                          <span className="font-bold text-white">94%</span>
-                        </div>
-                        <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
-                          <div className="h-full bg-emerald-400 rounded-full w-[94%]" />
+                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                          <div className="h-full bg-emerald-500 rounded-full w-[88%]" />
                         </div>
                       </div>
                     </div>
+                  </div>
 
-                    <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px]">
-                      <span className="text-emerald-300 font-semibold">AI Flag: Clean</span>
-                      <span className="text-slate-300">0 Follow-up Flags</span>
+                  <div className="bg-slate-950/80 rounded-2xl border border-white/10 p-4 font-mono text-xs text-slate-300 flex-1 flex flex-col justify-between">
+                    <div className="flex items-center justify-between pb-2 border-b border-white/10 text-[10px] text-slate-400">
+                      <span>solution.py</span>
+                      <span className="text-cyan-400">Python 3.13</span>
+                    </div>
+                    <p className="text-cyan-300/90 leading-relaxed py-2">
+                      def invalidate_cache(key: str) -&gt; bool:<br />
+                      &nbsp;&nbsp;&nbsp;&nbsp;redis_client.delete(key)<br />
+                      &nbsp;&nbsp;&nbsp;&nbsp;publish_event("cache:evict", key)<br />
+                      &nbsp;&nbsp;&nbsp;&nbsp;return True
+                    </p>
+                    <div className="pt-2 border-t border-white/10 flex justify-between items-center text-[10px] text-slate-400">
+                      <span>✓ Syntax Verified</span>
+                      <span className="text-emerald-400">Tests Passing</span>
                     </div>
                   </div>
                 </div>
+
               </div>
-            </div>
-          </motion.div>
-
+            </BrowserMockup>
+          </SectionReveal>
         </section>
 
-        {/* ── BRAND LOGOS / TRUSTED BY ──────────────────────────────────────── */}
-        <section className="py-12 bg-slate-50/60 border-y border-slate-200/80">
-          <div className="max-w-7xl mx-auto px-6 text-center">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-8">
-              Trusted by Candidates & Hiring Teams at Leading Companies
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-16 opacity-60 grayscale hover:grayscale-0 transition-all">
-              {['Google', 'Meta', 'Microsoft', 'Amazon', 'Apple', 'Stanford', 'MIT'].map(brand => (
-                <span key={brand} className="text-slate-700 font-extrabold text-xl tracking-tight">
-                  {brand}
-                </span>
-              ))}
+        {/* ── STAT COUNTERS ───────────────────────────────────────────────── */}
+        <section className="px-6 max-w-7xl mx-auto">
+          <SectionReveal>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+              <StatCounter
+                value={10000}
+                suffix="+"
+                label="Interviews Completed"
+                subtitle="Across 40+ countries"
+              />
+              <StatCounter
+                value={94.8}
+                suffix="%"
+                decimals={1}
+                label="Offer Conversion Rate"
+                subtitle="Within 60 days of prep"
+              />
+              <StatCounter
+                value={350}
+                suffix="+"
+                label="Calibrated Tech Roles"
+                subtitle="DSA, Full-Stack, ML, DevOps"
+              />
+              <StatCounter
+                value={4.9}
+                suffix="★"
+                decimals={1}
+                label="Candidate Satisfaction"
+                subtitle="Verified user scorecards"
+              />
             </div>
-          </div>
+          </SectionReveal>
         </section>
 
-        {/* ── WHY ORGANIZATIONS & CANDIDATES CHOOSE ────────────────────────── */}
-        <section id="features" className="py-24 px-6 max-w-7xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold tracking-wide uppercase">
-              Benefits
-            </span>
-            <h2 className="text-3xl sm:text-5xl font-bold text-slate-900 tracking-tight mt-4 mb-4">
-              Why Organizations & Professionals Choose InterviewIQ
-            </h2>
-            <p className="text-slate-600 text-base sm:text-lg">
-              Everything you need to master technical & behavioral interviews with measurable results.
-            </p>
-          </div>
-
-          <div className="grid lg:grid-cols-12 gap-8 items-center">
-
-            {/* Left: 4 Core Pillars of Measurable Insight */}
-            <div className="lg:col-span-6 space-y-5">
-              {[
-                {
-                  num: '01',
-                  title: 'Conversational AI Real-Time Adaptation',
-                  desc: 'Conversational AI that adapts to each answer in real time, asking intelligent follow-ups based on candidate depth.',
-                  icon: FaMicrophoneAlt,
-                },
-                {
-                  num: '02',
-                  title: 'Deep Dual Content & Delivery Scoring',
-                  desc: 'Deep scoring on both delivery dynamics and exact technical answer content accuracy.',
-                  icon: BsGraphUpArrow,
-                },
-                {
-                  num: '03',
-                  title: 'Comprehensive Communication Metrics',
-                  desc: 'Communication metrics that track tone, pacing (WPM), and vocal confidence index across every question.',
-                  icon: BsCpu,
-                },
-                {
-                  num: '04',
-                  title: 'Session-over-Session Progress Tracking',
-                  desc: 'Progress tracking that shows measurable skill improvement and percentile ranking session over session.',
-                  icon: BsAwardFill,
-                },
-              ].map((item, idx) => (
-                <motion.div
-                  key={item.num}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: idx * 0.08 }}
-                  className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:border-emerald-300 hover:shadow-md transition-all flex items-start gap-4 group"
-                >
-                  <div className="w-11 h-11 rounded-xl bg-teal-900 text-emerald-400 flex items-center justify-center font-bold text-base shrink-0 group-hover:scale-105 transition-transform">
-                    {item.num}
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-slate-900 text-base mb-1 flex items-center gap-2">
-                      {item.title}
-                    </h3>
-                    <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">{item.desc}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Right: Interactive Practice Setup Widget */}
-            <div className="lg:col-span-6">
-              <div className="bg-slate-900 text-white rounded-3xl p-8 border border-slate-800 shadow-2xl space-y-6 relative overflow-hidden">
-                <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-                  <div>
-                    <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Try Practice Setup</span>
-                    <h3 className="text-xl font-bold text-white mt-1">Configure Your Practice Session</h3>
-                  </div>
-                  <BsStars className="text-emerald-400 text-xl" />
-                </div>
-
-                {/* Role Selector */}
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold text-slate-400">Target Role</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {['Software Engineer', 'Data Scientist', 'Product Manager', 'UX Designer'].map(role => (
-                      <button
-                        key={role}
-                        onClick={() => setSelectedRole(role)}
-                        className={`px-3.5 py-2.5 rounded-xl text-xs font-semibold text-left transition cursor-pointer border ${
-                          selectedRole === role
-                            ? 'bg-emerald-600 text-white border-emerald-500'
-                            : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750'
-                        }`}
-                      >
-                        {role}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Level Selector */}
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold text-slate-400">Experience Level</label>
-                  <div className="flex gap-2">
-                    {['Entry-Level', 'Mid-Level', 'Senior', 'Lead / Staff'].map(level => (
-                      <button
-                        key={level}
-                        onClick={() => setSelectedLevel(level)}
-                        className={`flex-1 py-2 rounded-xl text-xs font-semibold transition cursor-pointer border ${
-                          selectedLevel === level
-                            ? 'bg-emerald-600 text-white border-emerald-500'
-                            : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750'
-                        }`}
-                      >
-                        {level}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Mode Selector */}
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold text-slate-400">Interview Mode</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {['Technical', 'HR & Behavioral', 'Live Voice AI'].map(mode => (
-                      <button
-                        key={mode}
-                        onClick={() => setSelectedMode(mode)}
-                        className={`py-2 rounded-xl text-xs font-semibold transition cursor-pointer border text-center ${
-                          selectedMode === mode
-                            ? 'bg-teal-700 text-white border-teal-500'
-                            : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750'
-                        }`}
-                      >
-                        {mode}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Action CTA */}
-                <button
-                  onClick={handleStart}
-                  className="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm transition cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 mt-4"
-                >
-                  <span>Start Practice Session ({selectedRole})</span>
-                  <HiArrowUpRight />
-                </button>
-              </div>
-            </div>
-
-          </div>
-        </section>
-
-        {/* ── CANDIDATE VS RECRUITER WORKFLOW SHOWCASE ───────────────────── */}
-        <section className="py-20 bg-slate-50/80 border-y border-slate-200">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center max-w-2xl mx-auto mb-12">
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-                Designed for Candidates and Recruiting Teams
+        {/* ── HOW IT WORKS / 4-STAGE INTERACTIVE TIMELINE ──────────────────── */}
+        <section id="stages" className="px-6 max-w-7xl mx-auto scroll-mt-28">
+          <SectionReveal>
+            <div className="text-center max-w-3xl mx-auto mb-14">
+              <Badge variant="cyan" icon={BsLightningChargeFill} className="mb-4">
+                Structured Workflow
+              </Badge>
+              <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-['Outfit']">
+                How InterviewIQ Works
               </h2>
-              <p className="text-slate-600 text-sm sm:text-base mt-2">
-                One platform powered by the same evaluation pipeline, customized for practice or hiring automation.
+              <p className="mt-3 text-slate-400 text-base leading-relaxed">
+                A seamless 4-stage engine that moves you from raw resume to offer-ready confidence.
               </p>
-
-              {/* Tabs */}
-              <div className="inline-flex p-1 bg-slate-200/80 rounded-2xl mt-6 border border-slate-300">
-                <button
-                  onClick={() => setActiveWorkflowTab('candidates')}
-                  className={`px-6 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-                    activeWorkflowTab === 'candidates'
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  For Candidates (Practice Mode)
-                </button>
-                <button
-                  onClick={() => setActiveWorkflowTab('recruiters')}
-                  className={`px-6 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-                    activeWorkflowTab === 'recruiters'
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  For Recruiters (Org Screening)
-                </button>
-              </div>
             </div>
 
-            {/* Workflow Card */}
-            <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm max-w-5xl mx-auto">
-              {activeWorkflowTab === 'candidates' ? (
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div className="space-y-2 p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">1</div>
-                    <h4 className="font-bold text-slate-900 text-base">Select Your Domain</h4>
-                    <p className="text-slate-600 text-xs leading-relaxed">Pick from 20+ job roles or upload your resume for customized question generation.</p>
-                  </div>
-                  <div className="space-y-2 p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">2</div>
-                    <h4 className="font-bold text-slate-900 text-base">Practice Voice & Code</h4>
-                    <p className="text-slate-600 text-xs leading-relaxed">Respond via speech or code editor. AI dynamically asks follow-up questions.</p>
-                  </div>
-                  <div className="space-y-2 p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">3</div>
-                    <h4 className="font-bold text-slate-900 text-base">Review Score Report</h4>
-                    <p className="text-slate-600 text-xs leading-relaxed">Get hiring recommendations, strengths, missing concepts, and improvement roadmap.</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div className="space-y-2 p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                    <div className="w-10 h-10 rounded-xl bg-teal-900 text-emerald-400 flex items-center justify-center font-bold text-sm">1</div>
-                    <h4 className="font-bold text-slate-900 text-base">Invite Candidate Pool</h4>
-                    <p className="text-slate-600 text-xs leading-relaxed">Bulk invite candidates by email to standardized interview template links.</p>
-                  </div>
-                  <div className="space-y-2 p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                    <div className="w-10 h-10 rounded-xl bg-teal-900 text-emerald-400 flex items-center justify-center font-bold text-sm">2</div>
-                    <h4 className="font-bold text-slate-900 text-base">Automated Screening</h4>
-                    <p className="text-slate-600 text-xs leading-relaxed">AI scores all answers, detects integrity flags, and ranks candidates in a central pipeline.</p>
-                  </div>
-                  <div className="space-y-2 p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                    <div className="w-10 h-10 rounded-xl bg-teal-900 text-emerald-400 flex items-center justify-center font-bold text-sm">3</div>
-                    <h4 className="font-bold text-slate-900 text-base">Human Override & Audit</h4>
-                    <p className="text-slate-600 text-xs leading-relaxed">Recruiters can review transcripts, override AI scores, and export PDF reports.</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+            <StepTimeline steps={workflowSteps} />
+          </SectionReveal>
         </section>
 
-        {/* ── PRICING SECTION ──────────────────────────────────────────────── */}
-        <section className="py-24 px-6 max-w-7xl mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold tracking-wide uppercase">
-              Pricing
-            </span>
-            <h2 className="text-3xl sm:text-5xl font-bold text-slate-900 tracking-tight mt-4 mb-4">
-              Simple, Transparent Pricing
-            </h2>
-            <p className="text-slate-600 text-base">
-              Start for free, upgrade when you need unlimited practice or recruiting features.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Free */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xs flex flex-col justify-between">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Starter Free</p>
-                <h3 className="text-4xl font-extrabold text-slate-900">$0 <span className="text-xs font-normal text-slate-500">/ forever</span></h3>
-                <p className="text-slate-600 text-xs mt-3 mb-6">Perfect for quick self-assessment and trying out AI interviews.</p>
-                <ul className="space-y-3 text-xs text-slate-700 mb-8">
-                  <li className="flex items-center gap-2"><BsCheckLg className="text-emerald-600 shrink-0" /> 100 Free Credits on Signup</li>
-                  <li className="flex items-center gap-2"><BsCheckLg className="text-emerald-600 shrink-0" /> Standard Technical & HR Questions</li>
-                  <li className="flex items-center gap-2"><BsCheckLg className="text-emerald-600 shrink-0" /> Basic Score Report</li>
-                </ul>
-              </div>
-              <button
-                onClick={handleStart}
-                className="w-full py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold text-xs transition cursor-pointer"
-              >
-                Get Started Free
-              </button>
-            </div>
-
-            {/* Pro Candidate */}
-            <div className="bg-teal-900 text-white rounded-3xl p-8 border border-teal-800 shadow-xl flex flex-col justify-between relative transform lg:-translate-y-2">
-              <span className="absolute -top-3.5 right-6 px-3 py-1 rounded-full bg-emerald-400 text-slate-950 font-bold text-[10px] uppercase tracking-wider shadow-sm">
-                Most Popular
-              </span>
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2">Candidate Pro</p>
-                <h3 className="text-4xl font-extrabold text-white">$19 <span className="text-xs font-normal text-slate-300">/ month</span></h3>
-                <p className="text-slate-300 text-xs mt-3 mb-6">Unlimited mock interviews with voice AI & detailed analytics.</p>
-                <ul className="space-y-3 text-xs text-slate-200 mb-8">
-                  <li className="flex items-center gap-2"><BsCheckLg className="text-emerald-400 shrink-0" /> Unlimited Mock Interviews</li>
-                  <li className="flex items-center gap-2"><BsCheckLg className="text-emerald-400 shrink-0" /> Real-Time Voice AI Interviewer</li>
-                  <li className="flex items-center gap-2"><BsCheckLg className="text-emerald-400 shrink-0" /> Deep Rubric Analysis & PDF Reports</li>
-                  <li className="flex items-center gap-2"><BsCheckLg className="text-emerald-400 shrink-0" /> Personalized Improvement Roadmap</li>
-                </ul>
-              </div>
-              <button
-                onClick={() => navigate('/pricing')}
-                className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition cursor-pointer shadow-lg shadow-emerald-500/20"
-              >
-                Upgrade to Pro ↗
-              </button>
-            </div>
-
-            {/* Recruiter / Enterprise */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xs flex flex-col justify-between">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Recruiter & Team</p>
-                <h3 className="text-4xl font-extrabold text-slate-900">$99 <span className="text-xs font-normal text-slate-500">/ month</span></h3>
-                <p className="text-slate-600 text-xs mt-3 mb-6">Org candidate screening pipeline with RBAC and score overrides.</p>
-                <ul className="space-y-3 text-xs text-slate-700 mb-8">
-                  <li className="flex items-center gap-2"><BsCheckLg className="text-emerald-600 shrink-0" /> Recruiter Hub & Bulk Candidate Invites</li>
-                  <li className="flex items-center gap-2"><BsCheckLg className="text-emerald-600 shrink-0" /> Custom Question Templates & Rubrics</li>
-                  <li className="flex items-center gap-2"><BsCheckLg className="text-emerald-600 shrink-0" /> Human Score Override & Audit Logging</li>
-                  <li className="flex items-center gap-2"><BsCheckLg className="text-emerald-600 shrink-0" /> Super Admin Multi-Tenant Support</li>
-                </ul>
-              </div>
-              <button
-                onClick={() => navigate('/pricing')}
-                className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition cursor-pointer"
-              >
-                Contact Sales
-              </button>
-            </div>
-          </div>
-        </section>
-
-        {/* ── FOOTER CALL TO ACTION ────────────────────────────────────────── */}
-        <section className="px-6 py-12 max-w-7xl mx-auto">
-          <div className="bg-gradient-to-r from-teal-950 via-slate-900 to-teal-900 text-white rounded-3xl p-10 sm:p-16 text-center relative overflow-hidden shadow-2xl">
-            <div className="max-w-2xl mx-auto space-y-6 relative z-10">
-              <span className="px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold tracking-wide uppercase">
-                Get Started Today
-              </span>
-              <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight leading-tight">
-                Ready to Master Your Next Interview?
+        {/* ── TRADITIONAL VS INTERVIEWIQ COMPARISON ────────────────────────── */}
+        <section id="features" className="px-6 max-w-7xl mx-auto">
+          <SectionReveal>
+            <div className="text-center max-w-3xl mx-auto mb-14">
+              <Badge variant="indigo" icon={BsStars} className="mb-4">
+                The Competitive Edge
+              </Badge>
+              <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-['Outfit']">
+                Traditional Prep vs. InterviewIQ
               </h2>
-              <p className="text-slate-300 text-sm sm:text-base">
-                Join thousands of candidates who practice with AI to land their dream job.
+              <p className="mt-3 text-slate-400 text-base leading-relaxed">
+                Why static question banks fail and dynamic conversational AI delivers results.
               </p>
-              <div className="pt-4">
-                <button
-                  onClick={handleStart}
-                  className="inline-flex items-center gap-2 px-9 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-base transition-all shadow-xl shadow-emerald-500/20 hover:scale-105 cursor-pointer"
-                >
-                  <span>Start Free Practice Now</span>
-                  <HiArrowUpRight />
-                </button>
+            </div>
+
+            <div className="rounded-3xl border border-white/10 bg-slate-950/70 backdrop-blur-xl overflow-hidden shadow-2xl">
+              <div className="grid grid-cols-1 md:grid-cols-12 border-b border-white/10 bg-slate-900/60 p-5 font-['Outfit'] font-bold text-xs uppercase tracking-wider text-slate-400">
+                <div className="md:col-span-3">Assessment Pillar</div>
+                <div className="md:col-span-4 text-rose-400/90">Traditional Mock Prep</div>
+                <div className="md:col-span-5 text-cyan-300">InterviewIQ Studio</div>
+              </div>
+
+              <div className="divide-y divide-white/5">
+                {comparisonItems.map((item, idx) => (
+                  <div key={idx} className="grid grid-cols-1 md:grid-cols-12 p-5 gap-4 items-center text-sm transition-colors hover:bg-white/2">
+                    <div className="md:col-span-3 font-bold text-white font-['Outfit']">
+                      {item.feature}
+                    </div>
+                    <div className="md:col-span-4 flex items-start gap-2.5 text-slate-400 text-xs leading-relaxed">
+                      <HiXMark className="text-rose-500 shrink-0 mt-0.5" size={16} />
+                      <span>{item.traditional}</span>
+                    </div>
+                    <div className="md:col-span-5 flex items-start gap-2.5 text-cyan-200 text-xs font-semibold leading-relaxed bg-cyan-500/5 p-3 rounded-2xl border border-cyan-500/15">
+                      <HiCheck className="text-cyan-400 shrink-0 mt-0.5" size={16} />
+                      <span>{item.interviewIQ}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
+          </SectionReveal>
+        </section>
+
+        {/* ── FAQ SECTION ─────────────────────────────────────────────────── */}
+        <section id="faq" className="px-6 max-w-4xl mx-auto">
+          <SectionReveal>
+            <div className="text-center mb-12">
+              <Badge variant="cyan" className="mb-4">FAQ</Badge>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-['Outfit']">
+                Frequently Asked Questions
+              </h2>
+              <p className="mt-2 text-slate-400 text-sm">
+                Everything you need to know about the AI interview engine.
+              </p>
+            </div>
+
+            <Accordion items={faqItems} />
+          </SectionReveal>
+        </section>
+
+        {/* ── BOTTOM CTA BANNER ───────────────────────────────────────────── */}
+        <section className="px-6 max-w-7xl mx-auto pb-24">
+          <SectionReveal>
+            <div className="rounded-3xl bg-gradient-to-r from-cyan-900/30 via-slate-900 to-indigo-950/40 border border-cyan-500/30 p-8 sm:p-14 text-center relative overflow-hidden shadow-2xl">
+              <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
+              
+              <div className="relative z-10 max-w-2xl mx-auto space-y-6">
+                <Badge variant="cyan" icon={BsStars}>Get Started Today</Badge>
+                <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-['Outfit']">
+                  Ready to Ace Your Next Interview?
+                </h2>
+                <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+                  Join thousands of candidates who practice daily with our conversational AI avatars and step into real interviews fully prepared.
+                </p>
+
+                <div className="pt-2 flex flex-wrap justify-center gap-4">
+                  <GradientButton onClick={handleStart} size="lg" iconRight={HiArrowUpRight}>
+                    Launch Free Session
+                  </GradientButton>
+                  <SecondaryButton onClick={() => navigate('/pricing')} size="lg">
+                    View Plan Tiers
+                  </SecondaryButton>
+                </div>
+              </div>
+            </div>
+          </SectionReveal>
         </section>
 
       </main>
 
-      {/* ── FOOTER ─────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-slate-200 bg-white py-12 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-slate-500">
-          <div className="flex items-center gap-2 font-bold text-slate-900">
-            <div className="w-6 h-6 rounded-md bg-teal-900 text-emerald-400 flex items-center justify-center text-xs">
-              <BsStars size={12} />
+      {/* ── FOOTER ──────────────────────────────────────────────────────── */}
+      <footer className="border-t border-white/8 bg-slate-950/80 px-6 py-12 text-xs text-slate-500 relative z-10">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-cyan-500 to-indigo-600 flex items-center justify-center text-white text-xs">
+              <BsStars />
             </div>
-            <span>InterviewIQ.AI</span>
+            <span className="font-bold text-white text-sm font-['Outfit']">InterviewIQ.AI</span>
           </div>
-
-          <p>© 2026 InterviewIQ Inc. All rights reserved.</p>
-
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-slate-900 transition">Privacy Policy</a>
-            <a href="#" className="hover:text-slate-900 transition">Terms of Service</a>
-            <a href="#" className="hover:text-slate-900 transition">Support</a>
+          <p>© {new Date().getFullYear()} InterviewIQ. All rights reserved. Universal AI Interview Studio.</p>
+          <div className="flex gap-6 font-medium text-slate-400">
+            <a href="#" className="hover:text-cyan-400 transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-cyan-400 transition-colors">Terms of Service</a>
+            <a href="#" className="hover:text-cyan-400 transition-colors">Security</a>
           </div>
         </div>
       </footer>

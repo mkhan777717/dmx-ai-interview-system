@@ -17,15 +17,15 @@ import { ServerUrl } from '../App'
 const NavItem = ({ icon: Icon, label, active, onClick }) => (
   <div
     onClick={onClick}
-    className={`flex items-center gap-3 px-3.5 py-2.5 mb-1 rounded-xl cursor-pointer transition-all duration-200 ${
+    className={`flex items-center gap-3 px-3.5 py-2.5 mb-1 rounded-2xl cursor-pointer transition-all duration-200 ${
       active
-        ? 'bg-emerald-500/15 text-teal-900 font-bold border border-emerald-500/30 shadow-xs'
-        : 'text-slate-600 hover:bg-slate-200/50 hover:text-slate-900'
+        ? 'bg-gradient-to-r from-cyan-500/15 via-blue-500/10 to-transparent text-cyan-300 font-bold border border-cyan-500/30 shadow-lg shadow-cyan-500/5'
+        : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
     }`}
   >
-    <Icon className={`text-base shrink-0 transition-colors ${active ? 'text-teal-700' : 'text-slate-400'}`} />
-    <span className="text-sm">{label}</span>
-    {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20" />}
+    <Icon className={`text-base shrink-0 transition-colors ${active ? 'text-cyan-400' : 'text-slate-500'}`} />
+    <span className="text-sm font-medium">{label}</span>
+    {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-cyan-400 ring-4 ring-cyan-400/20" />}
   </div>
 )
 
@@ -71,21 +71,21 @@ export default function V2Layout({
   const userRole = userData?.role || 'USER'
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex relative overflow-hidden mesh-gradient-canvas">
-      {/* Background ambient orbs */}
-      <div className="ambient-glow bg-emerald-400/20 w-96 h-96 -top-20 -left-20" />
-      <div className="ambient-glow bg-indigo-400/15 w-96 h-96 bottom-10 right-10" />
+    <div className="min-h-screen bg-[#050811] text-[#f8fafc] flex relative overflow-hidden dark-canvas">
+      {/* Background ambient blobs */}
+      <div className="ambient-blob bg-cyan-500/10 w-[550px] h-[550px] -top-32 -left-32" />
+      <div className="ambient-blob bg-indigo-500/10 w-[500px] h-[500px] bottom-10 right-10" />
 
       {/* ── SIDEBAR ─────────────────────────────────────────────────────────── */}
-      <aside className="w-68 glass-panel-subtle border-r border-slate-200/70 flex flex-col h-screen sticky top-0 overflow-y-auto shrink-0 z-20">
+      <aside className="w-68 bg-slate-950/70 backdrop-blur-2xl border-r border-white/8 flex flex-col h-screen sticky top-0 overflow-y-auto shrink-0 z-20">
 
         {/* Logo */}
-        <div className="px-5 py-4.5 flex items-center gap-2.5 cursor-pointer border-b border-slate-200/60" onClick={() => navigate('/')}>
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-teal-800 to-teal-950 flex items-center justify-center text-emerald-300 shadow-md shadow-teal-950/20">
+        <div className="px-5 py-4.5 flex items-center gap-2.5 cursor-pointer border-b border-white/8" onClick={() => navigate('/')}>
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-cyan-500/20">
             <BsStars size={15} />
           </div>
-          <h1 className="text-lg font-bold text-slate-900 tracking-tight font-['Outfit'] flex items-center gap-1">
-            InterviewIQ <span className="bg-emerald-500/15 text-emerald-700 border border-emerald-500/30 text-[9px] px-1.5 py-0.5 rounded-md font-extrabold uppercase">AI</span>
+          <h1 className="text-lg font-bold text-white tracking-tight font-['Outfit'] flex items-center gap-1">
+            InterviewIQ <span className="bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-[9px] px-1.5 py-0.5 rounded-md font-extrabold uppercase">AI</span>
           </h1>
         </div>
 
@@ -93,7 +93,7 @@ export default function V2Layout({
         <nav className="px-3 pt-4 flex-1 space-y-0.5 custom-scrollbar">
 
           {/* Section: Main */}
-          <p className="px-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-2">Main Menu</p>
+          <p className="px-3 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">Main Menu</p>
           <NavItem onClick={() => navigate('/dashboard')} icon={FaThLarge} label="Overview" active={location.pathname === '/dashboard'} />
           <NavItem onClick={() => navigate('/v2/interview')} icon={FaMicrophoneAlt} label="Start Interview" active={location.pathname === '/v2/interview' || location.pathname === '/interview'} />
           <NavItem onClick={() => navigate('/history')} icon={FaHistory} label="My Reports" active={location.pathname === '/history' || location.pathname.startsWith('/report')} />
@@ -102,7 +102,7 @@ export default function V2Layout({
           {/* Section: Recruiter */}
           {hasPermission(userRole, 'nav.recruiterDashboard') && (
             <>
-              <p className="px-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mt-5 mb-2">Recruiter</p>
+              <p className="px-3 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mt-5 mb-2">Recruiter</p>
               <NavItem onClick={() => navigate('/recruiter')} icon={FaUsersCog} label="Recruiter Hub" active={location.pathname === '/recruiter'} />
               <NavItem onClick={() => navigate('/admin')} icon={FaShieldAlt} label="Candidate Pipeline" active={location.pathname === '/admin'} />
             </>
@@ -111,43 +111,43 @@ export default function V2Layout({
           {/* Section: Super Admin */}
           {hasPermission(userRole, 'nav.superAdminDashboard') && (
             <>
-              <p className="px-3 text-[10px] font-extrabold text-purple-600 uppercase tracking-wider mt-5 mb-2">Super Admin</p>
+              <p className="px-3 text-[10px] font-extrabold text-indigo-400 uppercase tracking-wider mt-5 mb-2">Super Admin</p>
               <NavItem onClick={() => navigate('/superadmin')} icon={FaCrown} label="Platform Control" active={location.pathname === '/superadmin'} />
             </>
           )}
         </nav>
 
         {/* Bottom — User Profile */}
-        <div className="px-3 pb-4 pt-3 border-t border-slate-200/60 space-y-2.5">
+        <div className="px-3 pb-4 pt-3 border-t border-white/8 space-y-2.5">
 
           {/* Plan badge */}
-          <div className="flex items-center gap-2 px-3 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-            <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-teal-800 flex items-center justify-center shrink-0">
+          <div className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-cyan-500/10 via-indigo-500/5 to-transparent border border-cyan-500/20 rounded-2xl">
+            <div className="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-300 flex items-center justify-center shrink-0">
               <BsStars size={11} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-teal-900">Pro Tier</p>
-              <p className="text-[9px] text-teal-700 font-medium">Enterprise Engine</p>
+              <p className="text-xs font-bold text-cyan-200">Pro Tier</p>
+              <p className="text-[9px] text-slate-400 font-medium">Enterprise Engine</p>
             </div>
-            <button onClick={() => navigate('/pricing')} className="text-[10px] font-bold text-teal-800 bg-white/80 hover:bg-white px-2 py-0.5 rounded-md border border-emerald-500/20 transition cursor-pointer shadow-2xs">
+            <button onClick={() => navigate('/pricing')} className="text-[10px] font-bold text-cyan-300 bg-white/5 hover:bg-white/10 px-2 py-0.5 rounded-md border border-cyan-500/30 transition cursor-pointer shadow-2xs">
               Upgrade
             </button>
           </div>
 
           {/* User card */}
-          <div className="flex items-center gap-2.5 px-3 py-2.5 glass-card-static rounded-xl">
+          <div className="flex items-center gap-2.5 px-3 py-2.5 glass-card-static rounded-2xl border-white/5">
             <img
-              src={userData?.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData?.name || 'User')}&background=0f766e&color=ffffff&size=64`}
+              src={userData?.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData?.name || 'User')}&background=06b6d4&color=050811&size=64`}
               alt="User"
-              className="w-8 h-8 rounded-full object-cover shrink-0 ring-1 ring-emerald-500/30"
+              className="w-8 h-8 rounded-full object-cover shrink-0 ring-1 ring-cyan-500/40"
             />
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-slate-900 truncate">{userData?.name || 'User'}</p>
+              <p className="text-xs font-bold text-slate-200 truncate">{userData?.name || 'User'}</p>
               <span className={`inline-block text-[8px] font-extrabold px-1.5 py-0.2 rounded-full border leading-tight ${getRoleBadgeColor(userRole)}`}>
                 {getRoleLabel(userRole)}
               </span>
             </div>
-            <button onClick={() => navigate('/dashboard')} title="Account Settings" className="text-slate-400 hover:text-teal-800 p-1 transition cursor-pointer shrink-0">
+            <button onClick={() => navigate('/dashboard')} title="Account Settings" className="text-slate-500 hover:text-cyan-400 p-1 transition cursor-pointer shrink-0">
               <FaEdit size={11} />
             </button>
           </div>
@@ -158,15 +158,15 @@ export default function V2Layout({
       <main className="flex-1 flex flex-col h-screen overflow-hidden z-10">
 
         {/* Header */}
-        <header className="h-16 glass-panel-subtle border-b border-slate-200/70 px-8 flex items-center justify-between shrink-0">
+        <header className="h-16 bg-slate-950/60 backdrop-blur-xl border-b border-white/8 px-8 flex items-center justify-between shrink-0">
 
           {headerLeft ? headerLeft : (
             <div>
-              <div className="flex items-center gap-2 font-bold text-slate-900 text-lg leading-tight font-['Outfit']">
-                <BsStars className="text-emerald-500 shrink-0" />
+              <div className="flex items-center gap-2 font-bold text-white text-lg leading-tight font-['Outfit']">
+                <BsStars className="text-cyan-400 shrink-0" />
                 <h1>{title}</h1>
               </div>
-              <p className="text-slate-500 text-xs mt-0.5">{subtitle}</p>
+              <p className="text-slate-400 text-xs mt-0.5">{subtitle}</p>
             </div>
           )}
 
@@ -175,17 +175,17 @@ export default function V2Layout({
 
               {/* Progress (interview pages) */}
               {progressText && (
-                <div className="flex items-center gap-3.5 border-r border-slate-200/80 pr-4 mr-1">
+                <div className="flex items-center gap-3.5 border-r border-white/10 pr-4 mr-1">
                   <div className="w-40">
                     <div className="flex justify-between text-[11px] mb-1 font-semibold">
-                      <span className="text-slate-500">Progress</span>
-                      <span className="text-teal-700">{Math.round(progressPercent)}%</span>
+                      <span className="text-slate-400">Progress</span>
+                      <span className="text-cyan-400">{Math.round(progressPercent)}%</span>
                     </div>
-                    <div className="h-2 w-full bg-slate-200/70 rounded-full overflow-hidden p-0.5">
-                      <div className="h-full bg-gradient-to-r from-teal-600 to-emerald-500 rounded-full transition-all duration-500 shadow-xs" style={{ width: `${progressPercent}%` }} />
+                    <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden p-0.5">
+                      <div className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 rounded-full transition-all duration-500 shadow-xs" style={{ width: `${progressPercent}%` }} />
                     </div>
                   </div>
-                  <span className="text-xs font-bold text-slate-700 bg-white/70 px-2 py-0.5 rounded-md border border-slate-200/60">{progressText}</span>
+                  <span className="text-xs font-bold text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded-md border border-cyan-500/20">{progressText}</span>
                 </div>
               )}
 
@@ -193,10 +193,10 @@ export default function V2Layout({
               <div className="relative">
                 <button
                   onClick={() => { setShowNotifications(!showNotifications); setShowProfileMenu(false) }}
-                  className="w-9 h-9 flex items-center justify-center rounded-xl glass-pill hover:border-slate-300 text-slate-600 transition cursor-pointer relative"
+                  className="w-9 h-9 flex items-center justify-center rounded-xl glass-pill hover:border-cyan-500/30 text-slate-300 transition cursor-pointer relative"
                 >
                   <FaBell size={14} />
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white" />
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-cyan-400 rounded-full ring-2 ring-slate-950 shadow-xs shadow-cyan-400" />
                 </button>
                 <AnimatePresence>
                   {showNotifications && (
@@ -204,11 +204,11 @@ export default function V2Layout({
                       initial={{ opacity: 0, y: 8, scale: 0.96 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                      className="absolute right-0 top-11 w-68 glass-panel rounded-2xl shadow-xl p-4 z-50 border border-white/80"
+                      className="absolute right-0 top-11 w-68 glass-panel rounded-2xl shadow-2xl p-4 z-50 border border-white/10"
                     >
-                      <h3 className="font-bold text-slate-900 text-sm mb-2 font-['Outfit']">System Notifications</h3>
-                      <div className="text-center py-4 bg-slate-50/50 rounded-xl border border-slate-200/50">
-                        <p className="text-xs text-slate-500">All services connected & operational</p>
+                      <h3 className="font-bold text-white text-sm mb-2 font-['Outfit']">System Notifications</h3>
+                      <div className="text-center py-4 bg-white/5 rounded-xl border border-white/5">
+                        <p className="text-xs text-slate-400">All services connected & operational</p>
                       </div>
                     </motion.div>
                   )}
@@ -219,10 +219,10 @@ export default function V2Layout({
               <div className="relative">
                 <div
                   onClick={() => { setShowProfileMenu(!showProfileMenu); setShowNotifications(false) }}
-                  className="w-9 h-9 rounded-full overflow-hidden cursor-pointer ring-2 ring-emerald-500/30 hover:ring-emerald-500 transition shadow-xs"
+                  className="w-9 h-9 rounded-full overflow-hidden cursor-pointer ring-2 ring-cyan-500/40 hover:ring-cyan-400 transition shadow-xs"
                 >
                   <img
-                    src={userData?.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData?.name || 'User')}&background=0f766e&color=ffffff&size=64`}
+                    src={userData?.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData?.name || 'User')}&background=06b6d4&color=050811&size=64`}
                     alt="User"
                     className="w-full h-full object-cover"
                   />
@@ -233,24 +233,24 @@ export default function V2Layout({
                       initial={{ opacity: 0, y: 8, scale: 0.96 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                      className="absolute right-0 top-11 w-56 glass-panel rounded-2xl shadow-xl p-2 z-50 border border-white/80"
+                      className="absolute right-0 top-11 w-56 glass-panel rounded-2xl shadow-2xl p-2 z-50 border border-white/10"
                     >
-                      <div className="px-3 py-2.5 mb-1 border-b border-slate-200/60">
-                        <p className="font-bold text-slate-900 text-sm">{userData?.name || 'User'}</p>
-                        <p className="text-xs text-slate-500 truncate">{userData?.email}</p>
+                      <div className="px-3 py-2.5 mb-1 border-b border-white/8">
+                        <p className="font-bold text-white text-sm">{userData?.name || 'User'}</p>
+                        <p className="text-xs text-slate-400 truncate">{userData?.email}</p>
                         <span className={`inline-block text-[9px] font-extrabold px-1.5 py-0.5 rounded-full border mt-1 ${getRoleBadgeColor(userRole)}`}>
                           {getRoleLabel(userRole)}
                         </span>
                       </div>
                       <button 
                         onClick={() => { setShowProfileMenu(false); navigate('/dashboard') }}
-                        className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100/80 rounded-xl flex items-center gap-2 transition cursor-pointer"
+                        className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-white/5 hover:text-white rounded-xl flex items-center gap-2 transition cursor-pointer"
                       >
-                        <FaCog className="text-slate-400" size={13} /> Dashboard
+                        <FaCog className="text-slate-500" size={13} /> Dashboard
                       </button>
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50/80 rounded-xl flex items-center gap-2 transition cursor-pointer mt-0.5"
+                        className="w-full text-left px-3 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-500/10 rounded-xl flex items-center gap-2 transition cursor-pointer mt-0.5"
                       >
                         <FaSignOutAlt size={13} /> Log out
                       </button>

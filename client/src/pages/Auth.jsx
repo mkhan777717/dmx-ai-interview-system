@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { BsRobot, BsStars, BsCheckCircleFill, BsShieldCheck } from 'react-icons/bs'
-import { IoSparkles } from 'react-icons/io5'
+import { BsRobot, BsStars, BsShieldCheck } from 'react-icons/bs'
 import { motion } from 'motion/react'
 import { FcGoogle } from 'react-icons/fc'
 import { signInWithPopup } from 'firebase/auth'
@@ -12,6 +11,7 @@ import { setUserData } from '../redux/userSlice'
 import { useNavigate, Link } from 'react-router-dom'
 import { getDefaultRoute } from '../permissions'
 import { HiArrowLeft } from 'react-icons/hi2'
+import Badge from '../components/ui/Badge'
 
 function Auth({ isModel = false }) {
   const dispatch = useDispatch()
@@ -35,7 +35,6 @@ function Auth({ isModel = false }) {
       const userData = result.data
       dispatch(setUserData(userData))
 
-      // Redirect to the role-appropriate dashboard
       if (!isModel) {
         navigate(getDefaultRoute(userData.role), { replace: true })
       }
@@ -49,29 +48,25 @@ function Auth({ isModel = false }) {
   }
 
   return (
-    <div className={`w-full font-['Inter',sans-serif] ${isModel ? 'py-2' : 'min-h-screen bg-[#FFFFFF] text-slate-900 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden'}`}>
+    <div className={`w-full font-['Plus_Jakarta_Sans',sans-serif] ${isModel ? 'py-2' : 'min-h-screen bg-[#050811] text-[#f8fafc] flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden dark-canvas'}`}>
       
-      {/* Background Ambient Mesh & Glow Effects (Page mode only) */}
+      {/* Background Ambient Mesh (Page mode only) */}
       {!isModel && (
         <>
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[650px] pointer-events-none z-0 overflow-hidden">
-            <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[850px] h-[550px] bg-gradient-to-b from-emerald-100/75 via-teal-50/50 to-transparent rounded-full blur-3xl opacity-90" />
-            <div className="absolute top-[15%] left-[10%] w-[380px] h-[380px] bg-emerald-100/60 rounded-full blur-3xl" />
-            <div className="absolute top-[18%] right-[10%] w-[380px] h-[380px] bg-teal-100/50 rounded-full blur-3xl" />
-            <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:32px_32px] opacity-35" />
-          </div>
+          <div className="ambient-blob bg-cyan-500/15 w-[600px] h-[600px] -top-32 left-1/2 -translate-x-1/2" />
+          <div className="ambient-blob bg-indigo-500/12 w-[450px] h-[450px] bottom-10 right-10" />
 
           {/* Top Return Navigation */}
           <div className="w-full max-w-md mb-6 relative z-10 flex items-center justify-between">
             <Link
               to="/"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-emerald-700 transition"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-cyan-400 transition"
             >
               <HiArrowLeft className="w-3.5 h-3.5" /> Back to Home
             </Link>
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[11px] font-semibold text-slate-500">Live AI System</span>
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+              <span className="text-[11px] font-semibold text-slate-400">Live AI System</span>
             </div>
           </div>
         </>
@@ -82,29 +77,29 @@ function Auth({ isModel = false }) {
         initial={{ opacity: 0, y: isModel ? 0 : 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: 'easeOut' }}
-        className={`w-full max-w-md relative z-10 glass-panel rounded-3xl border border-white/90 shadow-2xl ${
+        className={`w-full max-w-md relative z-10 rounded-3xl border border-white/10 bg-slate-950/80 backdrop-blur-2xl shadow-2xl ${
           isModel ? 'p-6 sm:p-8' : 'p-8 sm:p-10'
         }`}
       >
         {/* Brand Logo & Pill */}
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-bold text-teal-900 mb-4 shadow-2xs">
-            <BsStars className="text-emerald-600" /> AI-Powered Interview System
-          </div>
+          <Badge variant="cyan" icon={BsStars} className="mb-4">
+            AI-Powered Interview Studio
+          </Badge>
 
           <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-teal-800 to-teal-950 text-emerald-300 rounded-2xl flex items-center justify-center shadow-md shadow-teal-950/20">
+            <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
               <BsRobot size={20} />
             </div>
-            <h2 className="font-extrabold text-2xl tracking-tight text-slate-900 font-['Outfit']">
-              InterviewIQ<span className="text-emerald-600">.AI</span>
+            <h2 className="font-extrabold text-2xl tracking-tight text-white font-['Outfit']">
+              InterviewIQ<span className="text-cyan-400">.AI</span>
             </h2>
           </div>
 
-          <h1 className="text-xl font-bold text-slate-900 mt-2 font-['Outfit']">
-            Welcome to your career prep 👋
+          <h1 className="text-xl font-bold text-white mt-2 font-['Outfit']">
+            Welcome to Career Studio 👋
           </h1>
-          <p className="text-xs text-slate-500 mt-1 max-w-xs leading-relaxed">
+          <p className="text-xs text-slate-400 mt-1 max-w-xs leading-relaxed">
             Access personalized AI mock interviews, real-time avatar feedback, and scoring analytics.
           </p>
         </div>
@@ -114,10 +109,10 @@ function Auth({ isModel = false }) {
           <button
             onClick={handleGoogleAuth}
             disabled={loading}
-            className="w-full py-3.5 px-4 bg-white/90 hover:bg-white active:bg-slate-50 border border-slate-200 hover:border-emerald-400 text-slate-800 font-bold text-sm rounded-2xl flex items-center justify-center gap-3 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed group"
+            className="w-full py-3.5 px-4 bg-white/5 hover:bg-white/10 active:bg-white/15 border border-white/15 hover:border-cyan-500/40 text-white font-bold text-sm rounded-2xl flex items-center justify-center gap-3 shadow-lg hover:shadow-cyan-500/10 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed group"
           >
             {loading ? (
-              <svg className="animate-spin w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
@@ -130,44 +125,44 @@ function Auth({ isModel = false }) {
 
         {/* Error Alert */}
         {error && (
-          <div className="mt-4 px-4 py-3 bg-rose-50 border border-rose-200 rounded-2xl flex items-start gap-2.5">
-            <span className="text-rose-500 mt-0.5 shrink-0">⚠️</span>
-            <p className="text-xs font-semibold text-rose-700 leading-relaxed">{error}</p>
+          <div className="mt-4 px-4 py-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-start gap-2.5">
+            <span className="text-rose-400 mt-0.5 shrink-0">⚠️</span>
+            <p className="text-xs font-semibold text-rose-300 leading-relaxed">{error}</p>
           </div>
         )}
 
         {/* Features Value Pillars */}
-        <div className="mt-7 pt-6 border-t border-slate-100 grid grid-cols-3 gap-2 text-center">
+        <div className="mt-7 pt-6 border-t border-white/8 grid grid-cols-3 gap-2 text-center">
           <div className="flex flex-col items-center gap-1">
             <span className="text-base">🎙️</span>
-            <span className="text-[11px] font-bold text-slate-700">Real-Time Avatar</span>
-            <span className="text-[9px] text-slate-400">Live Voice / Video</span>
+            <span className="text-[11px] font-bold text-slate-300">Live Avatars</span>
+            <span className="text-[9px] text-slate-500">Real-Time Voice</span>
           </div>
-          <div className="flex flex-col items-center gap-1 border-x border-slate-100 px-1">
+          <div className="flex flex-col items-center gap-1 border-x border-white/8 px-1">
             <span className="text-base">⚡</span>
-            <span className="text-[11px] font-bold text-slate-700">Instant Scoring</span>
-            <span className="text-[9px] text-slate-400">Local NLP Model</span>
+            <span className="text-[11px] font-bold text-slate-300">Fast Scoring</span>
+            <span className="text-[9px] text-slate-500">Local NLP Model</span>
           </div>
           <div className="flex flex-col items-center gap-1">
             <span className="text-base">📊</span>
-            <span className="text-[11px] font-bold text-slate-700">Skill Reports</span>
-            <span className="text-[9px] text-slate-400">Strengths & Insights</span>
+            <span className="text-[11px] font-bold text-slate-300">Skill Matrices</span>
+            <span className="text-[9px] text-slate-500">Percentile Rank</span>
           </div>
         </div>
 
         {/* Trust Metric & Legal */}
         <div className="mt-6 text-center space-y-2">
-          <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-slate-600">
-            <span className="text-amber-500">★★★★★</span>
-            <span>4.9/5</span>
-            <span className="text-slate-400 font-normal">· Trusted by 10,000+ candidates</span>
+          <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-slate-400">
+            <span className="text-amber-400">★★★★★</span>
+            <span className="text-white">4.9/5</span>
+            <span className="text-slate-500 font-normal">· Trusted by 10,000+ candidates</span>
           </div>
 
-          <p className="text-[11px] text-slate-400 leading-relaxed">
+          <p className="text-[11px] text-slate-500 leading-relaxed">
             By continuing, you agree to our{' '}
-            <a href="#" className="text-slate-600 hover:text-emerald-700 underline font-medium">Terms of Service</a>{' '}
+            <a href="#" className="text-slate-400 hover:text-cyan-400 underline font-medium">Terms of Service</a>{' '}
             and{' '}
-            <a href="#" className="text-slate-600 hover:text-emerald-700 underline font-medium">Privacy Policy</a>.
+            <a href="#" className="text-slate-400 hover:text-cyan-400 underline font-medium">Privacy Policy</a>.
           </p>
         </div>
       </motion.div>
