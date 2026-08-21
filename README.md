@@ -1,6 +1,6 @@
 # 🎯 InterviewIQ v2.0 — AI-Powered Real-Time Interview Platform
 
-InterviewIQ is an enterprise-grade AI technical & behavioral interview platform. Built with **FastAPI (Python 3.13)**, **PostgreSQL (SQLAlchemy 2.0 AsyncPG)**, **LiveKit Real-Time WebRTC**, **TruGen.AI Video Avatars**, and **React 19 (Vite 7)**.
+InterviewIQ is an enterprise-grade AI technical and behavioral interview platform. Built with **FastAPI (Python 3.13)**, **PostgreSQL (SQLAlchemy 2.0 AsyncPG)**, **LiveKit Real-Time WebRTC**, **TruGen.AI Video Avatars**, and **React 19 (Vite 7)**.
 
 ---
 
@@ -9,20 +9,21 @@ InterviewIQ is an enterprise-grade AI technical & behavioral interview platform.
 ### 🎭 Real-Time AI Video Avatar (TruGen.AI & LiveKit)
 - **Real-Time Lip-Sync Video**: Live interactive video avatar powered by TruGen.AI and LiveKit Agents.
 - **Dynamic Interviewer Personas**:
-  - **Alex Vance** (`Technical & System Design`)
-  - **Sophia Chen** (`Behavioral & Culture Fit`)
-  - **Marcus Brody** (`Executive & Leadership`)
+  - **Alex Vance** (`Technical & System Design` — Crisp male persona)
+  - **Sophia Chen** (`Behavioral & Culture Fit` — Empathetic female persona)
+  - **Marcus Brody** (`Executive & Leadership` — Authoritative male persona)
+- **Persona-Accurate Voice Mapping**: TTS synthesizes gender- and persona-matched audio (OpenAI TTS with macOS system fallback).
 - **Seamless Degradation**: Layered fallback ensuring uninterrupted interview flow (LiveKit WebRTC Video Track ➔ High-Definition Video Loop ➔ Audio Speech Synthesis).
 
 ### 🎙️ Voice & Audio Pipeline
 - **Speech-to-Text (STT)**: Sub-second audio transcription via Groq Whisper (`whisper-large-v3-turbo`).
-- **Natural Text-to-Speech (TTS)**: High-quality WAV audio synthesized with OpenAI TTS / Groq Orpheus.
-- **Audio-Driven Viseme Lip-Sync**: Real-time waveform visualizers and speech gating for natural conversational turns.
+- **Natural Text-to-Speech (TTS)**: High-quality WAV audio synthesized with OpenAI TTS (`tts-1`) / macOS native fallback.
+- **Continuous STT & Gating**: Real-time microphone capture and speech gating for natural conversational turns.
 
 ### 🏢 Multi-Role Access Control (RBAC)
-- **Candidate**: Interactive voice/coding interview rooms, real-time feedback, detailed performance scorecards, and tailored coaching insights.
+- **Candidate**: Interactive voice/coding interview rooms, real-time hints, detailed performance scorecards, and tailored coaching insights.
 - **Recruiter**: Job description parsing, rubric configuration, candidate evaluation metrics, and score overrides.
-- **SuperAdmin**: Platform analytics, organization management, recruiter provisioning, and audit logs.
+- **SuperAdmin**: Platform analytics, organization management, recruiter provisioning, impersonation mode, and audit logs.
 
 ### 🤖 Adaptive Assessment Engine
 - **Sentence Transformers Semantic Scoring**: Real-time answer evaluation across relevance, technical depth, and communication clarity.
@@ -37,15 +38,15 @@ InterviewIQ is an enterprise-grade AI technical & behavioral interview platform.
 ### Backend
 - **Framework**: FastAPI (Python 3.13, async/await)
 - **Database & ORM**: PostgreSQL with SQLAlchemy 2.0 (`asyncpg` async engine) & Alembic
-- **WebRTC & Avatars**: LiveKit (`livekit-api`, `livekit-agents`, `livekit-plugins-trugen`)
+- **WebRTC & Avatars**: LiveKit (`livekit-api`, `livekit-agents`), TruGen.AI
 - **NLP & AI**: OpenRouter AI, Groq SDK, Sentence-Transformers, PyMuPDF, Scikit-Learn
-- **Cache**: Redis / In-Memory fallback cache
+- **Authentication**: JWT & OAuth RBAC middleware
 
 ### Frontend
 - **Framework**: React 19, Vite 7, React Router v7
 - **State Management**: Redux Toolkit & React-Redux
 - **Styling & UI**: TailwindCSS v4, Motion animations, React Icons, Monaco Code Editor, Recharts
-- **LiveKit Client**: `livekit-client`, `@livekit/components-react`
+- **LiveKit Client**: `livekit-client`, `@livekit/components-react`, `@aiteammate/agent-widget`
 
 ---
 
@@ -55,7 +56,7 @@ InterviewIQ is an enterprise-grade AI technical & behavioral interview platform.
 .
 ├── client/                     # Frontend Application (React 19 + Vite 7)
 │   ├── src/
-│   │   ├── components/         # TruGenVideoInterviewer, HumanAvatar, Monaco Editor, V2Room
+│   │   ├── components/         # TruGenVideoInterviewer, TrugenWidget, Monaco Editor, V2Room
 │   │   ├── pages/              # V2Interview, Dashboard, Recruiter, SuperAdmin, MeetingRoom
 │   │   ├── redux/              # Redux Toolkit slices & store
 │   │   └── App.jsx             # Main routing and auth wrappers
@@ -68,10 +69,13 @@ InterviewIQ is an enterprise-grade AI technical & behavioral interview platform.
 │   │   ├── middleware/         # RBAC role authentication middleware
 │   │   ├── models/             # SQLAlchemy ORM models (User, V2Interview, Organization)
 │   │   ├── routes/             # API routes (v2_interview, tts, transcribe, livekit, etc.)
-│   │   └── services/           # AI services (evaluator, question_selector, avatar_service)
+│   │   └── services/           # AI services (evaluator, question_selector, avatar_service, tts)
+│   ├── data/
+│   │   └── question_bank.csv   # Comprehensive technical & behavioral interview questions
 │   ├── main.py                 # FastAPI application entry point
 │   ├── requirements.txt        # Python package dependencies
-│   └── seed_superadmin.py      # Database seed script for SuperAdmin account
+│   ├── seed_superadmin.py      # Database seed script for SuperAdmin account
+│   └── .env.example            # Environment variables template
 │
 └── avatar-service/             # Optional Wav2Lip containerized video generation service
 ```
@@ -100,22 +104,16 @@ source venv/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Create server/.env file and configure your API keys:
-# PORT=8000
-# DATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5432/interviewiq
-# JWT_SECRET=your_super_secret_jwt_key
-# OPENROUTER_API_KEY=your_openrouter_api_key
-# GROQ_API_KEY=your_groq_api_key
-# TRUGEN_API_KEY=your_trugen_api_key
-# LIVEKIT_API_KEY=your_livekit_api_key
-# LIVEKIT_API_SECRET=your_livekit_api_secret
-# LIVEKIT_URL=wss://your-project.livekit.cloud
+# Create server/.env file from template
+cp .env.example .env
+
+# Edit server/.env and configure your API keys (Database, OpenRouter, Groq, OpenAI, LiveKit)
 
 # Run migrations and seed SuperAdmin user
 python seed_superadmin.py
 
 # Start the FastAPI server
-python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+python main.py
 ```
 
 - **API Base URL**: `http://localhost:8000`
@@ -148,7 +146,7 @@ npm run dev
 | `GET` | `/api/health` | Public | System health check and RBAC status |
 | `POST` | `/api/auth/google` | Public | Google OAuth login & JWT issuance |
 | `GET` | `/api/livekit/token/{room}` | Candidate / Auth | Issue LiveKit token & trigger TruGen cloud avatar |
-| `POST` | `/api/v2/speak` | Public / Auth | Text-to-Speech audio synthesis (WAV) |
+| `POST` | `/api/v2/speak` | Public / Auth | Text-to-Speech audio synthesis (WAV with persona voices) |
 | `POST` | `/api/v2/transcribe` | Public / Auth | Groq Whisper speech-to-text transcription |
 | `POST` | `/api/v2/interview/start` | Candidate | Start dynamic AI interview session |
 | `POST` | `/api/v2/interview/submit` | Candidate | Submit candidate answer for real-time scoring |
@@ -169,7 +167,7 @@ npm run build
 
 # Verify backend routes and imports
 cd server
-python -c "import main; print('Backend modules OK')"
+./venv/bin/python -m compileall app/ main.py
 ```
 
 ---

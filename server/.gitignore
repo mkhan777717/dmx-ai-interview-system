@@ -10,6 +10,7 @@ ENV/
 *.egg-info/
 dist/
 build/
-public/
 .env
+*.env.local
 .DS_Store
+*.log

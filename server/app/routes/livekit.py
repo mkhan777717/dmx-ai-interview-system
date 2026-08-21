@@ -28,7 +28,7 @@ class TokenResponse(BaseModel):
 async def get_livekit_token(
     room_name: str,
     participant_name: str = "candidate",
-    avatar_id: Optional[str] = Query("80b9095f", description="TruGen avatar ID to join room"),
+    avatar_id: Optional[str] = Query("db56efae-05b0-4c3b-956c-914bc31e4c04", description="TruGen avatar ID to join room"),
     token: Optional[str] = Cookie(None),
 ):
     """

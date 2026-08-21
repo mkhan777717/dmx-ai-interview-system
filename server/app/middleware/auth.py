@@ -68,6 +68,37 @@ async def get_current_user_ctx(
     )
 
 
+async def get_optional_user_ctx(
+    token: Optional[str] = Cookie(None),
+    db: AsyncSession = Depends(get_db),
+) -> Optional[UserContext]:
+    """
+    Resolve JWT cookie → UserContext if present and valid, otherwise return None.
+    Allows public routes like session check to avoid raising 401.
+    """
+    if not token:
+        return None
+    payload = verify_token(token)
+    if not payload:
+        return None
+    user_id = payload.get("userId")
+    if not user_id:
+        return None
+    result = await db.execute(select(User).where(User.id == int(user_id)))
+    user: Optional[User] = result.scalar_one_or_none()
+    if not user or not user.is_active:
+        return None
+    jwt_role = payload.get("role", user.role)
+    return UserContext(
+        user_id=user.id,
+        role=jwt_role,
+        org_id=payload.get("orgId") or user.org_id,
+        email=user.email,
+        name=user.name,
+        is_active=user.is_active,
+    )
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Backward-compat shim (existing routes use get_current_user returning str)
 # ─────────────────────────────────────────────────────────────────────────────

@@ -1,14 +1,35 @@
+# Dependencies
 node_modules/
-.env
-dist/
-build/
-.DS_Store
-*.log
 venv/
-__pycache__/
-*.pyc
-.ipynb_checkpoints/
-*.csv
-*.pdf
+env/
+.venv/
+
+# Environment variables
+.env
+*.env.local
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+*.egg-info/
+
+# Operating System & IDE
+.DS_Store
 .idea/
 .vscode/
+*.swp
+*.swo
+
+# Python cache & logs
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+.ipynb_checkpoints/
+
+# Data files (whitelist question bank)
+*.csv
+!server/data/question_bank.csv
+*.pdf
+

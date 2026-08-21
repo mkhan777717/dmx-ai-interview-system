@@ -6,7 +6,7 @@ import { setUserData } from './redux/userSlice'
 
 // Pages
 import Home           from './pages/Home'
-import Auth           from './pages/auth'
+import Auth           from './pages/Auth'
 import Dashboard      from './pages/Dashboard'
 import Analytics      from './pages/Analytics'
 import InterviewHistory from './pages/InterviewHistory'
@@ -143,6 +143,8 @@ function App() {
             </RoleGuard>
           }
         />
+        {/* ── Catch-all Fallback: Default to Home Landing Page ── */}
+        <Route path='*' element={<Home />} />
       </Routes>
     </>
   )

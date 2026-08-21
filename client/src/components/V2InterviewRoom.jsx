@@ -4,8 +4,7 @@ import { FaMicrophone, FaMicrophoneSlash, FaSpinner, FaLightbulb, FaVolumeUp, Fa
 import { BsLightningFill, BsStars } from 'react-icons/bs'
 import axios from 'axios'
 import { ServerUrl } from '../App'
-import { AVATAR_PERSONAS } from './HumanAvatar'
-import TruGenVideoInterviewer from './TruGenVideoInterviewer'
+import TrugenWidget from './TrugenWidget'
 
 const MonacoEditor = lazy(() => import('@monaco-editor/react'))
 
@@ -31,7 +30,6 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
   const [micError, setMicError]               = useState('')
   const [processing, setProcessing]           = useState(false)
   const [isSpeaking, setIsSpeaking]           = useState(false)
-  const [activePersona, setActivePersona]     = useState(AVATAR_PERSONAS[0])
 
   // Hint Modal State
   const [hintModalOpen, setHintModalOpen]     = useState(false)
@@ -46,17 +44,16 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
   const streamRef    = useRef(null)
   const timerRef     = useRef(null)
   const isMicRef     = useRef(false)
-  const isSpeakRef   = useRef(false)
   const chunksRef    = useRef([])
-  const avatarRef    = useRef(null)    // VRMAvatarInterviewer ref
+  const avatarRef    = useRef(null)
 
   const currentQ = isFollowUpPhase
     ? { question: followUp, estimated_time_seconds: 60 } : questions[qIndex]
   const totalQ        = questions.length
   const isDSAQuestion = ['DSA', 'Coding', 'Code'].includes(currentQ?.category)
   const fullAnswer    = isDSAQuestion
-    ? (codeValue.trim() + (transcript.trim() ? '\n\n// Explanation:\n' + transcript.trim() : ''))
-    : transcript.trim()
+    ? (codeValue.trim() + (transcript.trim() ? '\n\n// Candidate Spoken Explanation:\n' + transcript.trim() : ''))
+    : (transcript.trim() || (codeValue.trim() ? 'Solution:\n' + codeValue.trim() : ''))
   const initTime      = currentQ?.estimated_time_seconds || 90
 
   useEffect(() => {
@@ -103,12 +100,17 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
     }
   }
 
-  // ── Mic ───────────────────────────────────────────────────────────────────
+  // ── Mic with Echo Cancellation ───────────────────────────────────────────
   const startMic = async () => {
-    if (isSpeakRef.current) return
     setMicError('')
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      })
       streamRef.current = stream
       const mime = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4']
         .find(m => MediaRecorder.isTypeSupported(m)) || ''
@@ -146,19 +148,6 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
   useEffect(() => {
     if (!currentQ?.question) return
     stopMic(); setFeedback(null); setTranscript(''); setHintModalOpen(false)
-    isSpeakRef.current = true; setIsSpeaking(true)
-    // Speak through the avatar (TruGenVideoInterviewer → /api/v2/speak WAV → LiveKit)
-    if (avatarRef.current) {
-      avatarRef.current.speak(currentQ.question).then?.(() => {
-        isSpeakRef.current = false; setIsSpeaking(false)
-      })
-      // Prefetch next question in background (no-op for LiveKit; kept for API compat)
-      const nextQ = questions[qIndex + 1]
-      if (nextQ?.question) avatarRef.current.prefetch(nextQ.question)
-    }
-    return () => {
-      avatarRef.current?.stopSpeaking()
-    }
     // eslint-disable-next-line
   }, [qIndex, isFollowUpPhase])
 
@@ -174,13 +163,20 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
 
   useEffect(() => {
     if (timeLeft === 0 && !submitting && !finishLoading && !isSpeaking) {
-      if (!fullAnswer) {
-        stopMic(); avatarRef.current?.stopSpeaking()
-        const next = qIndex + 1
-        if (next >= totalQ) { handleFinish(); return }
-        setQIndex(next); setIsFollowUpPhase(false); setFollowUp(null)
-      } else {
+      stopMic()
+
+      // If any response was transcribed or entered during the allotted time, submit it for evaluation
+      if (fullAnswer && fullAnswer.length > 0) {
         handleSubmit()
+      } else {
+        const next = qIndex + 1
+        if (next >= totalQ) {
+          handleFinish()
+          return
+        }
+        setQIndex(next)
+        setIsFollowUpPhase(false)
+        setFollowUp(null)
       }
     }
   }, [timeLeft])
@@ -188,7 +184,7 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
   // ── Submit ────────────────────────────────────────────────────────────────
   const handleSubmit = async () => {
     if (submitting || !fullAnswer) return
-    stopMic(); avatarRef.current?.stopSpeaking(); setSubmitting(true)
+    stopMic(); setSubmitting(true)
     try {
       const res = await axios.post(ServerUrl + '/api/v2/interview/submit', {
         interview_id, question_index: qIndex,
@@ -199,31 +195,28 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
       const data = res.data; setFeedback(data)
       setIntegrityFlags([])  // Clear sent flags
       
-      const proceed = () => {
-        if (data.next_action === 'finish') { handleFinish(); return }
-        if (data.next_action === 'follow_up' && data.follow_up_question) {
-          setFollowUp(data.follow_up_question); setIsFollowUpPhase(true)
-        } else {
-          const next = qIndex + 1
-          if (next >= totalQ) { handleFinish(); return }
-          setQIndex(next); setIsFollowUpPhase(false); setFollowUp(null)
-        }
+      if (data.next_action === 'finish') {
+        handleFinish()
+        return
       }
-
-      const spokenMessage = data.spoken_feedback || data.feedback
-      if (spokenMessage) {
-        isSpeakRef.current = true; setIsSpeaking(true)
-        // avatarRef.current is always set (TruGenVideoInterviewer is unconditionally rendered)
-        // Its speak() already handles fallback: /api/v2/speak WAV → browser TTS
-        avatarRef.current?.speak(spokenMessage).then?.(() => {
-          isSpeakRef.current = false; setIsSpeaking(false)
-          proceed()
-        }) ?? proceed()
+      if (data.next_action === 'follow_up' && data.follow_up_question) {
+        setFollowUp(data.follow_up_question)
+        setIsFollowUpPhase(true)
       } else {
-        proceed()
+        const next = qIndex + 1
+        if (next >= totalQ) {
+          handleFinish()
+          return
+        }
+        setQIndex(next)
+        setIsFollowUpPhase(false)
+        setFollowUp(null)
       }
-    } catch (e) { console.error(e) }
-    finally { setSubmitting(false) }
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const handleFinish = async () => {
@@ -290,21 +283,10 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
         {/* LEFT COLUMN: Main Interview Interface */}
         <div className="lg:col-span-8 flex flex-col gap-6">
           
-          {/* TruGen Real-Time Avatar via LiveKit */}
-          <TruGenVideoInterviewer
-            ref={avatarRef}
-            sessionData={sessionData}
-            persona={activePersona}
-            showCaption={true}
-            onStateChange={(state) => {
-              setIsSpeaking(state === 'speaking')
-              if (state === 'idle' && isSpeakRef.current) {
-                isSpeakRef.current = false
-              }
-            }}
-            onError={(err) => console.warn('Avatar 3D error (fallback active):', err)}
-            style={{ width: '100%', height: 420, borderRadius: 16, overflow: 'hidden' }}
-          />
+          {/* TruGen Official Cloud Avatar Widget */}
+          <div className="relative rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-slate-800 bg-[#0d1117] min-h-[460px] flex items-center justify-center">
+            <TrugenWidget agentId="db56efae-05b0-4c3b-956c-914bc31e4c04" inline={true} />
+          </div>
 
           {/* Question Card */}
           <div className="bg-white dark:bg-[#131c2e] rounded-2xl p-6 border border-gray-200 dark:border-slate-800 shadow-sm transition-colors duration-300">
@@ -467,7 +449,7 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
                 {submitting ? <><FaSpinner className="animate-spin" /> Evaluating...</> :
                  finishLoading ? <><FaSpinner className="animate-spin" /> Finishing...</> :
                  isSpeaking ? 'AI Speaking...' :
-                 'Submit Answer'}
+                 (qIndex === totalQ - 1 && !isFollowUpPhase ? 'Finish & Submit Interview' : 'Submit & Next Question')}
               </button>
             </div>
 

@@ -2,19 +2,22 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
+from typing import Optional
 from app.models.user import UserResponse, User, UserContext
 from app.config.database import get_db
-from app.middleware.auth import get_current_user_ctx
+from app.middleware.auth import get_current_user_ctx, get_optional_user_ctx
 
 router = APIRouter()
 
 
-@router.get("/current-user", response_model=UserResponse)
-async def get_current_user_info(ctx: UserContext = Depends(get_current_user_ctx)):
+@router.get("/current-user", response_model=Optional[UserResponse])
+async def get_current_user_info(ctx: Optional[UserContext] = Depends(get_optional_user_ctx)):
     """
     Get current authenticated user info.
-    Returns role and org_id so the frontend can render the appropriate dashboard.
+    Returns 200 with null when not logged in to eliminate console 401 error noise on initial page load.
     """
+    if not ctx:
+        return None
     return UserResponse(
         id=ctx.user_id,
         name=ctx.name,

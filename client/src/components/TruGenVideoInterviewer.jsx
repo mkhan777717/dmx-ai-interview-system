@@ -53,7 +53,7 @@ const TruGenVideoInterviewer = forwardRef(function TruGenVideoInterviewer(
   // ── Fetch LiveKit room token on mount ────────────────────────────────────
   useEffect(() => {
     const roomName = sessionData?.interview_id || 'default_room';
-    const avatarId = persona?.trugenAvatarId || '80b9095f';
+    const avatarId = persona?.trugenAvatarId || 'db56efae-05b0-4c3b-956c-914bc31e4c04';
     const fetchToken = async () => {
       try {
         const res = await fetch(`${ServerUrl}/api/livekit/token/${roomName}?avatar_id=${avatarId}`, {
@@ -99,7 +99,12 @@ const TruGenVideoInterviewer = forwardRef(function TruGenVideoInterviewer(
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ text }),
+          body: JSON.stringify({
+            text,
+            persona: persona?.id,
+            gender: persona?.gender,
+            voicePitch: persona?.voicePitch,
+          }),
         });
 
         if (!res.ok) throw new Error(`/api/v2/speak returned ${res.status}`);
@@ -154,7 +159,7 @@ const TruGenVideoInterviewer = forwardRef(function TruGenVideoInterviewer(
   }
 
   /**
-   * Last-resort fallback: browser Web Speech API.
+   * Last-resort fallback: browser Web Speech API with gender matching.
    * Returns a Promise that resolves when speech ends.
    */
   function _browserTTSFallback(text) {
@@ -163,18 +168,27 @@ const TruGenVideoInterviewer = forwardRef(function TruGenVideoInterviewer(
       window.speechSynthesis.cancel();
       const u  = new SpeechSynthesisUtterance(text);
       u.lang   = 'en-US';
-      u.rate   = 0.9;
+      u.rate   = 0.95;
+      u.pitch  = persona?.voicePitch || (persona?.gender === 'female' ? 1.1 : 0.9);
       u.onend  = resolve;
       u.onerror = resolve;
+
       const go = () => {
         const voices = window.speechSynthesis.getVoices();
-        const voice  = voices.find(v => v.name === 'Google US English')
-                    || voices.find(v => v.name === 'Samantha')
-                    || voices.find(v => v.lang === 'en-US')
-                    || null;
-        if (voice) u.voice = voice;
+        let matchedVoice = null;
+
+        if (persona?.gender === 'female') {
+          matchedVoice = voices.find(v => /samantha|victoria|karen|zira|female/i.test(v.name))
+                      || voices.find(v => v.lang === 'en-US');
+        } else {
+          matchedVoice = voices.find(v => /alex|daniel|fred|david|male/i.test(v.name))
+                      || voices.find(v => v.lang === 'en-US');
+        }
+
+        if (matchedVoice) u.voice = matchedVoice;
         window.speechSynthesis.speak(u);
       };
+
       window.speechSynthesis.getVoices().length > 0
         ? go()
         : (window.speechSynthesis.onvoiceschanged = () => {

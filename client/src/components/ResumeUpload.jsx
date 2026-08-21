@@ -407,7 +407,7 @@ function ResumeUpload({ onStart, onResumeParsed }) {
                 <div className="bg-blue-50 rounded-xl p-3.5 border border-blue-100 flex gap-2.5">
                   <FaLightbulb className="text-blue-500 shrink-0 mt-0.5" size={13} />
                   <p className="text-xs text-blue-900 leading-relaxed">
-                    Questions will be customized for <strong>{interviewMode}</strong> mode based on your skills in {resumeData.skills?.[0] || 'core topics'}.
+                    Questions will be customized for <strong>{interviewMode}</strong> mode based on your skills.
                   </p>
                 </div>
               </div>

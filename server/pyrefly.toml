@@ -1,1 +1,4 @@
 python_interpreter = "venv/bin/python3"
+
+[tool.pyrefly]
+python_interpreter = "venv/bin/python3"

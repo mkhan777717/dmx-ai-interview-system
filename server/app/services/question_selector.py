@@ -215,25 +215,62 @@ def select_questions(
                     selected_ids.add(row["id"])
                     added += 1
 
-    # ── Select questions ──────────────────────────────────────────────────────
-    behav_pool = df[df["category"] == "Behavioral"].copy()
+    # ── Select questions with strict domain boundaries ────────────────────────
+    mode_normalized = (interview_mode or "Technical").strip().lower()
 
-    if interview_mode == "HR":
+    if mode_normalized in ["hr", "behavioral", "hr & behavioral", "hr_behavioral"]:
+        # 100% Behavioral & HR questions (Strictly NO coding or technical questions)
+        behav_pool = df[df["category"] == "Behavioral"].copy()
+        if behav_pool.empty:
+            behav_pool = df.copy()
         pick_questions(behav_pool, n)
+
+    elif mode_normalized in ["system design", "system_design", "architecture", "system architecture"]:
+        # 100% System Design & Distributed Architecture questions
+        sys_design_mask = (
+            (df["category"] == "System Design")
+            | (df["topic"] == "System Design")
+            | (df["topic"] == "System Architecture")
+            | (df["topic"] == "Infrastructure")
+            | (df["topic"] == "Database Architecture")
+        ) & (df["category"] != "Behavioral")
+        sys_pool = df[sys_design_mask].copy()
+        if len(sys_pool) < n:
+            sys_pool = df[df["category"] != "Behavioral"].copy()
+        pick_questions(sys_pool, n)
+
+    elif mode_normalized in ["data science", "data_science", "machine learning", "ml", "ai engineer"]:
+        # 100% Data Science & ML questions
+        ds_mask = (
+            (df["category"] == "Data Science")
+            | (df["topic"].isin(["ML Fundamentals", "Deep Learning", "ML Algorithms", "ML Evaluation", "Data Analysis", "Data Architecture"]))
+        ) & (df["category"] != "Behavioral")
+        ds_pool = df[ds_mask].copy()
+        if len(ds_pool) < n:
+            ds_pool = df[df["category"] != "Behavioral"].copy()
+        pick_questions(ds_pool, n)
+
     else:
-        # Technical mode: 2 behavioral warm-ups + 3 technical
-        pick_questions(behav_pool, 2)
-
+        # Technical mode: 100% Technical & DSA questions (Strictly NO behavioral questions)
         role_mask2 = df["role_list"].apply(lambda rl: _role_matches(rl, predicted_role))
-        tech_pool = df[role_mask2 & (df["category"] != "Behavioral")].copy()
-        if len(tech_pool) < 3:
-            tech_pool = df[df["category"] != "Behavioral"].copy()
+        tech_pool = df[role_mask2 & (df["category"] != "Behavioral") & (df["topic"] != "Behavioral")].copy()
+        if len(tech_pool) < n:
+            tech_pool = df[(df["category"] != "Behavioral") & (df["topic"] != "Behavioral")].copy()
 
-        for difficulty, count in [("Easy", 1), ("Medium", 1), ("Hard", 1)]:
+        # Distribute across difficulties: Easy -> Medium -> Hard
+        easy_count = max(1, n // 3)
+        hard_count = max(1, n // 3)
+        med_count = max(1, n - easy_count - hard_count)
+
+        for difficulty, count in [("Easy", easy_count), ("Medium", med_count), ("Hard", hard_count)]:
             diff_pool = tech_pool[tech_pool["difficulty"] == difficulty].copy()
             if diff_pool.empty:
                 diff_pool = tech_pool.copy()
             pick_questions(diff_pool, count)
+
+        # If still needed, fill from tech pool
+        if len(selected) < n:
+            pick_questions(tech_pool, n - len(selected))
 
     return [_format_question(row) for row in selected]
 

@@ -111,7 +111,7 @@ def get_room_token(
 
 async def start_trugen_avatar_session(
     room_name: str,
-    avatar_id: str = "80b9095f",
+    avatar_id: str = "db56efae-05b0-4c3b-956c-914bc31e4c04",
 ) -> bool:
     """
     Triggers the TruGen.AI cloud avatar to join the LiveKit room.

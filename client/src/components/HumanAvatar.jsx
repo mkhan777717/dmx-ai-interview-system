@@ -12,7 +12,7 @@ export const AVATAR_PERSONAS = [
     company: 'InterviewIQ AI',
     gender: 'male',
     voicePitch: 0.95,
-    trugenAvatarId: '03ae0187',
+    trugenAvatarId: 'db56efae-05b0-4c3b-956c-914bc31e4c04',
     avatarUrl: 'https://assets.trugen.ai/images/avatarImages/mike-wide.jpg',
     idleVideoUrl: 'https://assets.trugen.ai/videos/avatar-videos/mike_wide.mp4',
     avatarFallback: 'https://ui-avatars.com/api/?name=Alex+Vance&background=064e3b&color=10b981&size=400',
