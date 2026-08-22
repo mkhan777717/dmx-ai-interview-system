@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { FaMicrophone, FaMicrophoneSlash, FaSpinner, FaLightbulb, FaVolumeUp, FaTimes, FaStepForward, FaCode } from 'react-icons/fa'
-import { BsLightningFill, BsStars } from 'react-icons/bs'
+import { FaMicrophone, FaMicrophoneSlash, FaSpinner, FaLightbulb, FaVolumeUp, FaTimes, FaStepForward, FaCode, FaChartLine, FaCheckCircle, FaTrophy } from 'react-icons/fa'
+import { BsLightningFill, BsStars, BsShieldCheck, BsGraphUp } from 'react-icons/bs'
 import axios from 'axios'
 import { ServerUrl } from '../App'
 import TrugenWidget from './TrugenWidget'
@@ -30,6 +30,19 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
   const [micError, setMicError]               = useState('')
   const [processing, setProcessing]           = useState(false)
   const [isSpeaking, setIsSpeaking]           = useState(false)
+
+  // ── Live Scoring & Evaluation Tracking ─────────────────────────────────────
+  const [liveScore, setLiveScore]             = useState(null)
+  const [questionScores, setQuestionScores]   = useState({})
+  const [subscores, setSubscores]             = useState({ technical: null, concept: null, communication: null })
+
+  // ── Local answer storage — persists all Q&A pairs for report display ───────
+  const [localAnswers, setLocalAnswers]       = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(`interviewiq_session_${interview_id}`)
+      return saved ? JSON.parse(saved) : []
+    } catch { return [] }
+  })
 
   // Hint Modal State
   const [hintModalOpen, setHintModalOpen]     = useState(false)
@@ -194,7 +207,43 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
       }, { withCredentials: true })
       const data = res.data; setFeedback(data)
       setIntegrityFlags([])  // Clear sent flags
-      
+
+      // ── Update Live Running Score & Breakdown ─────────────────────────────
+      const newScore = data.running_avg_score ?? data.final_score
+      if (newScore != null) setLiveScore(newScore)
+      setQuestionScores(prev => ({ ...prev, [qIndex]: data }))
+      setSubscores({
+        technical: data.technical_score ?? (data.semantic_score != null ? data.semantic_score * 10 : null),
+        concept: data.concept_score != null ? data.concept_score * 10 : null,
+        communication: data.communication_score != null ? data.communication_score * 10 : null,
+      })
+
+      // ── Store this answer locally for report display ──────────────────────
+      const entry = {
+        questionIndex: isFollowUpPhase ? `${qIndex}-followup` : qIndex,
+        question: currentQ?.question || '',
+        category: currentQ?.category || '',
+        difficulty: currentQ?.difficulty || '',
+        answer: fullAnswer,
+        isFollowUp: isFollowUpPhase,
+        timeTaken: initTime - timeLeft,
+        score: data.final_score ?? null,
+        feedback: data.feedback ?? '',
+        justification: data.justification ?? '',
+        confidence: data.confidence ?? null,
+        coveredConcepts: data.covered_concepts ?? [],
+        missingConcepts: data.missing_concepts ?? [],
+        timestamp: new Date().toISOString(),
+      }
+      setLocalAnswers(prev => {
+        const updated = [...prev, entry]
+        try {
+          sessionStorage.setItem(`interviewiq_session_${interview_id}`, JSON.stringify(updated))
+        } catch { /* quota exceeded — non-fatal */ }
+        return updated
+      })
+      // ─────────────────────────────────────────────────────────────────────
+
       if (data.next_action === 'finish') {
         handleFinish()
         return
@@ -226,7 +275,14 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
         interview_id,
         integrity_flags: integrityFlags,
       }, { withCredentials: true })
-      onFinish(res.data)
+      // Merge locally-stored answers into report so V2Report can show them
+      const latestAnswers = (() => {
+        try {
+          const saved = sessionStorage.getItem(`interviewiq_session_${interview_id}`)
+          return saved ? JSON.parse(saved) : localAnswers
+        } catch { return localAnswers }
+      })()
+      onFinish({ ...res.data, localAnswers: latestAnswers })
     } catch (e) { console.error(e); setFinishLoading(false) }
   }
 
@@ -285,7 +341,14 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
           
           {/* TruGen Official Cloud Avatar Widget */}
           <div className="relative rounded-3xl overflow-hidden shadow-xl border border-slate-700/50 bg-[#090d16] min-h-[460px] flex items-center justify-center">
-            <TrugenWidget agentId="db56efae-05b0-4c3b-956c-914bc31e4c04" inline={true} />
+            <TrugenWidget
+              agentId="db56efae-05b0-4c3b-956c-914bc31e4c04"
+              inline={true}
+              avatarRef={avatarRef}
+              isSpeaking={isSpeaking}
+              isListening={micOn}
+              isThinking={processing}
+            />
           </div>
 
           {/* Question Card */}
@@ -488,10 +551,91 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
         {/* RIGHT COLUMN: Sidebar Info */}
         <div className="lg:col-span-4 flex flex-col gap-6">
           
-          {/* Interview Timeline */}
+          {/* ── LIVE SCORECARD & PERFORMANCE GAUGE ── */}
+          <div className="glass-card-static rounded-3xl p-6 border border-cyan-500/25 relative overflow-hidden">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <FaChartLine className="text-cyan-400" size={15} />
+                <h3 className="text-white font-bold text-sm font-['Outfit']">Live Performance Score</h3>
+              </div>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/5 text-slate-400 border border-white/10">
+                {Object.keys(questionScores).length} of {totalQ} evaluated
+              </span>
+            </div>
+
+            {liveScore != null ? (
+              <div className="space-y-4">
+                {/* Score Number + Status */}
+                <div className="flex items-end justify-between">
+                  <div>
+                    <div className="flex items-baseline gap-1">
+                      <span className={`text-3xl md:text-4xl font-extrabold font-['Outfit'] ${
+                        liveScore >= 8.0 ? 'text-cyan-300' : liveScore >= 6.5 ? 'text-indigo-300' : liveScore >= 5.0 ? 'text-amber-300' : 'text-rose-300'
+                      }`}>
+                        {liveScore.toFixed(1)}
+                      </span>
+                      <span className="text-sm font-bold text-slate-400">/ 10</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Current Cumulative Rating</p>
+                  </div>
+
+                  <span className={`px-3 py-1 rounded-full text-[11px] font-extrabold border ${
+                    liveScore >= 8.0
+                      ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30'
+                      : liveScore >= 6.5
+                      ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30'
+                      : liveScore >= 5.0
+                      ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                      : 'bg-rose-500/15 text-rose-300 border-rose-500/30'
+                  }`}>
+                    {liveScore >= 8.0 ? '✦ Strong Hire' : liveScore >= 6.5 ? '✦ Hire Track' : liveScore >= 5.0 ? '✦ Borderline' : '✦ Developing'}
+                  </span>
+                </div>
+
+                {/* Linear Score Meter */}
+                <div className="h-2 bg-white/8 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-700 ${
+                      liveScore >= 8.0 ? 'bg-gradient-to-r from-cyan-400 to-emerald-400' : liveScore >= 6.5 ? 'bg-gradient-to-r from-indigo-400 to-cyan-400' : liveScore >= 5.0 ? 'bg-amber-400' : 'bg-rose-400'
+                    }`}
+                    style={{ width: `${Math.min(100, Math.max(5, (liveScore / 10) * 100))}%` }}
+                  />
+                </div>
+
+                {/* Sub-Score Breakdown Meters */}
+                <div className="pt-2 border-t border-white/8 space-y-2 text-xs">
+                  {subscores.technical != null && (
+                    <div className="flex items-center justify-between text-slate-300">
+                      <span className="text-[11px] text-slate-400">Technical Depth</span>
+                      <span className="font-bold text-cyan-300 font-mono">{(subscores.technical).toFixed(1)}/10</span>
+                    </div>
+                  )}
+                  {subscores.concept != null && (
+                    <div className="flex items-center justify-between text-slate-300">
+                      <span className="text-[11px] text-slate-400">Concept Coverage</span>
+                      <span className="font-bold text-indigo-300 font-mono">{(subscores.concept).toFixed(1)}/10</span>
+                    </div>
+                  )}
+                  {subscores.communication != null && (
+                    <div className="flex items-center justify-between text-slate-300">
+                      <span className="text-[11px] text-slate-400">Communication Quality</span>
+                      <span className="font-bold text-emerald-300 font-mono">{(subscores.communication).toFixed(1)}/10</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-4 text-slate-400 text-xs">
+                <p className="font-semibold text-slate-300">Scoring Engine Ready</p>
+                <p className="text-[11px] text-slate-500 mt-1">Submit your first answer to start live evaluation.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Interview Timeline with Live Score Badges */}
           <div className="glass-card-static rounded-3xl p-6">
             <h3 className="text-white font-bold text-base mb-5 font-['Outfit']">Interview Timeline</h3>
-            <div className="space-y-5 relative before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/10 before:to-transparent">
+            <div className="space-y-4 relative before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/10 before:to-transparent">
               
               <div className="relative flex items-start gap-3.5">
                 <div className="w-6 h-6 rounded-full bg-cyan-500 text-slate-950 flex items-center justify-center font-bold text-xs shadow-xs z-10 shrink-0 mt-0.5"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"/></svg></div>
@@ -504,26 +648,41 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
               <div className="relative flex items-start gap-3.5">
                 <div className="w-6 h-6 rounded-full bg-cyan-500 text-slate-950 flex items-center justify-center font-bold text-xs shadow-xs z-10 shrink-0 mt-0.5"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"/></svg></div>
                 <div>
-                  <p className="text-xs font-bold text-white leading-tight">Role Detected</p>
+                  <p className="text-xs font-bold text-white leading-tight">Role Calibrated</p>
                   <p className="text-[10px] text-cyan-400 font-semibold mt-0.5">Completed</p>
                 </div>
               </div>
 
-              {questions.map((_, i) => (
-                <div key={i} className="relative flex items-start gap-3.5">
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center shadow-xs z-10 shrink-0 mt-0.5 ${
-                    i < qIndex ? 'bg-cyan-500 text-slate-950 font-bold' : i === qIndex ? 'bg-cyan-500/20 border-2 border-cyan-400 text-cyan-300 ring-2 ring-cyan-500/20' : 'glass-pill border border-white/10'
-                  }`}>
-                    {i < qIndex && <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"/></svg>}
+              {questions.map((q, i) => {
+                const qEval = questionScores[i]
+                const qScore = qEval?.final_score
+                return (
+                  <div key={i} className="relative flex items-start gap-3.5">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center shadow-xs z-10 shrink-0 mt-0.5 ${
+                      i < qIndex ? 'bg-cyan-500 text-slate-950 font-bold' : i === qIndex ? 'bg-cyan-500/20 border-2 border-cyan-400 text-cyan-300 ring-2 ring-cyan-500/20' : 'glass-pill border border-white/10'
+                    }`}>
+                      {i < qIndex && <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"/></svg>}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <p className={`text-xs leading-tight truncate ${i === qIndex ? 'font-bold text-cyan-300' : i < qIndex ? 'font-bold text-slate-300' : 'font-medium text-slate-500'}`}>
+                          Question {i+1}
+                        </p>
+                        {qScore != null && (
+                          <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${
+                            qScore >= 7.5 ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25' : qScore >= 5.0 ? 'bg-amber-500/15 text-amber-300 border-amber-500/25' : 'bg-rose-500/15 text-rose-300 border-rose-500/25'
+                          }`}>
+                            {qScore.toFixed(1)}/10
+                          </span>
+                        )}
+                      </div>
+                      <p className={`text-[10px] mt-0.5 ${i === qIndex ? 'text-cyan-400 font-bold' : 'text-slate-500'}`}>
+                        {i < qIndex ? 'Evaluated' : i === qIndex ? 'In Progress' : 'Pending'}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className={`text-xs leading-tight ${i === qIndex ? 'font-bold text-cyan-300' : i < qIndex ? 'font-bold text-slate-300' : 'font-medium text-slate-500'}`}>Question {i+1}</p>
-                    <p className={`text-[10px] mt-0.5 ${i === qIndex ? 'text-cyan-400 font-bold' : 'text-slate-500'}`}>
-                      {i < qIndex ? 'Completed' : i === qIndex ? 'In Progress' : 'Pending'}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
               
               <div className="relative flex items-start gap-3.5">
                 <div className="w-6 h-6 rounded-full glass-pill border border-white/10 shadow-xs z-10 shrink-0 mt-0.5"></div>
@@ -541,9 +700,14 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
               className="glass-card-static rounded-3xl p-6 border-cyan-500/30"
             >
-              <h3 className="text-cyan-300 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 mb-2">
-                <BsStars className="text-cyan-400" /> AI Instant Evaluation
-              </h3>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-cyan-300 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
+                  <BsStars className="text-cyan-400" /> AI Instant Evaluation
+                </h3>
+                <span className="font-extrabold text-cyan-300 text-xs px-2.5 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/30">
+                  {(feedback.final_score).toFixed(1)} / 10
+                </span>
+              </div>
               <p className="text-xs text-slate-300 leading-relaxed">{feedback.feedback}</p>
 
               {/* Justification quote */}
@@ -553,12 +717,33 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
                 </p>
               )}
 
-              <div className="mt-3 pt-3 border-t border-white/8 flex justify-between items-center text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="text-slate-400 font-medium">Score:</span>
-                  <span className="font-bold text-cyan-300">{(feedback.final_score).toFixed(1)} / 10</span>
+              {/* Covered & Missing Concepts Pills */}
+              {((feedback.covered_concepts && feedback.covered_concepts.length > 0) || (feedback.missing_concepts && feedback.missing_concepts.length > 0)) && (
+                <div className="mt-3 pt-3 border-t border-white/8 space-y-1.5">
+                  {feedback.covered_concepts && feedback.covered_concepts.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 items-center">
+                      <span className="text-[10px] text-slate-400 font-bold">Covered:</span>
+                      {feedback.covered_concepts.slice(0, 3).map((c, idx) => (
+                        <span key={idx} className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">
+                          ✓ {c}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {feedback.missing_concepts && feedback.missing_concepts.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 items-center">
+                      <span className="text-[10px] text-slate-400 font-bold">Gaps:</span>
+                      {feedback.missing_concepts.slice(0, 2).map((c, idx) => (
+                        <span key={idx} className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/25">
+                          ⚠ {c}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                {/* Confidence badge */}
+              )}
+
+              <div className="mt-3 pt-2.5 border-t border-white/8 flex justify-between items-center text-xs">
                 {feedback.confidence !== undefined && (
                   <span
                     title="Evaluation confidence"
@@ -571,6 +756,11 @@ function V2InterviewRoom({ sessionData, onFinish, onProgressUpdate }) {
                     }`}
                   >
                     {Math.round(feedback.confidence * 100)}% confidence
+                  </span>
+                )}
+                {feedback.technical_score != null && (
+                  <span className="text-[10px] text-slate-400">
+                    Tech: <strong className="text-cyan-300 font-mono">{(feedback.technical_score).toFixed(1)}</strong>
                   </span>
                 )}
               </div>

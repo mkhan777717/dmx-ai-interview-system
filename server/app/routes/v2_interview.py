@@ -26,7 +26,7 @@ from app.models.v2_interview import (
 from app.services.resume_parser import parse_resume
 from app.services.jd_parser import parse_jd
 from app.services.question_selector import select_questions, get_harder_question, get_easier_question
-from app.services.evaluator import evaluate_answer, generate_llm_feedback
+from app.services.evaluator import evaluate_answer, evaluate_answer_advanced, generate_llm_feedback
 from app.services.rubric_service import resolve_rubric, list_rubrics
 from app.services.interview_agent import (
     decide_next_action, get_hiring_recommendation,
@@ -74,8 +74,43 @@ async def get_rubrics():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# GET /api/v2/interview/history
+# GET /api/v2/stats  — PUBLIC — real-time platform counters for landing page
 # ─────────────────────────────────────────────────────────────────────────────
+@router.get("/stats")
+async def get_platform_stats(db: AsyncSession = Depends(get_db)):
+    """No auth — live counts for the public landing page."""
+    try:
+        from app.models.user import User as UserModel
+
+        total_interviews_result = await db.execute(select(sqlfunc.count()).select_from(V2Interview))
+        total_interviews = total_interviews_result.scalar() or 0
+
+        total_users_result = await db.execute(select(sqlfunc.count()).select_from(UserModel))
+        total_users = total_users_result.scalar() or 0
+
+        completed_q = select(V2Interview).where(V2Interview.status == "completed")
+        completed_result = await db.execute(completed_q)
+        completed = completed_result.scalars().all()
+
+        avg_score = 0.0
+        if completed:
+            scores = [float(getattr(i, "final_score", 0) or 0) for i in completed]
+            avg_score = round(sum(scores) / len(scores), 1)
+
+        roles_covered = len({i.predicted_role for i in completed if i.predicted_role})
+
+        return {
+            "total_interviews": total_interviews,
+            "total_users": total_users,
+            "avg_score": avg_score,
+            "roles_covered": roles_covered,
+            "total_completed": len(completed),
+        }
+    except Exception as e:
+        # Never break the landing page
+        return {"total_interviews": 0, "total_users": 0, "avg_score": 0.0, "roles_covered": 0, "total_completed": 0}
+
+
 @router.get("/interview/history")
 async def get_interview_history(
     user_id: str = Depends(get_current_user),
@@ -92,13 +127,18 @@ async def get_interview_history(
 
         return [
             {
+                "id": i.id,
                 "_id": str(i.id),
                 "role": i.predicted_role,
+                "predicted_role": i.predicted_role,
                 "mode": i.interview_mode or "Technical",
+                "interview_mode": i.interview_mode or "Technical",
                 "experience": "N/A",
                 "finalScore": i.final_score,
+                "final_score": i.final_score,
                 "status": i.status,
                 "createdAt": i.created_at,
+                "created_at": i.created_at,
                 "rubric_id": i.rubric_id,
                 "percentile": i.percentile,
                 "integrity_flags": i.integrity_flags or [],
@@ -166,15 +206,16 @@ async def start_interview(
         merged_skills = list(set(body.skills + body.jd_skills))
 
         # ── Resolve rubric ────────────────────────────────────────────────────
+        role_str = str(body.jd_role or body.predicted_role or "Software Engineer")
         rubric = resolve_rubric(
             interview_mode=body.interview_mode,
-            predicted_role=body.jd_role or body.predicted_role,
+            predicted_role=role_str,
             rubric_id=body.rubric_id,
         )
 
         # ── Select questions ──────────────────────────────────────────────────
         questions = select_questions(
-            predicted_role=body.jd_role or body.predicted_role,
+            predicted_role=role_str,
             skills=merged_skills,
             interview_mode=body.interview_mode,
         )
@@ -328,36 +369,33 @@ async def submit_answer(
         )
         weights = rubric.get("weights", {"semantic": 0.50, "concept": 0.35, "keyword": 0.15})
 
-        # ── Evaluate answer ───────────────────────────────────────────────────
-        eval_result = evaluate_answer(
+        # ── Advanced Multi-Stage Evaluation (LLM + Calibrated Embeddings) ──
+        eval_result = await evaluate_answer_advanced(
             candidate_answer=body.answer,
-            reference_answer=current_q["reference_answer"],
+            question=current_q.get("question", ""),
+            reference_answer=current_q.get("reference_answer", ""),
             evaluation_points=current_q.get("evaluation_points", []),
             keywords=current_q.get("keywords", []),
             weights=weights,
+            category=current_q.get("category", "Technical"),
+            difficulty=current_q.get("difficulty", "Medium"),
+            expected_time_seconds=current_q.get("estimated_time_seconds", 90),
         )
-
-        # ── LLM feedback (attempt with timeout, fall back to template) ────────
-        try:
-            llm_fb = await asyncio.wait_for(
-                generate_llm_feedback(
-                    question=current_q["question"],
-                    candidate_answer=body.answer,
-                    score=eval_result["final_score"],
-                    missing_concepts=eval_result["missing_concepts"],
-                ),
-                timeout=8.0,
-            )
-            if llm_fb:
-                eval_result["feedback"] = llm_fb
-        except (asyncio.TimeoutError, Exception):
-            pass  # Keep template feedback
 
         # ── Accumulate integrity flags ────────────────────────────────────────
         existing_flags = list(cast(list, interview.integrity_flags or []))
         if body.integrity_flags:
             existing_flags.extend(body.integrity_flags)
             interview.integrity_flags = existing_flags
+
+        # ── Calculate Running Cumulative Session Score ────────────────────────
+        prev_scores_res = await db.execute(
+            select(V2Answer.final_score).where(V2Answer.interview_id == body.interview_id)
+        )
+        past_scores = [r[0] for r in prev_scores_res.fetchall() if r[0] is not None]
+        all_scores_so_far = past_scores + [eval_result["final_score"]]
+        running_avg_score = round(sum(all_scores_so_far) / len(all_scores_so_far), 1) if all_scores_so_far else eval_result["final_score"]
+        interview.final_score = running_avg_score
 
         # ── Handle follow-up submission ───────────────────────────────────────
         if body.is_follow_up:
@@ -383,6 +421,9 @@ async def submit_answer(
                 semantic_score=eval_result["semantic_score"],
                 concept_score=eval_result["concept_score"],
                 keyword_score=eval_result["keyword_score"],
+                technical_score=eval_result.get("technical_score", eval_result["final_score"]),
+                communication_score=eval_result.get("communication_score", 0.7),
+                running_avg_score=running_avg_score,
                 covered_concepts=eval_result["covered_concepts"],
                 missing_concepts=eval_result["missing_concepts"],
                 feedback=eval_result["feedback"],
@@ -502,7 +543,7 @@ async def submit_answer(
 
         await _write_audit(
             db, int(user_id), "answer.submitted",
-            "V2Answer", answer_row.id,
+            "V2Answer", int(cast(Any, answer_row.id)),
             {
                 "interview_id": cast(int, interview.id),
                 "question_index": q_index,
@@ -522,6 +563,9 @@ async def submit_answer(
             semantic_score=eval_result["semantic_score"],
             concept_score=eval_result["concept_score"],
             keyword_score=eval_result["keyword_score"],
+            technical_score=eval_result.get("technical_score", eval_result["final_score"]),
+            communication_score=eval_result.get("communication_score", 0.7),
+            running_avg_score=running_avg_score,
             covered_concepts=eval_result["covered_concepts"],
             missing_concepts=eval_result["missing_concepts"],
             feedback=eval_result["feedback"],
@@ -647,7 +691,7 @@ async def finish_interview(
 
         # Compute average communication score
         comm_scores = [
-            float(a.get("communication_score", 0) or 0)
+            float(cast(float, a.get("communication_score") or 0.0))
             for a in answers_data
             if a.get("communication_score") is not None
         ]
@@ -656,7 +700,7 @@ async def finish_interview(
         # AI detection summary
         ai_flagged_count = sum(
             1 for a in answers_data
-            if float(a.get("ai_detection_score") or 0) > 0.5
+            if float(cast(float, a.get("ai_detection_score") or 0.0)) > 0.5
         )
 
         report = {

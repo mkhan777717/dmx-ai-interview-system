@@ -1,28 +1,49 @@
-import React, { createContext, useContext } from 'react'
-
-// ── Aggressively purge dark class from root immediately (before React renders) ──
-// This runs at module load time, not after hydration — prevents flash of dark UI.
-;(function purgeDarkMode() {
-  try {
-    const root = document.documentElement
-    root.classList.remove('dark')
-    root.style.colorScheme = 'light'
-    localStorage.removeItem('app-theme')
-    localStorage.removeItem('theme')
-    localStorage.setItem('app-theme', 'light')
-  } catch {}
-})()
+import React, { createContext, useContext, useEffect, useState } from 'react'
 
 const ThemeContext = createContext({
-  theme: 'light',
-  isDark: false,
-  toggleTheme: () => {},
+  theme: 'dark',
   setTheme: () => {},
+  toggleTheme: () => {},
 })
 
 export function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState(() => {
+    try {
+      const saved = localStorage.getItem('app-theme')
+      if (saved === 'light' || saved === 'dark') return saved
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        return 'light'
+      }
+    } catch {
+      // Fallback
+    }
+    return 'dark'
+  })
+
+  useEffect(() => {
+    const root = document.documentElement
+    if (theme === 'dark') {
+      root.classList.add('dark')
+      root.classList.remove('light')
+      root.style.colorScheme = 'dark'
+    } else {
+      root.classList.add('light')
+      root.classList.remove('dark')
+      root.style.colorScheme = 'light'
+    }
+    try {
+      localStorage.setItem('app-theme', theme)
+    } catch {
+      // Fallback
+    }
+  }, [theme])
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'))
+  }
+
   return (
-    <ThemeContext.Provider value={{ theme: 'light', isDark: false, toggleTheme: () => {}, setTheme: () => {} }}>
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   )
@@ -30,9 +51,4 @@ export function ThemeProvider({ children }) {
 
 export function useTheme() {
   return useContext(ThemeContext)
-}
-
-// No-op toggle — light mode is permanent
-export function ThemeToggle() {
-  return null
 }

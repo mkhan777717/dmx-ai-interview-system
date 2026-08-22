@@ -61,7 +61,7 @@ export default function SuperAdminDashboard() {
         setPlatformStats(r.data)
       } else if (tab === 'Organizations') {
         const r = await apiGet('/api/superadmin/orgs')
-        setOrgs(r.data.organizations || [])
+        setOrgs(r.data.organizations || r.data.orgs || [])
       } else if (tab === 'All Users') {
         const r = await apiGet('/api/superadmin/users', {
           role: userRoleFilter || undefined,

@@ -1,55 +1,50 @@
 import React, { useState } from 'react'
-import Navbar from '../components/Navbar'
+import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { motion } from 'motion/react'
-import { useNavigate } from 'react-router-dom'
+import Navbar from '../components/Navbar'
 import AuthModel from '../components/AuthModel'
-import {
-  BsStars, BsPlayFill, BsCheckCircleFill, BsLightningChargeFill,
-  BsShieldCheck, BsArrowRight, BsGraphUpArrow, BsCpu, BsBriefcase,
-  BsPersonWorkspace, BsAwardFill, BsChatQuote, BsCheckLg,
-} from 'react-icons/bs'
-import { HiArrowUpRight, HiSparkles, HiCheck, HiXMark } from 'react-icons/hi2'
-import { FaGraduationCap, FaBuilding, FaUserCheck, FaMicrophoneAlt, FaCode, FaChartLine } from 'react-icons/fa'
-
-// UI Components
-import GradientButton from '../components/ui/GradientButton'
-import SecondaryButton from '../components/ui/SecondaryButton'
-import Badge from '../components/ui/Badge'
-import GlassCard from '../components/ui/GlassCard'
-import StatCounter from '../components/ui/StatCounter'
 import SectionReveal from '../components/ui/SectionReveal'
+import StatCounter from '../components/ui/StatCounter'
 import BrowserMockup from '../components/ui/BrowserMockup'
 import StepTimeline from '../components/ui/StepTimeline'
 import Accordion from '../components/ui/Accordion'
+import GradientButton from '../components/ui/GradientButton'
+import SecondaryButton from '../components/ui/SecondaryButton'
+import Badge from '../components/ui/Badge'
+import {
+  BsStars, BsPlayFill, BsCheck2Circle, BsLightningChargeFill,
+  BsShieldCheck, BsGraphUpArrow, BsArrowRight
+} from 'react-icons/bs'
+import { HiArrowUpRight, HiCheck, HiXMark } from 'react-icons/hi2'
 
 export default function Home() {
+  const navigate = useNavigate()
   const { userData } = useSelector((state) => state.user)
   const [showAuth, setShowAuth] = useState(false)
-  const [selectedRole, setSelectedRole] = useState('Software Engineer')
-  const [selectedLevel, setSelectedLevel] = useState('Mid-Level')
-  const [selectedMode, setSelectedMode] = useState('Technical')
-  const navigate = useNavigate()
 
   const handleStart = () => {
-    if (!userData) return setShowAuth(true)
-    navigate('/v2/interview')
+    if (userData) {
+      navigate('/v2/interview')
+    } else {
+      setShowAuth(true)
+    }
   }
 
   const workflowSteps = [
     {
-      title: 'Resume & JD Parsing',
+      title: 'Resume & Context Parsing',
       shortDesc: 'Instant skill vectorization',
-      heading: 'Deep ATS & Context Extraction',
-      description: 'Upload your resume PDF or paste target Job Description text. Our NLP engine extracts core skills, tech stacks, experience tier, and project domains in seconds.',
-      bullets: ['Automated ATS Quality Rating', 'Domain Keyword Matching', 'Experience Tier Normalization', 'Custom Rubric Configuration'],
-      codeSnippet: `> resume_parser.extract(pdf_stream)\n✓ Extracted: ["Python", "FastAPI", "React", "Docker", "PostgreSQL"]\n✓ Experience Tier: Mid-Senior (4+ YOE)\n✓ Target Role: Full-Stack Platform Engineer`,
+      heading: 'Deep Profile & Context Extraction',
+      description: 'Upload your PDF resume or paste a target Job Description. Our semantic engine vectorizes your technical skills, seniority tiers, and role expectations in under 3 seconds.',
+      bullets: ['Semantic Vector Skill Matching', 'Job Description Keyword Alignment', 'Experience Tier Calibration', 'Instant Profile Matrix'],
+      codeSnippet: `> resume_engine.parse("alex_resume.pdf")\n✓ Detected Role: Senior Backend Engineer\n✓ Top Skills: Python, FastAPI, Distributed Systems, Redis\n✓ Experience Tier: Senior (6+ Years)`,
     },
     {
-      title: 'Adaptive Question Gen',
+      title: 'Role-Adaptive Engine',
       shortDesc: 'Dynamically calibrated prompts',
       heading: 'Custom Questions Tailored to Your Stack',
-      description: 'Generates tailored DSA, System Design, and STAR behavioral questions matched to your exact background, preventing generic interview questions.',
+      description: 'Generates calibrated DSA, System Design, and STAR behavioral questions matched to your exact background, preventing generic interview questions.',
       bullets: ['DSA Coding with Monaco IDE', 'System Design Scalability Rounds', 'Behavioral STAR Frameworks', 'Real-Time Hint Generator'],
       codeSnippet: `> question_engine.generate(role="Full-Stack", mode="Technical")\n✓ Question: "Design an idempotent webhook dispatcher with dead-letter queue."\n✓ Estimated Time: 3 mins | Difficulty: Hard`,
     },
@@ -119,7 +114,7 @@ export default function Home() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#050811] text-[#f8fafc] font-['Plus_Jakarta_Sans',sans-serif] selection:bg-cyan-500/25 selection:text-cyan-200 relative overflow-hidden dark-canvas">
+    <div className="min-h-screen bg-[#050811] text-[#f8fafc] font-['Plus_Jakarta_Sans',sans-serif] selection:bg-cyan-500/25 selection:text-cyan-300 relative overflow-hidden dark-canvas">
 
       {/* Ambient background drifting blobs */}
       <div className="ambient-blob bg-cyan-500/12 w-[650px] h-[650px] -top-40 left-1/2 -translate-x-1/2" />
@@ -139,24 +134,24 @@ export default function Home() {
           <SectionReveal>
             {/* Top Pill Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-cyan-500/10 via-indigo-500/10 to-transparent border border-cyan-500/30 text-xs font-semibold mb-8 shadow-lg shadow-cyan-500/5">
-              <span className="px-2.5 py-0.5 rounded-full bg-cyan-500 text-slate-950 font-extrabold text-[10px] tracking-wider uppercase shadow-xs">
+              <span className="px-2.5 py-0.5 rounded-full bg-cyan-500 text-slate-950 font-extrabold text-[10px] tracking-widest uppercase shadow-xs">
                 AI Studio 2.0
               </span>
-              <span className="text-slate-300">Next-Gen Real-Time Avatar Interviewer</span>
+              <span className="text-slate-300 font-medium tracking-wide">Next-Gen Real-Time Avatar Interviewer</span>
             </div>
 
-            {/* Main Headline */}
-            <h1 className="text-4xl sm:text-6xl lg:text-[72px] font-extrabold text-white leading-[1.06] tracking-tight max-w-5xl mx-auto mb-8 font-['Outfit']">
+            {/* Main Headline with Calligraphy Accent */}
+            <h1 className="text-4xl sm:text-6xl lg:text-[76px] font-extrabold text-white leading-[1.06] tracking-tight max-w-5xl mx-auto mb-8 font-['Outfit']">
               Master Technical Screens with{' '}
-              <span className="gradient-text">
+              <span className="font-calligraphy italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-200 to-indigo-300 pr-1.5 drop-shadow-[0_0_25px_rgba(6,182,212,0.3)]">
                 Real-Time AI
               </span>{' '}
               Avatar Interviewers
             </h1>
 
             {/* Sub-heading */}
-            <p className="text-lg sm:text-xl text-slate-400 leading-relaxed max-w-2xl mx-auto mb-10 font-normal">
-              Dynamically generate role-calibrated questions, speak with photorealistic avatars, and receive instantaneous performance scoring with actionable coaching.
+            <p className="text-lg sm:text-xl text-slate-300/90 leading-relaxed max-w-2xl mx-auto mb-10 font-normal tracking-[-0.01em]">
+              Role-calibrated algorithmic rounds, photorealistic voice synthesis, and instant rubric diagnostics tailored for elite engineering candidates.
             </p>
 
             {/* CTA Buttons */}
@@ -182,7 +177,7 @@ export default function Home() {
             </div>
 
             {/* Social Proof Stack */}
-            <div className="flex items-center justify-center gap-4 text-xs text-slate-400 font-medium">
+            <div className="flex items-center justify-center gap-4 text-xs text-slate-300 font-medium">
               <div className="flex -space-x-2.5 overflow-hidden">
                 {['alex', 'sarah', 'michael', 'elena'].map((name, i) => (
                   <img
@@ -196,9 +191,9 @@ export default function Home() {
               <div className="text-left">
                 <div className="flex items-center gap-1 text-amber-400 mb-0.5 text-xs">
                   {'★'.repeat(5)}
-                  <span className="font-bold text-white ml-1">4.9/5 Rating</span>
+                  <span className="font-bold text-white ml-1 font-['Outfit']">4.9 / 5 Rating</span>
                 </div>
-                <p className="text-slate-400 text-[11px]">Over 10,000+ candidates screened & prepared</p>
+                <p className="text-slate-400 text-[11px] font-normal tracking-wide">Over 10,000+ candidates screened & prepared</p>
               </div>
             </div>
           </SectionReveal>
@@ -211,7 +206,7 @@ export default function Home() {
                 {/* Left Live Avatar Mock */}
                 <div className="lg:col-span-7 bg-slate-950 rounded-2xl border border-white/10 p-6 relative overflow-hidden flex flex-col justify-between min-h-[320px]">
                   <div className="flex items-center justify-between z-10">
-                    <span className="px-3 py-1 bg-cyan-500/20 text-cyan-300 text-xs font-bold rounded-full border border-cyan-500/30 flex items-center gap-1.5">
+                    <span className="px-3 py-1 bg-cyan-500/20 text-cyan-300 text-xs font-bold rounded-full border border-cyan-500/30 flex items-center gap-1.5 tracking-wide uppercase text-[10px]">
                       <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
                       Live AI Interviewer
                     </span>
@@ -225,8 +220,8 @@ export default function Home() {
                       </div>
                     </div>
                     <h4 className="text-lg font-bold text-white font-['Outfit']">Sophia — Lead AI Interviewer</h4>
-                    <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
-                      "Could you walk me through how you would handle cache invalidation in a distributed system?"
+                    <p className="text-xs text-slate-300 mt-2 max-w-md mx-auto italic font-['Plus_Jakarta_Sans'] font-medium leading-relaxed">
+                      "Could you walk me through how you would architect cache invalidation across distributed database replicas?"
                     </p>
                   </div>
 
@@ -241,12 +236,12 @@ export default function Home() {
                 {/* Right Metrics & Code IDE Mock */}
                 <div className="lg:col-span-5 flex flex-col gap-4">
                   <div className="bg-slate-950/80 rounded-2xl border border-white/10 p-5 space-y-3">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Real-Time Evaluation Telemetry</p>
+                    <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest font-mono">Real-Time Evaluation Telemetry</p>
                     <div className="space-y-2.5">
                       <div>
                         <div className="flex justify-between text-xs font-semibold mb-1">
                           <span className="text-slate-300">Technical Correctness</span>
-                          <span className="text-cyan-400">92%</span>
+                          <span className="text-cyan-400 font-bold font-['Outfit']">92%</span>
                         </div>
                         <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                           <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full w-[92%]" />
@@ -256,7 +251,7 @@ export default function Home() {
                       <div>
                         <div className="flex justify-between text-xs font-semibold mb-1">
                           <span className="text-slate-300">Speech Pacing (142 WPM)</span>
-                          <span className="text-emerald-400">Optimal</span>
+                          <span className="text-emerald-400 font-bold font-['Outfit']">Optimal</span>
                         </div>
                         <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                           <div className="h-full bg-emerald-500 rounded-full w-[88%]" />
@@ -270,7 +265,7 @@ export default function Home() {
                       <span>solution.py</span>
                       <span className="text-cyan-400">Python 3.13</span>
                     </div>
-                    <p className="text-cyan-300/90 leading-relaxed py-2">
+                    <p className="text-cyan-300/90 leading-relaxed py-2 font-mono text-[11px]">
                       def invalidate_cache(key: str) -&gt; bool:<br />
                       &nbsp;&nbsp;&nbsp;&nbsp;redis_client.delete(key)<br />
                       &nbsp;&nbsp;&nbsp;&nbsp;publish_event("cache:evict", key)<br />
@@ -278,7 +273,7 @@ export default function Home() {
                     </p>
                     <div className="pt-2 border-t border-white/10 flex justify-between items-center text-[10px] text-slate-400">
                       <span>✓ Syntax Verified</span>
-                      <span className="text-emerald-400">Tests Passing</span>
+                      <span className="text-emerald-400 font-bold">Tests Passing</span>
                     </div>
                   </div>
                 </div>
@@ -330,10 +325,10 @@ export default function Home() {
                 Structured Workflow
               </Badge>
               <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-['Outfit']">
-                How InterviewIQ Works
+                Engineering Your <span className="font-calligraphy italic font-normal text-cyan-400">Offer-Ready</span> Confidence
               </h2>
               <p className="mt-3 text-slate-400 text-base leading-relaxed">
-                A seamless 4-stage engine that moves you from raw resume to offer-ready confidence.
+                A seamless 4-stage engine that moves you from raw resume to peak interview readiness.
               </p>
             </div>
 
@@ -349,7 +344,7 @@ export default function Home() {
                 The Competitive Edge
               </Badge>
               <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-['Outfit']">
-                Traditional Prep vs. InterviewIQ
+                Traditional Prep vs. <span className="font-calligraphy italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400">InterviewIQ</span>
               </h2>
               <p className="mt-3 text-slate-400 text-base leading-relaxed">
                 Why static question banks fail and dynamic conversational AI delivers results.
@@ -357,7 +352,7 @@ export default function Home() {
             </div>
 
             <div className="rounded-3xl border border-white/10 bg-slate-950/70 backdrop-blur-xl overflow-hidden shadow-2xl">
-              <div className="grid grid-cols-1 md:grid-cols-12 border-b border-white/10 bg-slate-900/60 p-5 font-['Outfit'] font-bold text-xs uppercase tracking-wider text-slate-400">
+              <div className="grid grid-cols-1 md:grid-cols-12 border-b border-white/10 bg-slate-900/60 p-5 font-['Outfit'] font-bold text-xs uppercase tracking-widest text-slate-400 font-mono">
                 <div className="md:col-span-3">Assessment Pillar</div>
                 <div className="md:col-span-4 text-rose-400/90">Traditional Mock Prep</div>
                 <div className="md:col-span-5 text-cyan-300">InterviewIQ Studio</div>
@@ -390,7 +385,7 @@ export default function Home() {
             <div className="text-center mb-12">
               <Badge variant="cyan" className="mb-4">FAQ</Badge>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-['Outfit']">
-                Frequently Asked Questions
+                Answers to <span className="font-calligraphy italic font-normal text-cyan-400">Common Questions</span>
               </h2>
               <p className="mt-2 text-slate-400 text-sm">
                 Everything you need to know about the AI interview engine.
@@ -410,7 +405,7 @@ export default function Home() {
               <div className="relative z-10 max-w-2xl mx-auto space-y-6">
                 <Badge variant="cyan" icon={BsStars}>Get Started Today</Badge>
                 <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-['Outfit']">
-                  Ready to Ace Your Next Interview?
+                  Ready to <span className="font-calligraphy italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-indigo-300">Ace</span> Your Next Interview?
                 </h2>
                 <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
                   Join thousands of candidates who practice daily with our conversational AI avatars and step into real interviews fully prepared.
@@ -438,7 +433,9 @@ export default function Home() {
             <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-cyan-500 to-indigo-600 flex items-center justify-center text-white text-xs">
               <BsStars />
             </div>
-            <span className="font-bold text-white text-sm font-['Outfit']">InterviewIQ.AI</span>
+            <span className="font-bold text-white text-sm font-['Outfit']">
+              Interview<span className="font-calligraphy italic font-normal text-cyan-400">IQ</span>.AI
+            </span>
           </div>
           <p>© {new Date().getFullYear()} InterviewIQ. All rights reserved. Universal AI Interview Studio.</p>
           <div className="flex gap-6 font-medium text-slate-400">

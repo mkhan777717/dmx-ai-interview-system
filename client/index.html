@@ -6,22 +6,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400;1,600;1,700&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&family=Outfit:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
     <title>InterviewIQ.AI — AI-Powered Career & Interview Platform</title>
     <meta name="description" content="Master tech, behavioral, and system design interviews with lifelike real-time AI interviewers." />
     <script>
       (function() {
-        document.documentElement.classList.add('dark');
-        document.documentElement.style.colorScheme = 'dark';
-        try { localStorage.setItem('app-theme', 'dark'); } catch(e){}
+        try {
+          var saved = localStorage.getItem('app-theme');
+          var isDark = saved ? saved === 'dark' : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+            document.documentElement.style.colorScheme = 'dark';
+          } else {
+            document.documentElement.classList.add('light');
+            document.documentElement.classList.remove('dark');
+            document.documentElement.style.colorScheme = 'light';
+          }
+        } catch(e){}
       })();
     </script>
     <style>
-      /* Critical above-fold dark background to prevent FOUC */
-      html, body { background: #050811; color: #f8fafc; }
+      /* Critical adaptive canvas to eliminate FOUC */
+      html.dark, html.dark body { background-color: #050811; color: #f8fafc; }
+      html.light, html.light body { background-color: #f8fafc; color: #0f172a; }
     </style>
   </head>
-  <body class="bg-[#050811] text-[#f8fafc] antialiased selection:bg-cyan-500/20 selection:text-cyan-300">
+  <body class="transition-colors duration-300 antialiased selection:bg-cyan-500/20 selection:text-cyan-400">
     <div id="root"></div>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script type="module" src="/src/main.jsx"></script>

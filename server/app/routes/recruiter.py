@@ -12,6 +12,7 @@ Endpoints:
 from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
+from sqlalchemy import func as sqlfunc
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 
@@ -32,7 +33,10 @@ class InviteRequest(BaseModel):
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
-def _serialize_candidate(u: User, interview_count: int = 0, avg_score: Optional[float] = None) -> dict:
+def _serialize_candidate(u: User, interview_count: int = 0, avg_score: Optional[float] = None,
+                          latest_interview_id: Optional[int] = None,
+                          latest_score: Optional[float] = None,
+                          hiring_recommendation: Optional[str] = None) -> dict:
     return {
         "id": u.id,
         "name": u.name,
@@ -43,6 +47,9 @@ def _serialize_candidate(u: User, interview_count: int = 0, avg_score: Optional[
         "created_at": u.created_at,
         "interview_count": interview_count,
         "avg_score": avg_score,
+        "latest_interview_id": latest_interview_id,
+        "latest_score": latest_score,
+        "hiring_recommendation": hiring_recommendation,
     }
 
 
@@ -163,15 +170,36 @@ async def list_candidates(
     # Enrich with interview stats
     candidates = []
     for u in users:
-        interview_q = select(func.count(), func.avg(V2Interview.final_score)).where(
+        # Latest completed interview
+        latest_q = (
+            select(V2Interview)
+            .where(V2Interview.user_id == u.id, V2Interview.status == "completed")
+            .order_by(V2Interview.created_at.desc())
+            .limit(1)
+        )
+        latest_result = await db.execute(latest_q)
+        latest = latest_result.scalar_one_or_none()
+
+        interview_q = select(sqlfunc.count(), sqlfunc.avg(V2Interview.final_score)).where(
             V2Interview.user_id == u.id,
             V2Interview.status == "completed",
         )
         stats = (await db.execute(interview_q)).one()
+
+        def _rec(score):
+            if score is None: return None
+            if score >= 8.0: return "Strong Hire"
+            if score >= 6.5: return "Hire"
+            if score >= 5.0: return "Borderline"
+            return "Reject"
+
         candidates.append(_serialize_candidate(
             u,
             interview_count=stats[0] or 0,
             avg_score=round(stats[1], 1) if stats[1] else None,
+            latest_interview_id=latest.id if latest else None,
+            latest_score=round(latest.final_score, 1) if latest and latest.final_score else None,
+            hiring_recommendation=_rec(latest.final_score if latest else None),
         ))
 
     return {

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { motion } from 'motion/react'
 
 const CYAN = '#06b6d4'
@@ -102,6 +102,127 @@ function SkillBar({ label, score }) {
   )
 }
 
+// ── AnswerCard — collapsible stored Q&A + AI evaluation ───────────────────
+function AnswerCard({ entry, scoreColor }) {
+  const [open, setOpen] = useState(false)
+  const mins = Math.floor((entry.timeTaken || 0) / 60)
+  const secs = (entry.timeTaken || 0) % 60
+
+  return (
+    <div className="border border-white/8 rounded-2xl overflow-hidden bg-slate-900/40">
+      {/* Header row — always visible */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between gap-3 px-5 py-3.5 text-left cursor-pointer hover:bg-white/3 transition-colors"
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          {/* Index badge */}
+          <span className="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[10px] font-extrabold flex items-center justify-center shrink-0">
+            {typeof entry.questionIndex === 'number' ? entry.questionIndex + 1 : '↳'}
+          </span>
+          {/* Category + follow-up pill */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {entry.category && (
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
+                {entry.category}
+              </span>
+            )}
+            {entry.isFollowUp && (
+              <span className="text-[9px] font-bold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-1.5 py-0.5 rounded-full">
+                Follow-up
+              </span>
+            )}
+          </div>
+          {/* Question text (truncated) */}
+          <p className="text-xs font-semibold text-slate-200 truncate">{entry.question}</p>
+        </div>
+
+        <div className="flex items-center gap-3 shrink-0">
+          {/* Score badge */}
+          {entry.score != null && (
+            <span
+              className="text-sm font-extrabold px-3 py-0.5 rounded-full border font-['Outfit']"
+              style={{ color: scoreColor, borderColor: scoreColor + '40', background: scoreColor + '15' }}
+            >
+              {entry.score.toFixed(1)}/10
+            </span>
+          )}
+          {/* Time */}
+          {entry.timeTaken != null && (
+            <span className="text-[10px] text-slate-500 font-mono">
+              {mins}:{secs.toString().padStart(2, '0')}
+            </span>
+          )}
+          {/* Chevron */}
+          <span className={`text-slate-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}>▾</span>
+        </div>
+      </button>
+
+      {/* Expandable body */}
+      {open && (
+        <div className="px-5 pb-5 pt-1 border-t border-white/6 space-y-4">
+
+          {/* Your answer */}
+          <div>
+            <p className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5 font-mono">Your Answer</p>
+            <pre className="whitespace-pre-wrap text-xs text-slate-300 leading-relaxed bg-white/3 rounded-xl p-3.5 border border-white/5 max-h-48 overflow-y-auto font-mono">
+              {entry.answer || '(no answer submitted)'}
+            </pre>
+          </div>
+
+          {/* AI Feedback */}
+          {entry.feedback && (
+            <div>
+              <p className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5 font-mono">AI Feedback</p>
+              <p className="text-xs text-slate-200 leading-relaxed">{entry.feedback}</p>
+              {entry.justification && (
+                <p className="mt-1.5 text-xs text-slate-400 italic border-l-2 border-cyan-400/50 pl-2.5">{entry.justification}</p>
+              )}
+            </div>
+          )}
+
+          {/* Concepts */}
+          {(entry.coveredConcepts?.length > 0 || entry.missingConcepts?.length > 0) && (
+            <div className="grid grid-cols-2 gap-3">
+              {entry.coveredConcepts?.length > 0 && (
+                <div>
+                  <p className="text-[10px] font-extrabold text-emerald-400 uppercase tracking-widest mb-1.5 font-mono">✓ Covered</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {entry.coveredConcepts.map((c, i) => (
+                      <span key={i} className="text-[10px] bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 px-2 py-0.5 rounded-full font-medium">{c}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {entry.missingConcepts?.length > 0 && (
+                <div>
+                  <p className="text-[10px] font-extrabold text-rose-400 uppercase tracking-widest mb-1.5 font-mono">✗ Missed</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {entry.missingConcepts.map((c, i) => (
+                      <span key={i} className="text-[10px] bg-rose-500/10 text-rose-300 border border-rose-500/20 px-2 py-0.5 rounded-full font-medium">{c}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Confidence + timestamp */}
+          <div className="flex items-center gap-4 pt-1 text-[10px] text-slate-500 font-mono">
+            {entry.confidence != null && (
+              <span>Eval confidence: <span className="text-slate-300 font-semibold">{Math.round(entry.confidence * 100)}%</span></span>
+            )}
+            {entry.timestamp && (
+              <span>Submitted: <span className="text-slate-300">{new Date(entry.timestamp).toLocaleTimeString()}</span></span>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+
 // ── Main component ─────────────────────────────────────────────────────────
 function V2Report({ reportData, onRestart }) {
   const printRef = useRef()
@@ -120,6 +241,7 @@ function V2Report({ reportData, onRestart }) {
     improvement_plan = [],
     avg_communication_score,
     ai_flagged_count = 0,
+    localAnswers = [],
   } = reportData || {}
 
   const scores = questions.map(q => q.score ?? q.final_score ?? 0)
@@ -502,6 +624,32 @@ function V2Report({ reportData, onRestart }) {
                     Q{(q.question_index ?? i) + 1}: {Math.round((q.ai_detection_score || 0) * 100)}% AI probability
                   </span>
                 ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── YOUR ANSWERS ─────────────────────────────────────────────── */}
+        {localAnswers && localAnswers.length > 0 && (
+          <div className="mt-6 glass-card-static rounded-3xl p-6">
+            <h3 className="text-base font-bold text-white mb-1 flex items-center gap-2 font-['Outfit']">
+              📝 Your Answers &amp; Evaluations
+              <span className="ml-2 text-[11px] font-medium bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 px-2.5 py-0.5 rounded-full">
+                {localAnswers.length} response{localAnswers.length !== 1 ? 's' : ''} stored
+              </span>
+            </h3>
+            <p className="text-xs text-slate-400 mb-5">
+              Everything you submitted during the session, together with the AI evaluation for each question.
+            </p>
+
+            <div className="flex flex-col gap-4">
+              {localAnswers.map((entry, idx) => {
+                const scoreColor = entry.score != null
+                  ? (entry.score >= 7 ? '#06b6d4' : entry.score >= 5 ? '#f59e0b' : '#ef4444')
+                  : '#64748b'
+                return (
+                  <AnswerCard key={idx} entry={entry} scoreColor={scoreColor} />
+                )
+              })}
             </div>
           </div>
         )}

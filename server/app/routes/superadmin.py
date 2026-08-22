@@ -8,7 +8,10 @@ Endpoints:
   POST /api/superadmin/orgs                   — create organization
   DELETE /api/superadmin/orgs/{id}            — soft-delete org (cascade)
   GET  /api/superadmin/users                  — all users across all orgs
+  POST /api/superadmin/users/{id}/role        — update user role
   POST /api/superadmin/users/{id}/impersonate — time-boxed impersonation
+  POST /api/superadmin/impersonate            — shortcut (body: user_id)
+  GET  /api/superadmin/audit-logs             — full paginated audit trail
   GET  /api/superadmin/platform-analytics     — cross-org platform stats
 """
 
@@ -35,6 +38,14 @@ class CreateOrgRequest(BaseModel):
     name: str
     slug: Optional[str] = None
     plan: BillingPlan = BillingPlan.FREE
+
+
+class UpdateRoleRequest(BaseModel):
+    role: str
+
+
+class ImpersonateRequest(BaseModel):
+    user_id: int
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -90,7 +101,8 @@ async def list_organizations(
         member_count = count_result.scalar()
         org_data.append({**_serialize_org(o), "member_count": member_count})
 
-    return {"orgs": org_data, "total": len(org_data)}
+    # Return both key names so old and new clients both work
+    return {"orgs": org_data, "organizations": org_data, "total": len(org_data)}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -218,6 +230,53 @@ async def list_all_users(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# POST /api/superadmin/users/{target_id}/role  — update role
+# ─────────────────────────────────────────────────────────────────────────────
+@router.post("/users/{target_id}/role")
+async def update_user_role(
+    target_id: int,
+    body: UpdateRoleRequest,
+    ctx: UserContext = Depends(require_db_role(Role.SUPER_ADMIN)),
+    db: AsyncSession = Depends(get_db),
+):
+    """Update the role of any user (except other SUPER_ADMINs)."""
+    result = await db.execute(select(User).where(User.id == target_id))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+
+    old_role = user.role.value if hasattr(user.role, 'value') else user.role
+    new_role = body.role.upper()
+
+    # Validate role
+    valid_roles = {r.value for r in Role}
+    if new_role not in valid_roles:
+        raise HTTPException(status_code=400, detail=f"Invalid role. Must be one of: {valid_roles}")
+
+    # Prevent demoting the last SUPER_ADMIN
+    if old_role == "SUPER_ADMIN" and new_role != "SUPER_ADMIN":
+        count_result = await db.execute(
+            select(func.count()).select_from(User).where(User.role == Role.SUPER_ADMIN)
+        )
+        if (count_result.scalar() or 0) <= 1:
+            raise HTTPException(status_code=400, detail="Cannot demote the last Super Admin.")
+
+    user.role = Role(new_role)
+
+    audit = AuditLog(
+        actor_id=ctx.user_id,
+        action="user.role_update",
+        entity_type="User",
+        entity_id=target_id,
+        details={"old_role": old_role, "new_role": new_role, "target_email": user.email},
+    )
+    db.add(audit)
+    await db.commit()
+
+    return {"message": f"Role updated to {new_role}", "user": _serialize_user(user)}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # POST /api/superadmin/users/{target_id}/impersonate
 # ─────────────────────────────────────────────────────────────────────────────
 @router.post("/users/{target_id}/impersonate")
@@ -293,6 +352,64 @@ async def impersonate_user(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# POST /api/superadmin/impersonate  — body-based shortcut (for frontend)
+# ─────────────────────────────────────────────────────────────────────────────
+@router.post("/impersonate")
+async def impersonate_user_shortcut(
+    body: ImpersonateRequest,
+    response: Response,
+    ctx: UserContext = Depends(require_db_role(Role.SUPER_ADMIN)),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Shortcut: POST body { user_id } — delegates to the path-param version.
+    Keeps the frontend clean (no need to embed user_id in the URL).
+    """
+    # Re-use the core logic inline
+    target_id = body.user_id
+    if target_id == ctx.user_id:
+        raise HTTPException(status_code=400, detail="Cannot impersonate yourself.")
+
+    result = await db.execute(select(User).where(User.id == target_id))
+    target = result.scalar_one_or_none()
+    if not target or not target.is_active:
+        raise HTTPException(status_code=404, detail="Target user not found or inactive.")
+
+    target_role = target.role.value if hasattr(target.role, 'value') else target.role
+    if target_role == "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="Cannot impersonate another Super Admin.")
+
+    token = create_access_token(
+        user_id=ctx.user_id,
+        role=target_role,
+        org_id=target.org_id,
+        impersonated_as=target_id,
+    )
+    response.set_cookie(
+        key="token", value=token, httponly=True, secure=False,
+        samesite="lax", path="/", max_age=IMPERSONATION_TOKEN_MINS * 60,
+    )
+
+    audit = AuditLog(
+        actor_id=ctx.user_id,
+        action="superadmin.impersonate",
+        entity_type="User",
+        entity_id=target_id,
+        details={"impersonated_email": target.email, "impersonated_role": target_role,
+                 "duration_minutes": IMPERSONATION_TOKEN_MINS, "actor_email": ctx.email},
+    )
+    db.add(audit)
+    await db.commit()
+
+    return {
+        "message": f"Impersonating {target.email} for {IMPERSONATION_TOKEN_MINS} minutes.",
+        "expires_in_minutes": IMPERSONATION_TOKEN_MINS,
+        "impersonated_user": {"id": target.id, "name": target.name,
+                              "email": target.email, "role": target_role},
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # GET /api/superadmin/platform-analytics
 # ─────────────────────────────────────────────────────────────────────────────
 @router.get("/platform-analytics")
@@ -337,6 +454,14 @@ async def get_platform_analytics(
     recent_audits = audit_result.scalars().all()
 
     return {
+        # Flat keys — matched to what SuperAdminDashboard expects
+        "total_users": total_users,
+        "total_organizations": total_orgs,
+        "total_interviews": total_interviews,
+        "avg_platform_score": avg_score,
+        "new_users_30d": 0,          # placeholder — add time-windowed query if needed
+        "active_organizations": total_orgs,
+        # Nested keys — kept for backwards compat
         "users": {
             "total": total_users,
             "active": total_active_users,
@@ -350,14 +475,61 @@ async def get_platform_analytics(
             "avg_score": avg_score,
         },
         "mode_distribution": [{"mode": m, "count": c} for m, c in mode_counts.items()],
+        "plan_breakdown": {},        # populate with org-plan aggregation if needed
         "recent_audit_events": [
             {
                 "id": a.id,
                 "actor_id": a.actor_id,
                 "action": a.action,
                 "entity_type": a.entity_type,
+                "entity_id": getattr(a, 'entity_id', None),
                 "created_at": a.created_at,
             }
             for a in recent_audits
+        ],
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GET /api/superadmin/audit-logs  — full paginated audit trail
+# ─────────────────────────────────────────────────────────────────────────────
+@router.get("/audit-logs")
+async def list_audit_logs(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=200),
+    action: Optional[str] = Query(None, description="Filter by action string (partial match)"),
+    ctx: UserContext = Depends(require_db_role(Role.SUPER_ADMIN)),
+    db: AsyncSession = Depends(get_db),
+):
+    """Paginated full audit log with optional action filter."""
+    q = select(AuditLog)
+    if action:
+        q = q.where(AuditLog.action.ilike(f"%{action}%"))
+    q = q.order_by(AuditLog.created_at.desc())
+
+    count_result = await db.execute(
+        select(func.count()).select_from(AuditLog)
+    )
+    total = count_result.scalar() or 0
+
+    offset = (page - 1) * page_size
+    result = await db.execute(q.offset(offset).limit(page_size))
+    logs = result.scalars().all()
+
+    return {
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "logs": [
+            {
+                "id": a.id,
+                "actor_id": a.actor_id,
+                "action": a.action,
+                "entity_type": a.entity_type,
+                "entity_id": getattr(a, 'entity_id', None),
+                "details": a.details,
+                "created_at": a.created_at,
+            }
+            for a in logs
         ],
     }

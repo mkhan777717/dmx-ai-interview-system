@@ -165,6 +165,9 @@ class SubmitAnswerResponse(BaseModel):
     semantic_score: float
     concept_score: float
     keyword_score: float
+    technical_score: Optional[float] = None
+    communication_score: Optional[float] = None
+    running_avg_score: Optional[float] = None
     covered_concepts: List[str]
     missing_concepts: List[str]
     feedback: str

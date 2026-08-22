@@ -163,8 +163,8 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
             {/* Upload Box */}
             <div className="glass-card-static rounded-3xl p-6 flex flex-col justify-between">
               <div>
-                <h3 className="text-white font-bold text-base mb-4 font-['Outfit'] flex items-center gap-2">
-                  <FaUpload className="text-cyan-400" size={14} /> Upload Candidate Resume
+                <h3 className="text-slate-900 dark:text-white font-bold text-base mb-4 font-['Outfit'] flex items-center gap-2">
+                  <FaUpload className="text-cyan-500 dark:text-cyan-400" size={14} /> Upload Candidate Resume
                 </h3>
 
                 <div
@@ -172,14 +172,14 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
                   className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 flex flex-col items-center justify-center min-h-[200px] ${
                     file
                       ? 'border-cyan-500 bg-cyan-500/5 glow-accent'
-                      : 'border-white/10 hover:border-cyan-500/40 hover:bg-white/2'
+                      : 'border-slate-300/80 dark:border-white/10 hover:border-cyan-500/50 hover:bg-slate-50/50 dark:hover:bg-white/2'
                   }`}
                 >
-                  <div className="w-13 h-13 bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 text-cyan-300 border border-cyan-500/30 rounded-2xl flex items-center justify-center mb-3 shadow-xs">
+                  <div className="w-13 h-13 bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 text-cyan-600 dark:text-cyan-300 border border-cyan-500/30 rounded-2xl flex items-center justify-center mb-3 shadow-xs">
                     <FaUpload size={20} />
                   </div>
-                  <p className="font-bold text-white text-sm mb-1">Drag & drop your resume PDF here</p>
-                  <p className="text-xs text-slate-400 mb-3">or click to browse local files</p>
+                  <p className="font-bold text-slate-900 dark:text-white text-sm mb-1">Drag & drop your resume PDF here</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">or click to browse local files</p>
                   <button className="px-5 py-2 btn-glass rounded-xl text-xs font-bold transition cursor-pointer">
                     Browse Files
                   </button>
@@ -190,17 +190,17 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
                 {file && (
                   <div className="mt-4 flex items-center justify-between p-3.5 glass-panel-subtle rounded-xl border border-cyan-500/30">
                     <div className="flex items-center gap-3">
-                      <FaFilePdf className="text-rose-400 text-xl" />
+                      <FaFilePdf className="text-rose-500 dark:text-rose-400 text-xl" />
                       <div>
-                        <p className="text-xs font-bold text-white line-clamp-1">{file.name}</p>
-                        <p className="text-[10px] text-slate-400">{(file.size / (1024 * 1024)).toFixed(1)} MB</p>
+                        <p className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">{file.name}</p>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400">{(file.size / (1024 * 1024)).toFixed(1)} MB</p>
                       </div>
                     </div>
-                    <FaCheckCircle className="text-cyan-400" />
+                    <FaCheckCircle className="text-cyan-500 dark:text-cyan-400" />
                   </div>
                 )}
                 {error && (
-                  <p className="mt-4 text-xs font-medium text-rose-300 bg-rose-500/10 p-3 rounded-xl border border-rose-500/20">
+                  <p className="mt-4 text-xs font-medium text-rose-700 dark:text-rose-300 bg-rose-500/10 p-3 rounded-xl border border-rose-500/20">
                     ⚠️ {typeof error === 'string' ? error : JSON.stringify(error)}
                   </p>
                 )}
@@ -210,8 +210,8 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
             {/* Parsing Progress */}
             <div className="glass-card-static rounded-3xl p-6 flex flex-col justify-between">
               <div>
-                <h3 className="text-white font-bold text-base mb-4 font-['Outfit'] flex items-center gap-2">
-                  <BsStars className="text-cyan-400" size={15} /> AI Profile Extraction
+                <h3 className="text-slate-900 dark:text-white font-bold text-base mb-4 font-['Outfit'] flex items-center gap-2">
+                  <BsStars className="text-cyan-500 dark:text-cyan-400" size={15} /> AI Profile Extraction
                 </h3>
 
                 <div className="space-y-3.5">
@@ -226,15 +226,15 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
                       { label: 'Synthesizing Interview Persona', s: 4 },
                     ].map((item, i) => (
                       <div key={i} className="flex justify-between items-center text-xs">
-                        <span className={`font-semibold ${currentParseStep >= item.s ? 'text-slate-200' : 'text-slate-400'}`}>
+                        <span className={`font-semibold ${currentParseStep >= item.s ? 'text-slate-800 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500'}`}>
                           {item.label}
                         </span>
                         {currentParseStep > item.s ? (
-                          <span className="font-bold text-cyan-400 flex items-center gap-1">
+                          <span className="font-bold text-cyan-600 dark:text-cyan-400 flex items-center gap-1">
                             Done <FaCheckCircle size={11} />
                           </span>
                         ) : currentParseStep === item.s ? (
-                          <span className="font-bold text-blue-400 flex items-center gap-1">
+                          <span className="font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1">
                             Processing <FaSpinner className="animate-spin" size={11} />
                           </span>
                         ) : (
@@ -246,8 +246,8 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-white/8">
-                <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden p-0.5">
+              <div className="mt-6 pt-4 border-t border-slate-200/80 dark:border-white/8">
+                <div className="h-2 w-full bg-slate-200 dark:bg-white/5 rounded-full overflow-hidden p-0.5">
                   {(() => {
                     const currentParseStep = resumeData ? 5 : (parsing ? step : 0)
                     return (
@@ -258,7 +258,7 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
                     )
                   })()}
                 </div>
-                <p className="text-right text-xs text-cyan-300 font-bold mt-1.5">
+                <p className="text-right text-xs text-cyan-600 dark:text-cyan-300 font-bold mt-1.5">
                   {(() => {
                     const currentParseStep = resumeData ? 5 : (parsing ? step : 0)
                     return Math.round((Math.min(currentParseStep, 4) / 4) * 100)
@@ -272,14 +272,14 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
           <div className="glass-card-static rounded-3xl p-5.5">
             <div className="flex items-center justify-between mb-2">
               <div>
-                <h3 className="text-white font-bold text-sm font-['Outfit']">
-                  Target Job Description <span className="text-slate-400 font-normal text-xs">(Optional)</span>
+                <h3 className="text-slate-900 dark:text-white font-bold text-sm font-['Outfit']">
+                  Target Job Description <span className="text-slate-500 dark:text-slate-400 font-normal text-xs">(Optional)</span>
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5">Tailor your questions to match an explicit job opening</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Tailor your questions to match an explicit job opening</p>
               </div>
               <button
                 onClick={() => setShowJd(v => !v)}
-                className="text-xs font-bold text-cyan-300 hover:text-white cursor-pointer glass-pill px-3 py-1 rounded-full"
+                className="text-xs font-bold text-cyan-600 dark:text-cyan-300 hover:text-cyan-700 dark:hover:text-white cursor-pointer glass-pill px-3 py-1 rounded-full"
               >
                 {showJd ? 'Hide JD' : 'Add JD +'}
               </button>
@@ -292,7 +292,7 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
                   onChange={e => setJdText(e.target.value)}
                   placeholder="Paste the target job description text here..."
                   rows={4}
-                  className="w-full rounded-2xl glass-input text-white placeholder-slate-500 p-3.5 text-xs resize-none font-mono"
+                  className="w-full rounded-2xl glass-input text-slate-900 dark:text-white placeholder-slate-400 p-3.5 text-xs resize-none font-mono"
                 />
                 <div className="flex items-center justify-between gap-3">
                   <GradientButton
@@ -305,9 +305,9 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
 
                   {jdData && (
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-xs font-bold text-cyan-300 bg-cyan-500/15 px-2.5 py-0.5 rounded-md border border-cyan-500/30">{jdData.role}</span>
+                      <span className="text-xs font-bold text-cyan-700 dark:text-cyan-300 bg-cyan-500/15 px-2.5 py-0.5 rounded-md border border-cyan-500/30">{jdData.role}</span>
                       {jdData.skills?.slice(0, 5).map(s => (
-                        <span key={s} className="px-2 py-0.5 bg-white/5 text-slate-300 rounded-full text-[10px] font-semibold border border-white/5">
+                        <span key={s} className="px-2 py-0.5 bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-300 rounded-full text-[10px] font-semibold border border-slate-200 dark:border-white/5">
                           {s}
                         </span>
                       ))}
@@ -321,8 +321,8 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
           {/* Extracted Information Preview */}
           <div className="glass-card-static rounded-3xl p-6 min-h-[220px]">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-white font-bold text-base font-['Outfit']">
-                Extracted Profile Information <span className="text-slate-400 font-normal text-xs">(Verified)</span>
+              <h3 className="text-slate-900 dark:text-white font-bold text-base font-['Outfit']">
+                Extracted Profile Information <span className="text-slate-500 dark:text-slate-400 font-normal text-xs">(Verified)</span>
               </h3>
               <Badge variant="cyan" icon={FaCode}>
                 AI Parsed
@@ -333,28 +333,28 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-3.5 glass-panel-subtle rounded-2xl">
-                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Candidate Name</p>
-                    <p className="text-sm font-bold text-white mt-0.5">{resumeData.name || 'Detected from PDF'}</p>
+                    <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Candidate Name</p>
+                    <p className="text-sm font-bold text-slate-900 dark:text-white mt-0.5">{resumeData.name || 'Detected from PDF'}</p>
                   </div>
                   <div className="p-3.5 glass-panel-subtle rounded-2xl">
-                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Contact Email</p>
-                    <p className="text-sm font-bold text-white mt-0.5">{resumeData.email || 'Detected from PDF'}</p>
+                    <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Contact Email</p>
+                    <p className="text-sm font-bold text-slate-900 dark:text-white mt-0.5">{resumeData.email || 'Detected from PDF'}</p>
                   </div>
                 </div>
 
                 <div className="pt-2">
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Key Projects Highlighted</p>
+                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Key Projects Highlighted</p>
                   <div className="space-y-2">
                     {resumeData.projects?.slice(0, 3).map((p, i) => (
-                      <div key={i} className="p-3 glass-panel-subtle rounded-xl text-xs font-semibold text-slate-300 border-l-3 border-cyan-500">
+                      <div key={i} className="p-3 glass-panel-subtle rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-300 border-l-3 border-cyan-500">
                         {p}
                       </div>
-                    )) || <p className="text-xs text-slate-400">No projects specified</p>}
+                    )) || <p className="text-xs text-slate-500 dark:text-slate-400">No projects specified</p>}
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="h-32 flex flex-col items-center justify-center text-slate-400 text-xs">
+              <div className="h-32 flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 text-xs">
                 <p>Information will appear automatically after resume parsing</p>
               </div>
             )}
@@ -365,11 +365,11 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
         <div className="lg:col-span-4 flex flex-col gap-6">
           <div className="glass-card-static rounded-3xl p-6 flex-1 space-y-5">
             <div className="flex justify-between items-center">
-              <h3 className="text-white font-bold text-base font-['Outfit'] flex items-center gap-2">
-                <BsStars className="text-cyan-400" /> Assessment Blueprint
+              <h3 className="text-slate-900 dark:text-white font-bold text-base font-['Outfit'] flex items-center gap-2">
+                <BsStars className="text-cyan-500 dark:text-cyan-400" /> Assessment Blueprint
               </h3>
               {resumeData && (
-                <span className="text-xs bg-cyan-500/15 text-cyan-300 px-2.5 py-1 rounded-full font-bold border border-cyan-500/30">
+                <span className="text-xs bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 px-2.5 py-1 rounded-full font-bold border border-cyan-500/30">
                   98% Match
                 </span>
               )}
@@ -378,27 +378,27 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
             {resumeData ? (
               <div className="space-y-4.5">
                 <div className="p-4 bg-gradient-to-br from-cyan-500/10 to-indigo-500/5 rounded-2xl border border-cyan-500/20">
-                  <p className="text-[10px] font-extrabold text-cyan-400 uppercase tracking-wider mb-1">Target Evaluation Role</p>
-                  <p className="text-xl font-extrabold text-white font-['Outfit']">{resumeData.predicted_role}</p>
-                  <p className="text-xs text-slate-400 mt-1">Adaptive questions configured for your experience tier.</p>
+                  <p className="text-[10px] font-extrabold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider mb-1">Target Evaluation Role</p>
+                  <p className="text-xl font-extrabold text-slate-900 dark:text-white font-['Outfit']">{resumeData.predicted_role}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Adaptive questions configured for your experience tier.</p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-bold text-slate-300 mb-2">Detected Skill Matrix</p>
+                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">Detected Skill Matrix</p>
                   <div className="flex flex-wrap gap-1.5">
                     {resumeData.skills?.slice(0, 8).map(s => (
-                      <span key={s} className="px-2.5 py-1 glass-pill text-cyan-300 text-xs font-bold rounded-lg border-cyan-500/20">
+                      <span key={s} className="px-2.5 py-1 glass-pill text-cyan-700 dark:text-cyan-300 text-xs font-bold rounded-lg border-cyan-500/20">
                         {s}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <hr className="border-white/8" />
+                <hr className="border-slate-200/80 dark:border-white/8" />
 
                 {/* Mode Selector */}
                 <div>
-                  <p className="text-xs font-bold text-white mb-2.5">Select Interview Mode</p>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white mb-2.5">Select Interview Mode</p>
                   <div className="grid grid-cols-2 gap-2">
                     {[
                       { id: 'Technical', label: '💻 Technical', desc: 'Coding & Algorithms' },
@@ -411,12 +411,12 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
                         onClick={() => setInterviewMode(m.id)}
                         className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                           interviewMode === m.id
-                            ? 'border-cyan-500 bg-cyan-500/15 text-white font-bold shadow-md shadow-cyan-500/10'
-                            : 'glass-pill text-slate-400 hover:border-white/20'
+                            ? 'border-cyan-500 bg-cyan-500/15 text-slate-900 dark:text-white font-bold shadow-md shadow-cyan-500/10'
+                            : 'glass-pill text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-white/20'
                         }`}
                       >
                         <p className="text-xs font-bold">{m.label}</p>
-                        <p className="text-[10px] text-slate-400 mt-0.5">{m.desc}</p>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">{m.desc}</p>
                       </button>
                     ))}
                   </div>
@@ -425,17 +425,17 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
                 {/* Score */}
                 <div className="p-3.5 glass-panel-subtle rounded-2xl flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-bold text-white">ATS Resume Quality</p>
-                    <p className="text-[10px] text-slate-400 mt-0.5">Optimized for AI interviewer</p>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white">ATS Resume Quality</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Optimized for AI interviewer</p>
                   </div>
-                  <div className="w-10 h-10 rounded-full border-2 border-cyan-400 flex items-center justify-center font-extrabold text-cyan-300 text-xs bg-slate-900 shadow-xs">
+                  <div className="w-10 h-10 rounded-full border-2 border-cyan-500 flex items-center justify-center font-extrabold text-cyan-600 dark:text-cyan-300 text-xs bg-slate-100 dark:bg-slate-900 shadow-xs">
                     {resumeData.resume_quality_score || 92}
                   </div>
                 </div>
 
                 <div className="p-3.5 bg-cyan-500/10 rounded-2xl border border-cyan-500/20 flex gap-2.5">
-                  <FaLightbulb className="text-cyan-400 shrink-0 mt-0.5" size={13} />
-                  <p className="text-xs text-cyan-200 leading-relaxed">
+                  <FaLightbulb className="text-cyan-500 dark:text-cyan-400 shrink-0 mt-0.5" size={13} />
+                  <p className="text-xs text-cyan-900 dark:text-cyan-200 leading-relaxed font-medium">
                     Live interactive avatar will test you on <strong>{interviewMode}</strong> concepts.
                   </p>
                 </div>
@@ -443,7 +443,7 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
             ) : (
               <div className="h-48 flex flex-col items-center justify-center text-slate-400 py-12">
                 <FaBullseye size={28} className="mb-2 opacity-30 text-slate-400" />
-                <p className="text-xs text-center text-slate-400 font-medium">
+                <p className="text-xs text-center text-slate-500 dark:text-slate-400 font-medium">
                   Summary will appear automatically after resume parsing
                 </p>
               </div>

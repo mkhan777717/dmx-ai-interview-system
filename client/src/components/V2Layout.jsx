@@ -24,7 +24,7 @@ const NavItem = ({ icon: Icon, label, active, onClick }) => (
     }`}
   >
     <Icon className={`text-base shrink-0 transition-colors ${active ? 'text-cyan-400' : 'text-slate-500'}`} />
-    <span className="text-sm font-medium">{label}</span>
+    <span className="text-sm font-medium tracking-wide">{label}</span>
     {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-cyan-400 ring-4 ring-cyan-400/20" />}
   </div>
 )
@@ -84,8 +84,9 @@ export default function V2Layout({
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-cyan-500/20">
             <BsStars size={15} />
           </div>
-          <h1 className="text-lg font-bold text-white tracking-tight font-['Outfit'] flex items-center gap-1">
-            InterviewIQ <span className="bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-[9px] px-1.5 py-0.5 rounded-md font-extrabold uppercase">AI</span>
+          <h1 className="text-lg font-extrabold text-white tracking-tight font-['Outfit'] flex items-center gap-1">
+            Interview<span className="font-calligraphy italic font-normal text-cyan-400">IQ</span>
+            <span className="bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-[9px] px-1.5 py-0.5 rounded-md font-extrabold uppercase tracking-wider">AI</span>
           </h1>
         </div>
 
@@ -93,7 +94,7 @@ export default function V2Layout({
         <nav className="px-3 pt-4 flex-1 space-y-0.5 custom-scrollbar">
 
           {/* Section: Main */}
-          <p className="px-3 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">Main Menu</p>
+          <p className="px-3 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-2 font-mono">Main Menu</p>
           <NavItem onClick={() => navigate('/dashboard')} icon={FaThLarge} label="Overview" active={location.pathname === '/dashboard'} />
           <NavItem onClick={() => navigate('/v2/interview')} icon={FaMicrophoneAlt} label="Start Interview" active={location.pathname === '/v2/interview' || location.pathname === '/interview'} />
           <NavItem onClick={() => navigate('/history')} icon={FaHistory} label="My Reports" active={location.pathname === '/history' || location.pathname.startsWith('/report')} />
@@ -102,7 +103,7 @@ export default function V2Layout({
           {/* Section: Recruiter */}
           {hasPermission(userRole, 'nav.recruiterDashboard') && (
             <>
-              <p className="px-3 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mt-5 mb-2">Recruiter</p>
+              <p className="px-3 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mt-5 mb-2 font-mono">Recruiter</p>
               <NavItem onClick={() => navigate('/recruiter')} icon={FaUsersCog} label="Recruiter Hub" active={location.pathname === '/recruiter'} />
               <NavItem onClick={() => navigate('/admin')} icon={FaShieldAlt} label="Candidate Pipeline" active={location.pathname === '/admin'} />
             </>
@@ -111,7 +112,7 @@ export default function V2Layout({
           {/* Section: Super Admin */}
           {hasPermission(userRole, 'nav.superAdminDashboard') && (
             <>
-              <p className="px-3 text-[10px] font-extrabold text-indigo-400 uppercase tracking-wider mt-5 mb-2">Super Admin</p>
+              <p className="px-3 text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest mt-5 mb-2 font-mono">Super Admin</p>
               <NavItem onClick={() => navigate('/superadmin')} icon={FaCrown} label="Platform Control" active={location.pathname === '/superadmin'} />
             </>
           )}
@@ -138,16 +139,16 @@ export default function V2Layout({
           <div className="flex items-center gap-2.5 px-3 py-2.5 glass-card-static rounded-2xl border-white/5">
             <img
               src={userData?.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData?.name || 'User')}&background=06b6d4&color=050811&size=64`}
-              alt="User"
-              className="w-8 h-8 rounded-full object-cover shrink-0 ring-1 ring-cyan-500/40"
+              alt="Avatar"
+              className="w-8 h-8 rounded-full object-cover ring-2 ring-cyan-500/30"
             />
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-slate-200 truncate">{userData?.name || 'User'}</p>
-              <span className={`inline-block text-[8px] font-extrabold px-1.5 py-0.2 rounded-full border leading-tight ${getRoleBadgeColor(userRole)}`}>
+              <p className="text-xs font-bold text-white truncate font-['Outfit']">{userData?.name || 'User'}</p>
+              <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full border ${getRoleBadgeColor(userRole)}`}>
                 {getRoleLabel(userRole)}
               </span>
             </div>
-            <button onClick={() => navigate('/dashboard')} title="Account Settings" className="text-slate-500 hover:text-cyan-400 p-1 transition cursor-pointer shrink-0">
+            <button onClick={() => navigate('/dashboard')} title="Account Settings" className="text-slate-400 hover:text-cyan-400 p-1 transition cursor-pointer shrink-0">
               <FaEdit size={11} />
             </button>
           </div>
@@ -200,17 +201,24 @@ export default function V2Layout({
                 </button>
                 <AnimatePresence>
                   {showNotifications && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                      className="absolute right-0 top-11 w-68 glass-panel rounded-2xl shadow-2xl p-4 z-50 border border-white/10"
-                    >
-                      <h3 className="font-bold text-white text-sm mb-2 font-['Outfit']">System Notifications</h3>
-                      <div className="text-center py-4 bg-white/5 rounded-xl border border-white/5">
-                        <p className="text-xs text-slate-400">All services connected & operational</p>
-                      </div>
-                    </motion.div>
+                    <>
+                      {/* Backdrop */}
+                      <div
+                        className="fixed inset-0 z-[55]"
+                        onClick={() => setShowNotifications(false)}
+                      />
+                      <motion.div
+                        initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                        className="absolute right-0 top-full mt-2 w-68 glass-panel rounded-2xl shadow-2xl p-4 z-[60] border border-white/10 bg-slate-950/95"
+                      >
+                        <h3 className="font-bold text-white text-sm mb-2 font-['Outfit']">System Notifications</h3>
+                        <div className="text-center py-4 bg-white/5 rounded-xl border border-white/5">
+                          <p className="text-xs text-slate-400">All services connected & operational</p>
+                        </div>
+                      </motion.div>
+                    </>
                   )}
                 </AnimatePresence>
               </div>
@@ -229,32 +237,39 @@ export default function V2Layout({
                 </div>
                 <AnimatePresence>
                   {showProfileMenu && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                      className="absolute right-0 top-11 w-56 glass-panel rounded-2xl shadow-2xl p-2 z-50 border border-white/10"
-                    >
-                      <div className="px-3 py-2.5 mb-1 border-b border-white/8">
-                        <p className="font-bold text-white text-sm">{userData?.name || 'User'}</p>
-                        <p className="text-xs text-slate-400 truncate">{userData?.email}</p>
-                        <span className={`inline-block text-[9px] font-extrabold px-1.5 py-0.5 rounded-full border mt-1 ${getRoleBadgeColor(userRole)}`}>
-                          {getRoleLabel(userRole)}
-                        </span>
-                      </div>
-                      <button 
-                        onClick={() => { setShowProfileMenu(false); navigate('/dashboard') }}
-                        className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-white/5 hover:text-white rounded-xl flex items-center gap-2 transition cursor-pointer"
+                    <>
+                      {/* Backdrop — closes menu when clicking outside */}
+                      <div
+                        className="fixed inset-0 z-[55]"
+                        onClick={() => setShowProfileMenu(false)}
+                      />
+                      <motion.div
+                        initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                        className="absolute right-0 top-full mt-2 w-56 glass-panel rounded-2xl shadow-2xl p-2 z-[60] border border-white/10 bg-slate-950/95"
                       >
-                        <FaCog className="text-slate-500" size={13} /> Dashboard
-                      </button>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full text-left px-3 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-500/10 rounded-xl flex items-center gap-2 transition cursor-pointer mt-0.5"
-                      >
-                        <FaSignOutAlt size={13} /> Log out
-                      </button>
-                    </motion.div>
+                        <div className="px-3 py-2.5 mb-1 border-b border-white/8">
+                          <p className="font-bold text-white text-sm">{userData?.name || 'User'}</p>
+                          <p className="text-xs text-slate-400 truncate">{userData?.email}</p>
+                          <span className={`inline-block text-[9px] font-extrabold px-1.5 py-0.5 rounded-full border mt-1 ${getRoleBadgeColor(userRole)}`}>
+                            {getRoleLabel(userRole)}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => { setShowProfileMenu(false); navigate('/dashboard') }}
+                          className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-white/5 hover:text-white rounded-xl flex items-center gap-2 transition cursor-pointer"
+                        >
+                          <FaCog className="text-slate-500" size={13} /> Dashboard
+                        </button>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full text-left px-3 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-500/10 rounded-xl flex items-center gap-2 transition cursor-pointer mt-0.5"
+                        >
+                          <FaSignOutAlt size={13} /> Log out
+                        </button>
+                      </motion.div>
+                    </>
                   )}
                 </AnimatePresence>
               </div>

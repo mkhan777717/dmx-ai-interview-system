@@ -69,7 +69,7 @@ function Pricing() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050811] text-[#f8fafc] font-['Plus_Jakarta_Sans',sans-serif] relative overflow-hidden dark-canvas selection:bg-cyan-500/25 selection:text-cyan-200">
+    <div className="min-h-screen bg-[#050811] text-[#f8fafc] font-['Plus_Jakarta_Sans',sans-serif] relative overflow-hidden dark-canvas selection:bg-cyan-500/25 selection:text-cyan-300">
       
       {/* Background ambient drifting blobs */}
       <div className="ambient-blob bg-cyan-500/12 w-[600px] h-[600px] -top-32 left-1/4" />
@@ -90,7 +90,7 @@ function Pricing() {
               Transparent Career Investment
             </Badge>
             <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight font-['Outfit']">
-              Predictable Pricing, <span className="gradient-text">Zero Surprises</span>
+              Predictable Pricing, <span className="font-calligraphy italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400">Zero Surprises</span>
             </h1>
             <p className="mt-4 text-slate-400 text-base max-w-xl mx-auto leading-relaxed">
               Level up your interview performance with calibrated AI simulation. Choose the plan tailored to your career milestones.
@@ -102,7 +102,7 @@ function Pricing() {
                 onClick={() => setBillingCycle('monthly')}
                 className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
                   billingCycle === 'monthly'
-                    ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
+                    ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20 font-extrabold'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -112,7 +112,7 @@ function Pricing() {
                 onClick={() => setBillingCycle('annual')}
                 className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                   billingCycle === 'annual'
-                    ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
+                    ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20 font-extrabold'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -135,53 +135,45 @@ function Pricing() {
                 <div
                   className={`w-full rounded-3xl p-8 flex flex-col justify-between relative transition-all duration-300 ${
                     isMiddle
-                      ? 'bg-gradient-to-b from-slate-900/90 via-slate-950/90 to-slate-900/90 border-2 border-cyan-500/50 shadow-[0_20px_70px_-10px_rgba(6,182,212,0.25)] lg:-translate-y-3'
+                      ? 'bg-gradient-to-b from-slate-900/95 via-slate-950/95 to-slate-900/95 border-2 border-cyan-500 shadow-[0_20px_70px_-10px_rgba(6,182,212,0.3)] lg:-translate-y-3'
                       : 'glass-card-static border border-white/8 bg-slate-950/60'
                   }`}
                 >
-                  {/* Badge */}
+                  {/* Popular Badge */}
                   {plan.badge && (
-                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 text-slate-950 text-[11px] font-extrabold shadow-lg shadow-cyan-500/30 uppercase tracking-wider">
-                      ★ {plan.badge}
+                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                      <span className="px-4 py-1 rounded-full text-xs font-extrabold bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-md shadow-cyan-500/30 uppercase tracking-widest font-mono text-[10px]">
+                        {plan.badge}
+                      </span>
                     </div>
                   )}
 
                   <div>
-                    {/* Tier Name */}
-                    <h3 className="text-xl font-bold text-white font-['Outfit'] mb-2">
-                      {plan.name}
-                    </h3>
-                    <p className="text-xs text-slate-400 leading-relaxed min-h-[36px]">
-                      {plan.description}
-                    </p>
+                    {/* Header */}
+                    <div className="mb-6">
+                      <h3 className="text-xl font-bold text-white font-['Outfit'] mb-2">{plan.name}</h3>
+                      <p className="text-xs text-slate-400 leading-relaxed">{plan.description}</p>
+                    </div>
 
                     {/* Price */}
-                    <div className="my-6 pb-6 border-b border-white/10">
-                      <div className="flex items-baseline gap-1">
+                    <div className="mb-6 pb-6 border-b border-white/8">
+                      <div className="flex items-baseline gap-1.5">
                         <span className="text-4xl sm:text-5xl font-extrabold text-white font-['Outfit'] tracking-tight">
                           {plan.price}
                         </span>
                         {plan.price !== 'Custom' && (
-                          <span className="text-xs text-slate-400 font-semibold">
-                            / month
-                          </span>
+                          <span className="text-xs text-slate-400 font-semibold">/ mo</span>
                         )}
                       </div>
-                      <p className="text-[11px] text-cyan-400/90 font-medium mt-1">
-                        {plan.period}
-                      </p>
+                      <p className="text-[11px] text-slate-400 mt-1 font-medium">{plan.period}</p>
                     </div>
 
-                    {/* Features list */}
+                    {/* Features List */}
                     <div className="space-y-3.5 mb-8">
-                      <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-                        Included Features
-                      </p>
-                      {plan.features.map((feat, i) => (
-                        <div key={i} className="flex items-start gap-3 text-xs text-slate-300 font-medium">
-                          <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
-                            isMiddle ? 'bg-cyan-500/20 text-cyan-400' : 'bg-white/10 text-slate-300'
-                          }`}>
+                      <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest font-mono">Included Capabilities</p>
+                      {plan.features.map((feat, fIdx) => (
+                        <div key={fIdx} className="flex items-start gap-2.5 text-xs text-slate-300 leading-relaxed font-medium">
+                          <div className={`p-0.5 rounded-full shrink-0 mt-0.5 ${isMiddle ? 'bg-cyan-500/20 text-cyan-300' : 'bg-white/10 text-slate-300'}`}>
                             <FaCheck size={9} />
                           </div>
                           <span>{feat}</span>
@@ -191,18 +183,20 @@ function Pricing() {
                   </div>
 
                   {/* CTA Button */}
-                  <div className="pt-2">
+                  <div>
                     {isMiddle ? (
                       <GradientButton
                         onClick={() => handleSelect(plan.id)}
-                        className="w-full py-3.5 font-extrabold text-xs"
+                        className="w-full"
+                        size="md"
                       >
                         {plan.cta}
                       </GradientButton>
                     ) : (
                       <SecondaryButton
                         onClick={() => handleSelect(plan.id)}
-                        className="w-full py-3.5 font-bold text-xs"
+                        className="w-full"
+                        size="md"
                       >
                         {plan.cta}
                       </SecondaryButton>
@@ -214,22 +208,18 @@ function Pricing() {
           })}
         </div>
 
-        {/* Guarantee Banner */}
-        <SectionReveal delay={0.3} className="mt-16 max-w-3xl mx-auto text-center">
-          <div className="glass-card-static rounded-2xl p-6 border border-white/8 flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
-            <div>
-              <p className="text-sm font-bold text-white font-['Outfit']">Need Custom Org Screening for 50+ Candidates?</p>
-              <p className="text-xs text-slate-400 mt-0.5">Explore university and enterprise team quotas with dedicated support.</p>
-            </div>
-            <button
-              onClick={() => navigate('/recruiter')}
-              className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition cursor-pointer shrink-0"
-            >
-              Open Recruiter Hub
-            </button>
-          </div>
-        </SectionReveal>
-
+        {/* Bottom Guarantee */}
+        <div className="mt-16 text-center text-xs text-slate-400 flex flex-wrap items-center justify-center gap-6 font-medium">
+          <span className="flex items-center gap-1.5 text-slate-300">
+            <BsStars className="text-cyan-400" /> Instant Access
+          </span>
+          <span className="flex items-center gap-1.5 text-slate-300">
+            🔒 256-Bit SSL Encrypted
+          </span>
+          <span className="flex items-center gap-1.5 text-slate-300">
+            🔄 Cancel Anytime Without Penalty
+          </span>
+        </div>
       </main>
     </div>
   )
