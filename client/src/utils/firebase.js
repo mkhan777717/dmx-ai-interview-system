@@ -1,7 +1,7 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
-const rawApiKey = import.meta.env.VITE_FIREBASE_APIKEY || "AIzaSyAkS53c0g2FvmD3w5dn8DYp9tT60JtPuI0";
+const rawApiKey = import.meta.env.VITE_FIREBASE_APIKEY || "";
 const apiKey = String(rawApiKey).trim();
 
 // Check if API key is valid
