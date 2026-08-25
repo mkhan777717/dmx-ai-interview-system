@@ -42,13 +42,25 @@ async def google_auth(user_data: UserCreate, response: Response, db: AsyncSessio
             key="token",
             value=token,
             httponly=True,
-            secure=False,
-            samesite="lax",
+            secure=True,
+            samesite="none",
             path="/",
             max_age=7 * 24 * 60 * 60,  # 7 days
         )
 
-        return user
+        resp = UserResponse(
+            id=user.id,
+            name=user.name,
+            email=user.email,
+            credits=user.credits,
+            role=user.role.value if hasattr(user.role, 'value') else str(user.role),
+            org_id=user.org_id,
+            is_active=user.is_active,
+            created_at=user.created_at,
+            updated_at=user.updated_at,
+            token=token,
+        )
+        return resp
 
     except HTTPException:
         raise
@@ -61,7 +73,7 @@ async def google_auth(user_data: UserCreate, response: Response, db: AsyncSessio
 async def logout(response: Response):
     """Logout user"""
     try:
-        response.delete_cookie(key="token", path="/")
+        response.delete_cookie(key="token", path="/", samesite="none", secure=True)
         return {"message": "Logout Successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Logout error: {str(e)}")

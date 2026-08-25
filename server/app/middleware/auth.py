@@ -8,7 +8,7 @@ Provides:
   get_current_user()       — backward-compat shim returning user_id string.
 """
 
-from fastapi import HTTPException, Cookie, Depends, status
+from fastapi import HTTPException, Cookie, Header, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import Optional
@@ -18,16 +18,26 @@ from app.config.database import get_db
 from app.models.user import User, Role, UserContext
 
 
+def _extract_token(token: Optional[str], authorization: Optional[str]) -> Optional[str]:
+    """Extract JWT token from Cookie or Authorization: Bearer header."""
+    if token and token.strip():
+        return token.strip()
+    if authorization and authorization.strip().lower().startswith("bearer "):
+        return authorization.split(" ", 1)[1].strip()
+    return None
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Core JWT resolver
 # ─────────────────────────────────────────────────────────────────────────────
 
 async def get_current_user_ctx(
     token: Optional[str] = Cookie(None),
+    authorization: Optional[str] = Header(None),
     db: AsyncSession = Depends(get_db),
 ) -> UserContext:
     """
-    Resolve JWT cookie → UserContext.
+    Resolve JWT cookie or Bearer header → UserContext.
     Fetches the user row from DB on every request to catch:
       - Deactivated accounts
       - Role demotions (JWT may carry old role — DB is authoritative for identity)
@@ -35,10 +45,11 @@ async def get_current_user_ctx(
     NOTE: The JWT role is used for fast-path checks on low-privilege routes.
           For high-privilege actions, use require_db_role() which also asserts DB role.
     """
-    if not token:
+    jwt_token = _extract_token(token, authorization)
+    if not jwt_token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required.")
 
-    payload = verify_token(token)
+    payload = verify_token(jwt_token)
     if not payload:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token.")
 
@@ -70,15 +81,17 @@ async def get_current_user_ctx(
 
 async def get_optional_user_ctx(
     token: Optional[str] = Cookie(None),
+    authorization: Optional[str] = Header(None),
     db: AsyncSession = Depends(get_db),
 ) -> Optional[UserContext]:
     """
-    Resolve JWT cookie → UserContext if present and valid, otherwise return None.
+    Resolve JWT cookie or Bearer header → UserContext if present and valid, otherwise return None.
     Allows public routes like session check to avoid raising 401.
     """
-    if not token:
+    jwt_token = _extract_token(token, authorization)
+    if not jwt_token:
         return None
-    payload = verify_token(token)
+    payload = verify_token(jwt_token)
     if not payload:
         return None
     user_id = payload.get("userId")
@@ -103,14 +116,18 @@ async def get_optional_user_ctx(
 # Backward-compat shim (existing routes use get_current_user returning str)
 # ─────────────────────────────────────────────────────────────────────────────
 
-async def get_current_user(token: Optional[str] = Cookie(None)) -> str:
+async def get_current_user(
+    token: Optional[str] = Cookie(None),
+    authorization: Optional[str] = Header(None),
+) -> str:
     """
     Backward-compatible dependency. Returns user_id as string.
     Routes that need role checks should migrate to get_current_user_ctx().
     """
-    if not token:
+    jwt_token = _extract_token(token, authorization)
+    if not jwt_token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User does not have a token")
-    payload = verify_token(token)
+    payload = verify_token(jwt_token)
     if not payload:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token")
     user_id = payload.get("userId")
@@ -154,12 +171,14 @@ def require_db_role(*roles: Role):
     """
     async def _guard(
         token: Optional[str] = Cookie(None),
+        authorization: Optional[str] = Header(None),
         db: AsyncSession = Depends(get_db),
     ) -> UserContext:
-        if not token:
+        jwt_token = _extract_token(token, authorization)
+        if not jwt_token:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required.")
 
-        payload = verify_token(token)
+        payload = verify_token(jwt_token)
         if not payload:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token.")
 

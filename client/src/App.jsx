@@ -28,6 +28,16 @@ export const ServerUrl = (typeof import.meta !== 'undefined' && import.meta.env?
   ? import.meta.env.VITE_SERVER_URL.replace(/\/+$/, '')
   : 'http://localhost:8000'
 
+// Automatically attach credentials and Authorization Bearer token to all outgoing API requests
+axios.interceptors.request.use((config) => {
+  config.withCredentials = true
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
 function App() {
   const dispatch = useDispatch()
 
