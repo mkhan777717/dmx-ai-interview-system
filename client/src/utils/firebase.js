@@ -1,12 +1,13 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
-const apiKey = import.meta.env.VITE_FIREBASE_APIKEY || "";
+const rawApiKey = import.meta.env.VITE_FIREBASE_APIKEY || "";
+const apiKey = String(rawApiKey).trim();
 
 // Check if API key is valid
 const isKeyValid =
   Boolean(apiKey) &&
-  apiKey.trim() !== "" &&
+  apiKey !== "" &&
   !apiKey.toLowerCase().includes("your_") &&
   !apiKey.toLowerCase().includes("dummy") &&
   !apiKey.toLowerCase().includes("placeholder") &&
