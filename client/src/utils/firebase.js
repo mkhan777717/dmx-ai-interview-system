@@ -1,24 +1,25 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
-const apiKey = import.meta.env.VITE_FIREBASE_APIKEY;
+const apiKey = import.meta.env.VITE_FIREBASE_APIKEY || "";
 
-// Check if API key is missing, empty, or a known placeholder
-if (
-  !apiKey ||
-  apiKey.trim() === "" ||
-  apiKey.toLowerCase().includes("your_") ||
-  apiKey.toLowerCase().includes("dummy") ||
-  apiKey.toLowerCase().includes("placeholder") ||
-  apiKey.toLowerCase().includes("fake")
-) {
-  const errorMsg = "CRITICAL CONFIGURATION ERROR: The environment variable VITE_FIREBASE_APIKEY is missing or configured with a placeholder value in your client/.env file. Please configure a valid Firebase Web API key.";
-  console.error(errorMsg);
-  throw new Error(errorMsg);
+// Check if API key is valid
+const isKeyValid =
+  Boolean(apiKey) &&
+  apiKey.trim() !== "" &&
+  !apiKey.toLowerCase().includes("your_") &&
+  !apiKey.toLowerCase().includes("dummy") &&
+  !apiKey.toLowerCase().includes("placeholder") &&
+  !apiKey.toLowerCase().includes("fake");
+
+if (!isKeyValid) {
+  console.warn(
+    "⚠️ VITE_FIREBASE_APIKEY is missing or configured with a placeholder. Google Sign-In will require a valid key in environment variables."
+  );
 }
 
 const firebaseConfig = {
-  apiKey: apiKey,
+  apiKey: isKeyValid ? apiKey : "AIzaSyDummyKeyForAppLoadGracefulFallback123",
   authDomain: "fir-demo-cdea3.firebaseapp.com",
   databaseURL: "https://fir-demo-cdea3-default-rtdb.firebaseio.com",
   projectId: "fir-demo-cdea3",
@@ -28,10 +29,9 @@ const firebaseConfig = {
   measurementId: "G-YR1WE67L9F"
 };
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
 const auth = getAuth(app);
-
 const provider = new GoogleAuthProvider();
 
-export { auth, provider };
+export { auth, provider, isKeyValid };

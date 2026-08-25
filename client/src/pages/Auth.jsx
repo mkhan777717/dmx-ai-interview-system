@@ -3,7 +3,7 @@ import { BsRobot, BsStars, BsShieldCheck } from 'react-icons/bs'
 import { motion } from 'motion/react'
 import { FcGoogle } from 'react-icons/fc'
 import { signInWithPopup } from 'firebase/auth'
-import { auth, provider } from '../utils/firebase'
+import { auth, provider, isKeyValid } from '../utils/firebase'
 import axios from 'axios'
 import { ServerUrl } from '../App'
 import { useDispatch } from 'react-redux'
@@ -20,6 +20,10 @@ function Auth({ isModel = false }) {
   const [loading, setLoading] = useState(false)
 
   const handleGoogleAuth = async () => {
+    if (!isKeyValid) {
+      setError('Google Sign-in is not configured. Please set VITE_FIREBASE_APIKEY in Vercel environment variables.')
+      return
+    }
     try {
       setError(null)
       setLoading(true)
