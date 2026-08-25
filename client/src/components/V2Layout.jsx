@@ -61,9 +61,12 @@ export default function V2Layout({
   const handleLogout = async () => {
     try {
       await axios.get(ServerUrl + '/api/auth/logout', { withCredentials: true })
+      localStorage.removeItem('token')
       dispatch(setUserData(null))
       navigate('/auth')
     } catch {
+      localStorage.removeItem('token')
+      dispatch(setUserData(null))
       navigate('/auth')
     }
   }

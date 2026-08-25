@@ -46,11 +46,16 @@ function Navbar() {
   const handleLogout = async () => {
     try {
       await axios.get(ServerUrl + '/api/auth/logout', { withCredentials: true })
+      localStorage.removeItem('token')
       dispatch(setUserData(null))
       setShowUserPopup(false)
       navigate('/')
     } catch (error) {
       console.error(error)
+      localStorage.removeItem('token')
+      dispatch(setUserData(null))
+      setShowUserPopup(false)
+      navigate('/')
     }
   }
 

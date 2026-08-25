@@ -37,6 +37,9 @@ function Auth({ isModel = false }) {
       )
 
       const userData = result.data
+      if (userData.token) {
+        localStorage.setItem('token', userData.token)
+      }
       dispatch(setUserData(userData))
 
       if (!isModel) {

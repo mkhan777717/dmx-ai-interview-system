@@ -74,6 +74,7 @@ class UserResponse(BaseModel):
     is_active: bool = True
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+    token: Optional[str] = None
 
     class Config:
         from_attributes = True
