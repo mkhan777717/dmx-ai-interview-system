@@ -24,7 +24,9 @@ import TestAvatar     from './pages/TestAvatar'
 import RoleGuard from './components/RoleGuard'
 import ImpersonationBanner from './components/ImpersonationBanner'
 
-export const ServerUrl = 'http://localhost:8000'
+export const ServerUrl = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SERVER_URL)
+  ? import.meta.env.VITE_SERVER_URL.replace(/\/+$/, '')
+  : 'http://localhost:8000'
 
 function App() {
   const dispatch = useDispatch()
