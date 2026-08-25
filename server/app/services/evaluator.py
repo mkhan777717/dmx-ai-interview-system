@@ -62,13 +62,13 @@ def _compute_text_similarity(text_a: str, text_b: str) -> float:
         return 0.0
 
     # Build word + bigram frequency vectors
-    def get_ngrams(words):
-        counts = {}
-        for w in words:
-            counts[w] = counts.get(w, 0) + 1
-        for i in range(len(words) - 1):
-            bg = f"{words[i]}_{words[i+1]}"
-            counts[bg] = counts.get(bg, 0) + 1.5
+    def get_ngrams(words_list: List[str]) -> Dict[str, float]:
+        counts: Dict[str, float] = {}
+        for w in words_list:
+            counts[w] = counts.get(w, 0.0) + 1.0
+        for i in range(len(words_list) - 1):
+            bg = f"{words_list[i]}_{words_list[i+1]}"
+            counts[bg] = counts.get(bg, 0.0) + 1.5
         return counts
 
     vec_a = get_ngrams(words_a)

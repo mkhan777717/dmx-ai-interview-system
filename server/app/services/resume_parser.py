@@ -4,16 +4,23 @@ import httpx
 import json
 from app.config.settings import settings
 
+from typing import Any
+
+fitz: Any = None
 try:
-    import pymupdf as fitz
+    import pymupdf as _pymupdf
+    fitz = _pymupdf
 except ImportError:
     try:
-        import fitz
+        import fitz as _fitz
+        fitz = _fitz
     except ImportError:
         fitz = None
 
+pypdf: Any = None
 try:
-    import pypdf
+    import pypdf as _pypdf
+    pypdf = _pypdf
 except ImportError:
     pypdf = None
 
@@ -32,7 +39,11 @@ async def parse_resume(pdf_bytes: bytes) -> dict:
         try:
             doc_pdf = fitz.open(stream=pdf_bytes, filetype="pdf")
             for page in doc_pdf:
-                text += page.get_text()
+                extracted = page.get_text()
+                if isinstance(extracted, str):
+                    text += extracted
+                elif extracted:
+                    text += str(extracted)
             doc_pdf.close()
         except Exception as e:
             print(f"PyMuPDF extract warning: {e}")
