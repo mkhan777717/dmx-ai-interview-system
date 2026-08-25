@@ -1,8 +1,19 @@
-import fitz  # PyMuPDF
+import io
 import re
 import httpx
 import json
 from app.config.settings import settings
+
+try:
+    import fitz  # PyMuPDF
+except ImportError:
+    fitz = None
+
+try:
+    import pypdf
+except ImportError:
+    pypdf = None
+
 
 async def parse_resume(pdf_bytes: bytes) -> dict:
     """
@@ -13,11 +24,27 @@ async def parse_resume(pdf_bytes: bytes) -> dict:
         dict with name, email, phone, skills, education, experience, predicted_role
     """
     # ── Extract raw text ──────────────────────────────────────────────────────
-    doc_pdf = fitz.open(stream=pdf_bytes, filetype="pdf")
     text = ""
-    for page in doc_pdf:
-        text += page.get_text()
-    doc_pdf.close()
+    if fitz is not None:
+        try:
+            doc_pdf = fitz.open(stream=pdf_bytes, filetype="pdf")
+            for page in doc_pdf:
+                text += page.get_text()
+            doc_pdf.close()
+        except Exception as e:
+            print(f"PyMuPDF extract warning: {e}")
+
+    if not text.strip() and pypdf is not None:
+        try:
+            reader = pypdf.PdfReader(io.BytesIO(pdf_bytes))
+            for page in reader.pages:
+                text += page.extract_text() or ""
+        except Exception as e:
+            print(f"pypdf extract warning: {e}")
+
+    if not text.strip():
+        # Last resort fallback: decode utf-8 printable characters
+        text = pdf_bytes.decode("utf-8", errors="ignore")
 
     # Truncate text if it's absurdly long to save tokens
     text = text[:15000]
