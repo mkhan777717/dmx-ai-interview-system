@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     GROQ_API_KEY: str = ""
     OPENAI_API_KEY: str = ""
     REDIS_URL: str = "redis://localhost:6379"
+    # Client & CORS
+    CLIENT_URL: str = "http://localhost:5173"
+    ALLOWED_ORIGINS: str = ""
     # TruGen avatar service
     TRUGEN_API_KEY: str = ""
     # LiveKit real-time video room
