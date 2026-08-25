@@ -1,7 +1,7 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
-const apiKey = import.meta.env.VITE_FIREBASE_APIKEY || "";
+const apiKey = import.meta.env.VITE_FIREBASE_APIKEY || "AIzaSyAkS53c0g2FvmD3w5dn8DYp9tT60JtPuI0";
 
 // Check if API key is valid
 const isKeyValid =
@@ -12,21 +12,14 @@ const isKeyValid =
   !apiKey.toLowerCase().includes("placeholder") &&
   !apiKey.toLowerCase().includes("fake");
 
-if (!isKeyValid) {
-  console.warn(
-    "⚠️ VITE_FIREBASE_APIKEY is missing or configured with a placeholder. Google Sign-In will require a valid key in environment variables."
-  );
-}
-
 const firebaseConfig = {
-  apiKey: isKeyValid ? apiKey : "AIzaSyDummyKeyForAppLoadGracefulFallback123",
-  authDomain: "fir-demo-cdea3.firebaseapp.com",
-  databaseURL: "https://fir-demo-cdea3-default-rtdb.firebaseio.com",
-  projectId: "fir-demo-cdea3",
-  storageBucket: "fir-demo-cdea3.firebasestorage.app",
-  messagingSenderId: "920633223709",
-  appId: "1:920633223709:web:a89d0f742889d8f0f8b4f4",
-  measurementId: "G-YR1WE67L9F"
+  apiKey: apiKey,
+  authDomain: "interviewiq-app-6f9b4.firebaseapp.com",
+  projectId: "interviewiq-app-6f9b4",
+  storageBucket: "interviewiq-app-6f9b4.firebasestorage.app",
+  messagingSenderId: "16112584755",
+  appId: "1:16112584755:web:f1d52e53c73d6aba34fb46",
+  measurementId: "G-HELTJCZPQT"
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
