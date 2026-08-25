@@ -1,28 +1,27 @@
 import io
 import re
+import importlib
 import httpx
 import json
+from typing import Any
 from app.config.settings import settings
 
-from typing import Any
 
-fitz: Any = None
-try:
-    import pymupdf as _pymupdf
-    fitz = _pymupdf
-except ImportError:
+def _get_fitz() -> Any:
     try:
-        import fitz as _fitz
-        fitz = _fitz
-    except ImportError:
-        fitz = None
+        return importlib.import_module("pymupdf")
+    except Exception:
+        try:
+            return importlib.import_module("fitz")
+        except Exception:
+            return None
 
-pypdf: Any = None
-try:
-    import pypdf as _pypdf
-    pypdf = _pypdf
-except ImportError:
-    pypdf = None
+
+def _get_pypdf() -> Any:
+    try:
+        return importlib.import_module("pypdf")
+    except Exception:
+        return None
 
 
 async def parse_resume(pdf_bytes: bytes) -> dict:
@@ -35,9 +34,10 @@ async def parse_resume(pdf_bytes: bytes) -> dict:
     """
     # ── Extract raw text ──────────────────────────────────────────────────────
     text = ""
-    if fitz is not None:
+    fitz_mod = _get_fitz()
+    if fitz_mod is not None:
         try:
-            doc_pdf = fitz.open(stream=pdf_bytes, filetype="pdf")
+            doc_pdf = fitz_mod.open(stream=pdf_bytes, filetype="pdf")
             for page in doc_pdf:
                 extracted = page.get_text()
                 if isinstance(extracted, str):
@@ -48,11 +48,12 @@ async def parse_resume(pdf_bytes: bytes) -> dict:
         except Exception as e:
             print(f"PyMuPDF extract warning: {e}")
 
-    if not text.strip() and pypdf is not None:
+    pypdf_mod = _get_pypdf()
+    if not text.strip() and pypdf_mod is not None:
         try:
-            reader = pypdf.PdfReader(io.BytesIO(pdf_bytes))
+            reader = pypdf_mod.PdfReader(io.BytesIO(pdf_bytes))
             for page in reader.pages:
-                text += page.extract_text() or ""
+                text += str(page.extract_text() or "")
         except Exception as e:
             print(f"pypdf extract warning: {e}")
 
