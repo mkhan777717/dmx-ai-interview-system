@@ -1,81 +1,110 @@
-# 🎯 InterviewIQ v2.0 — AI-Powered Real-Time Interview Platform
+# 🎯 InterviewIQ.AI — Enterprise AI-Powered Career & Interview Studio
 
-InterviewIQ is an enterprise-grade AI technical and behavioral interview platform. Built with **FastAPI (Python 3.13)**, **PostgreSQL (SQLAlchemy 2.0 AsyncPG)**, **LiveKit Real-Time WebRTC**, **TruGen.AI Video Avatars**, and **React 19 (Vite 7)**.
+<div align="center">
+  <img src="client/public/logo.png" alt="InterviewIQ.AI Logo" width="120" height="120" style="border-radius: 24px;" />
+  <br />
+  <p><strong>Master tech, behavioral, and system design interviews with lifelike real-time AI interviewers and industry-calibrated scoring.</strong></p>
+
+  [![React 19](https://img.shields.io/badge/React-19-61dafb.svg?style=flat-square&logo=react)](https://react.dev)
+  [![Vite 7](https://img.shields.io/badge/Vite-7-646cff.svg?style=flat-square&logo=vite)](https://vitejs.dev)
+  [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com)
+  [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-336791.svg?style=flat-square&logo=postgresql)](https://www.postgresql.org)
+  [![LiveKit](https://img.shields.io/badge/LiveKit-WebRTC-FF4F00.svg?style=flat-square&logo=webrtc)](https://livekit.io)
+  [![TailwindCSS v4](https://img.shields.io/badge/TailwindCSS-v4-06B6D4.svg?style=flat-square&logo=tailwindcss)](https://tailwindcss.com)
+</div>
 
 ---
 
-## 🌟 Key Features
+## 🌟 Key Innovations & Capabilities
 
-### 🎭 Real-Time AI Video Avatar (TruGen.AI & LiveKit)
-- **Real-Time Lip-Sync Video**: Live interactive video avatar powered by TruGen.AI and LiveKit Agents.
+### 🧠 Multi-Stage Comprehensive Scoring Engine
+- **LLM Multi-Criteria Rubric Evaluation**:
+  - Technical Depth & Accuracy (0.0–10.0)
+  - Core Concept Coverage & Completeness (0.0–10.0)
+  - Communication Quality, Structure & Articulation (0.0–10.0)
+  - Code Correctness & Algorithmic Complexity (DSA & Coding rounds)
+- **Calibrated Semantic & Linguistic Fallback**:
+  - Non-linear calibrated Sentence-Transformer (`all-MiniLM-L6-v2`) similarity matching.
+  - Sentence-level localized concept verification.
+  - Communication quality telemetry: Type-Token Ratio vocabulary richness, structural signposts, filler words rate, and length adequacy.
+- **75/25 Blended Composite**: Synthesizes deep AI evaluation with deterministic signals for maximum objectivity and reliability.
+
+### ⚡ Live In-Session Performance Tracker
+- **Real-Time Scorecard Gauge**: Displays candidate's cumulative rating (`✦ Strong Hire`, `✦ Hire Track`, `✦ Borderline`, `✦ Developing`) updating live after every answer.
+- **Dynamic Competency Bars**: Tracks Technical Depth, Concept Coverage, and Communication Quality in real time.
+- **Timeline Question Badges**: Live score pills rendered alongside completed questions in the interactive session timeline.
+- **AI Instant Evaluation Card**: Displays granular feedback, quoted justifications, covered concept tags (`✓`), and gap tags (`⚠`).
+
+### 🎭 Real-Time AI Video Avatars (TruGen.AI & LiveKit)
+- **Interactive 3D Video Avatar**: Real-time video stream powered by TruGen.AI and LiveKit Agents.
 - **Dynamic Interviewer Personas**:
   - **Alex Vance** (`Technical & System Design` — Crisp male persona)
   - **Sophia Chen** (`Behavioral & Culture Fit` — Empathetic female persona)
   - **Marcus Brody** (`Executive & Leadership` — Authoritative male persona)
-- **Persona-Accurate Voice Mapping**: TTS synthesizes gender- and persona-matched audio (OpenAI TTS with macOS system fallback).
-- **Seamless Degradation**: Layered fallback ensuring uninterrupted interview flow (LiveKit WebRTC Video Track ➔ High-Definition Video Loop ➔ Audio Speech Synthesis).
+- **Layered Fallback Resilience**: `TruGen LiveKit WebRTC ➔ Neural Avatar with micro-expressions & TTS ➔ High-definition video loop`.
 
-### 🎙️ Voice & Audio Pipeline
-- **Speech-to-Text (STT)**: Sub-second audio transcription via Groq Whisper (`whisper-large-v3-turbo`).
-- **Natural Text-to-Speech (TTS)**: High-quality WAV audio synthesized with OpenAI TTS (`tts-1`) / macOS native fallback.
-- **Continuous STT & Gating**: Real-time microphone capture and speech gating for natural conversational turns.
+### 🎙️ Sub-Second Voice & Audio Pipeline
+- **Speech-to-Text (STT)**: Ultra-fast transcription via Groq Whisper (`whisper-large-v3-turbo`).
+- **Natural Text-to-Speech (TTS)**: High-quality WAV synthesis with OpenAI TTS (`tts-1`) and macOS native speech fallback.
+- **Echo Cancellation & Auto-Gain**: Browser WebRTC audio capture with noise suppression.
 
 ### 🏢 Multi-Role Access Control (RBAC)
-- **Candidate**: Interactive voice/coding interview rooms, real-time hints, detailed performance scorecards, and tailored coaching insights.
-- **Recruiter**: Job description parsing, rubric configuration, candidate evaluation metrics, and score overrides.
-- **SuperAdmin**: Platform analytics, organization management, recruiter provisioning, impersonation mode, and audit logs.
-
-### 🤖 Adaptive Assessment Engine
-- **Sentence Transformers Semantic Scoring**: Real-time answer evaluation across relevance, technical depth, and communication clarity.
-- **Adaptive Difficulty Adjustment**: Automatically adapts question difficulty based on consecutive candidate responses.
-- **Automated Follow-ups**: Generates targeted follow-up questions when responses miss core technical concepts.
-- **Anti-Cheat Integrity Tracking**: Monitors and logs candidate tab switches and session anomalies.
+- **Candidate Hub**: Voice/coding interview rooms, real-time hints, multi-language Monaco IDE, detailed scorecard reports, and personalized improvement roadmaps.
+- **Recruiter Screening Hub**: Organization candidate pipeline, JD parsing, rubric customization, score distribution analytics, and candidate interview report access.
+- **SuperAdmin Studio**: Global platform analytics, organization management, recruiter provisioning, user impersonation, and immutable audit logs.
 
 ---
 
 ## 🛠️ Technology Stack
 
-### Backend
-- **Framework**: FastAPI (Python 3.13, async/await)
-- **Database & ORM**: PostgreSQL with SQLAlchemy 2.0 (`asyncpg` async engine) & Alembic
-- **WebRTC & Avatars**: LiveKit (`livekit-api`, `livekit-agents`), TruGen.AI
-- **NLP & AI**: OpenRouter AI, Groq SDK, Sentence-Transformers, PyMuPDF, Scikit-Learn
-- **Authentication**: JWT & OAuth RBAC middleware
-
-### Frontend
-- **Framework**: React 19, Vite 7, React Router v7
-- **State Management**: Redux Toolkit & React-Redux
-- **Styling & UI**: TailwindCSS v4, Motion animations, React Icons, Monaco Code Editor, Recharts
-- **LiveKit Client**: `livekit-client`, `@livekit/components-react`, `@aiteammate/agent-widget`
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend** | React 19, Vite 7, React Router v7, Redux Toolkit, TailwindCSS v4, Motion (Framer), Monaco Code Editor, Recharts, Lucide / React Icons |
+| **Backend API** | FastAPI (Python 3.13, async/await), Uvicorn, Pydantic v2 |
+| **Database & ORM** | PostgreSQL, SQLAlchemy 2.0 (`asyncpg` async driver), Alembic migrations |
+| **WebRTC & Video** | LiveKit API & Client, `@aiteammate/agent-widget`, TruGen.AI SDK |
+| **AI / Machine Learning** | OpenRouter (GPT-4o-mini / GPT-4o), Groq SDK (Whisper), Sentence-Transformers, Scikit-Learn, PyMuPDF |
+| **Security & Auth** | OAuth 2.0 (Google Auth), JWT cookies, Role-Based Access Control (RBAC), Anti-Cheat Telemetry |
 
 ---
 
-## 📁 Repository Structure
+## 📁 Project Architecture & Clean File Structure
 
 ```
-.
-├── client/                     # Frontend Application (React 19 + Vite 7)
-│   ├── src/
-│   │   ├── components/         # TruGenVideoInterviewer, TrugenWidget, Monaco Editor, V2Room
-│   │   ├── pages/              # V2Interview, Dashboard, Recruiter, SuperAdmin, MeetingRoom
-│   │   ├── redux/              # Redux Toolkit slices & store
-│   │   └── App.jsx             # Main routing and auth wrappers
-│   ├── package.json            # Frontend dependencies
-│   └── vite.config.js          # Vite build & COOP headers configuration
+ai-based-interview-system/
+├── package.json                # Root proxy scripts (build, dev, preview, server)
+├── .gitignore                  # Root ignore configuration
 │
-├── server/                     # Backend Application (FastAPI + PostgreSQL)
+├── client/                     # Frontend Application (React 19 + Vite 7)
+│   ├── public/                 # Static assets (logo.png, favicon.png)
+│   ├── src/
+│   │   ├── components/         # Reusable UI & Core Components
+│   │   │   ├── ui/             # Design system tokens (buttons, badges, inputs)
+│   │   │   ├── HumanAvatar.jsx # Neural animated avatar with micro-expressions
+│   │   │   ├── TrugenWidget.jsx# TruGen WebRTC widget with ErrorBoundary & fallback
+│   │   │   ├── V2InterviewRoom.jsx # Live interview room with IDE & dynamic scoreboard
+│   │   │   ├── V2Layout.jsx    # Unified studio sidebar layout
+│   │   │   └── V2Report.jsx    # Detailed performance scorecard & analytics
+│   │   ├── pages/              # Route views (Home, Auth, Dashboard, Recruiter, SuperAdmin, Report)
+│   │   ├── redux/              # Redux Toolkit state slices
+│   │   ├── App.jsx             # Main router & RBAC route guards
+│   │   └── index.css           # Universal dark-theme design tokens & typography
+│   ├── package.json
+│   └── vite.config.js
+│
+├── server/                     # Backend API Application (FastAPI + PostgreSQL)
 │   ├── app/
-│   │   ├── config/             # Settings, database connection, JWT handler
+│   │   ├── config/             # App settings, database connection, JWT handler
 │   │   ├── middleware/         # RBAC role authentication middleware
-│   │   ├── models/             # SQLAlchemy ORM models (User, V2Interview, Organization)
-│   │   ├── routes/             # API routes (v2_interview, tts, transcribe, livekit, etc.)
-│   │   └── services/           # AI services (evaluator, question_selector, avatar_service, tts)
+│   │   ├── models/             # SQLAlchemy ORM models (User, V2Interview, V2Answer, AuditLog)
+│   │   ├── routes/             # REST & WebRTC routes (v2_interview, admin, recruiter, superadmin, auth)
+│   │   └── services/           # Business logic (evaluator, question_selector, resume_parser, jd_parser)
 │   ├── data/
-│   │   └── question_bank.csv   # Comprehensive technical & behavioral interview questions
+│   │   └── question_bank.csv   # Calibrated technical & behavioral question repository
 │   ├── main.py                 # FastAPI application entry point
-│   ├── requirements.txt        # Python package dependencies
-│   ├── seed_superadmin.py      # Database seed script for SuperAdmin account
-│   └── .env.example            # Environment variables template
+│   ├── requirements.txt        # Python dependencies
+│   ├── seed_superadmin.py      # SuperAdmin initial seeding utility
+│   └── .env.example
 │
 └── avatar-service/             # Optional Wav2Lip containerized video generation service
 ```
@@ -85,93 +114,83 @@ InterviewIQ is an enterprise-grade AI technical and behavioral interview platfor
 ## 🚀 Quick Start Guide
 
 ### Prerequisites
+- **Node.js**: `v18+` (npm v9+)
 - **Python**: `3.12` or `3.13`
-- **Node.js**: `18+` (npm v9+)
-- **PostgreSQL**: `14+` running locally or via cloud connection
+- **PostgreSQL**: `14+` running locally or cloud-hosted
 
 ---
 
-### 1. Backend Setup
+### 1. Unified Setup (Recommended)
+
+From the project root:
 
 ```bash
-# Navigate to the server directory
-cd server
+# Install frontend dependencies
+npm --prefix client install
 
-# Create and activate virtual environment
+# Setup backend environment
+cd server
 python3 -m venv venv
 source venv/bin/activate
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Create server/.env file from template
 cp .env.example .env
 
-# Edit server/.env and configure your API keys (Database, OpenRouter, Groq, OpenAI, LiveKit)
+# Configure your keys in server/.env (DATABASE_URL, OPENROUTER_API_KEY, GROQ_API_KEY, etc.)
 
-# Run migrations and seed SuperAdmin user
+# Seed database with initial superadmin
 python seed_superadmin.py
-
-# Start the FastAPI server
-python main.py
+cd ..
 ```
-
-- **API Base URL**: `http://localhost:8000`
-- **Interactive Swagger Docs**: `http://localhost:8000/docs`
-- **Health Check**: `http://localhost:8000/api/health`
 
 ---
 
-### 2. Frontend Setup
+### 2. Running Locally
 
 ```bash
-# Navigate to the client directory
-cd client
+# Start backend server (FastAPI on http://localhost:8000)
+cd server && ./venv/bin/python main.py
 
-# Install dependencies
-npm install
-
-# Start development server
+# Start frontend server (Vite on http://localhost:5173)
 npm run dev
 ```
 
-- **Frontend App**: `http://localhost:5173`
+- **Frontend App**: [http://localhost:5173](http://localhost:5173)
+- **Backend API**: [http://localhost:8000](http://localhost:8000)
+- **Interactive Swagger Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Health Check**: [http://localhost:8000/api/health](http://localhost:8000/api/health)
 
 ---
 
-## 🔒 API Routes Summary
+### 3. Production Build
+
+```bash
+# Build frontend for production
+npm run build
+```
+
+---
+
+## 🔒 API Endpoints Overview
 
 | Method | Endpoint | Access | Description |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/api/health` | Public | System health check and RBAC status |
-| `POST` | `/api/auth/google` | Public | Google OAuth login & JWT issuance |
-| `GET` | `/api/livekit/token/{room}` | Candidate / Auth | Issue LiveKit token & trigger TruGen cloud avatar |
-| `POST` | `/api/v2/speak` | Public / Auth | Text-to-Speech audio synthesis (WAV with persona voices) |
-| `POST` | `/api/v2/transcribe` | Public / Auth | Groq Whisper speech-to-text transcription |
-| `POST` | `/api/v2/interview/start` | Candidate | Start dynamic AI interview session |
-| `POST` | `/api/v2/interview/submit` | Candidate | Submit candidate answer for real-time scoring |
-| `POST` | `/api/v2/interview/hint` | Candidate | Request contextual guidance & hint |
-| `POST` | `/api/v2/interview/finish` | Candidate | Complete interview and generate scorecard |
-| `GET` | `/api/recruiter/candidates` | Recruiter | View candidate submissions and reports |
-| `GET` | `/api/superadmin/users` | SuperAdmin | Platform administration & user management |
-
----
-
-## 🧪 Testing & Verification
-
-```bash
-# Run client linter and production build
-cd client
-npm run lint
-npm run build
-
-# Verify backend routes and imports
-cd server
-./venv/bin/python -m compileall app/ main.py
-```
+| `GET` | `/api/health` | Public | System status and RBAC diagnostics |
+| `GET` | `/api/v2/stats` | Public | Real-time platform statistics for landing page |
+| `POST` | `/api/auth/google` | Public | Google OAuth login & JWT cookie issuance |
+| `POST` | `/api/v2/resume/parse` | Candidate | PDF resume semantic parsing & role extraction |
+| `POST` | `/api/v2/jd/parse` | Candidate / Recruiter | Job description skill & requirement extraction |
+| `POST` | `/api/v2/interview/start` | Candidate | Initialize adaptive AI mock interview session |
+| `POST` | `/api/v2/interview/submit` | Candidate | Submit answer for multi-stage LLM/embedding scoring |
+| `POST` | `/api/v2/interview/hint` | Candidate | Request contextual hint & guidance |
+| `POST` | `/api/v2/interview/finish` | Candidate | Force-complete or conclude interview and generate report |
+| `GET` | `/api/v2/interview/history` | Candidate / Auth | Retrieve user's completed and in-progress reports |
+| `GET` | `/api/v2/interview/report/{id}` | Candidate / Recruiter | Retrieve full scorecard with question-by-question breakdown |
+| `GET` | `/api/admin/analytics` | Recruiter / Admin | Aggregated organization interview metrics & score distribution |
+| `GET` | `/api/recruiter/candidates` | Recruiter | Candidate screening list with report links |
+| `GET` | `/api/superadmin/audit-logs` | SuperAdmin | Immutable security and session audit logs |
 
 ---
 
 ## 📜 License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is open-source and available under the [MIT License](LICENSE).

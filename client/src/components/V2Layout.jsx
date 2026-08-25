@@ -81,8 +81,12 @@ export default function V2Layout({
 
         {/* Logo */}
         <div className="px-5 py-4.5 flex items-center gap-2.5 cursor-pointer border-b border-white/8" onClick={() => navigate('/')}>
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-cyan-500/20">
-            <BsStars size={15} />
+          <div className="w-9 h-9 rounded-xl bg-slate-900/90 border border-cyan-500/30 flex items-center justify-center p-1 shadow-md shadow-cyan-500/20">
+            <img
+              src="/logo.png"
+              alt="InterviewIQ Logo"
+              className="w-full h-full object-contain aspect-square"
+            />
           </div>
           <h1 className="text-lg font-extrabold text-white tracking-tight font-['Outfit'] flex items-center gap-1">
             Interview<span className="font-calligraphy italic font-normal text-cyan-400">IQ</span>

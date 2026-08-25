@@ -74,8 +74,12 @@ function Navbar() {
           className="flex items-center gap-2.5 cursor-pointer group"
           onClick={() => navigate('/')}
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/25 group-hover:scale-105 group-hover:rotate-3 transition-all duration-300">
-            <BsStars size={17} />
+          <div className="w-10 h-10 rounded-xl bg-slate-900/90 border border-cyan-500/30 flex items-center justify-center p-1 shadow-lg shadow-cyan-500/20 group-hover:border-cyan-400 group-hover:scale-105 transition-all duration-300">
+            <img
+              src="/logo.png"
+              alt="InterviewIQ Logo"
+              className="w-full h-full object-contain aspect-square"
+            />
           </div>
           <h1 className="text-xl font-extrabold text-white tracking-tight flex items-center gap-1.5 font-['Outfit']">
             Interview<span className="font-calligraphy italic font-normal text-cyan-400">IQ</span>

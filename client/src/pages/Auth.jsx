@@ -88,8 +88,12 @@ function Auth({ isModel = false }) {
           </Badge>
 
           <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
-              <BsRobot size={20} />
+            <div className="w-11 h-11 bg-slate-900/90 border border-cyan-500/30 text-white rounded-2xl flex items-center justify-center p-1.5 shadow-lg shadow-cyan-500/20">
+              <img
+                src="/logo.png"
+                alt="InterviewIQ Logo"
+                className="w-full h-full object-contain aspect-square"
+              />
             </div>
             <h2 className="font-extrabold text-2xl tracking-tight text-white font-['Outfit']">
               InterviewIQ<span className="text-cyan-400">.AI</span>
