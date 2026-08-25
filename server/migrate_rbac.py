@@ -13,32 +13,30 @@ Existing users are assigned the default USER role.
 
 import asyncio
 import os
+import sys
 from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "")
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+if not DATABASE_URL:
+    print("❌ DATABASE_URL is missing or empty. Please set DATABASE_URL environment variable.")
+    sys.exit(1)
+
 # asyncpg URL → psycopg2 URL for synchronous migration
 SYNC_URL = DATABASE_URL.replace("postgresql+asyncpg://", "postgresql://")
 
 
 async def run_migration():
     import asyncpg
+    from sqlalchemy.engine.url import make_url
 
-    # Parse URL manually for asyncpg
-    url = DATABASE_URL.replace("postgresql+asyncpg://", "")
-    if "@" in url:
-        userinfo, hostdb = url.split("@", 1)
-        user = userinfo.split(":")[0]
-        password = userinfo.split(":")[1] if ":" in userinfo else None
-        if "/" in hostdb:
-            host_port, dbname = hostdb.rsplit("/", 1)
-        else:
-            host_port, dbname = hostdb, "postgres"
-        host = host_port.split(":")[0]
-        port = int(host_port.split(":")[1]) if ":" in host_port else 5432
-    else:
-        user, password, host, port, dbname = "postgres", None, "localhost", 5432, "postgres"
+    parsed = make_url(DATABASE_URL)
+    user = parsed.username or "postgres"
+    password = parsed.password
+    host = parsed.host or "localhost"
+    port = parsed.port or 5432
+    dbname = parsed.database or "postgres"
 
     conn = await asyncpg.connect(
         user=user,
