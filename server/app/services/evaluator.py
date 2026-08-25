@@ -16,34 +16,75 @@ Scoring Methodology:
 
 import json
 import re
+import math
 import asyncio
 import httpx
 from typing import List, Optional, Dict, Any, cast
-import numpy as np
-from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
 
 from app.config.settings import settings
 
 MODEL_NAME = "all-MiniLM-L6-v2"
 _model = None
+_model_attempted = False
 
 # Threshold for considering a concept "covered" in semantic fallback
 CONCEPT_SIMILARITY_THRESHOLD = 0.48
 
 
-def _get_model() -> Optional[SentenceTransformer]:
-    """Load SentenceTransformer model once and cache it."""
-    global _model
-    if _model is None:
+def _get_model():
+    """Lazy-load SentenceTransformer model if available without crashing on low RAM."""
+    global _model, _model_attempted
+    if not _model_attempted and _model is None:
+        _model_attempted = True
         try:
+            from sentence_transformers import SentenceTransformer
             print(f"Loading Sentence Transformer ({MODEL_NAME})...")
             _model = SentenceTransformer(MODEL_NAME)
             print("Sentence Transformer loaded ✅")
         except Exception as e:
-            print(f"Warning: SentenceTransformer load error: {e}")
+            print(f"SentenceTransformer not loaded (using fast heuristic engine): {e}")
             _model = None
     return _model
+
+
+def _compute_text_similarity(text_a: str, text_b: str) -> float:
+    """
+    Ultra-lightweight zero-RAM TF-IDF / N-gram cosine similarity.
+    Provides fast, deterministic semantic scoring without PyTorch memory overhead.
+    """
+    if not text_a or not text_b:
+        return 0.0
+
+    words_a = re.findall(r"\w+", text_a.lower())
+    words_b = re.findall(r"\w+", text_b.lower())
+
+    if not words_a or not words_b:
+        return 0.0
+
+    # Build word + bigram frequency vectors
+    def get_ngrams(words):
+        counts = {}
+        for w in words:
+            counts[w] = counts.get(w, 0) + 1
+        for i in range(len(words) - 1):
+            bg = f"{words[i]}_{words[i+1]}"
+            counts[bg] = counts.get(bg, 0) + 1.5
+        return counts
+
+    vec_a = get_ngrams(words_a)
+    vec_b = get_ngrams(words_b)
+
+    all_keys = set(vec_a.keys()) | set(vec_b.keys())
+    dot = sum(vec_a.get(k, 0) * vec_b.get(k, 0) for k in all_keys)
+    norm_a = math.sqrt(sum(v * v for v in vec_a.values()))
+    norm_b = math.sqrt(sum(v * v for v in vec_b.values()))
+
+    if norm_a == 0 or norm_b == 0:
+        return 0.0
+
+    raw_cos = dot / (norm_a * norm_b)
+    # Calibrated smooth scaling
+    return min(1.0, max(0.0, raw_cos * 1.35))
 
 
 # ── Communication Quality Scorer ──────────────────────────────────────────────
@@ -166,17 +207,17 @@ def evaluate_answer_heuristic(
 
     # 1. Calibrated Semantic Similarity
     if model is not None and reference_answer:
-        raw_embs = model.encode([answer, reference_answer])
-        embeddings = np.asarray(raw_embs, dtype=np.float32)
-        raw_sim = float(cosine_similarity(cast(Any, embeddings[0:1]), cast(Any, embeddings[1:2]))[0][0])
-        # Non-linear scaling: raw cosine between 0.30 and 0.85 mapped smoothly to 0.0–1.0
-        calibrated_semantic = max(0.0, min(1.0, (raw_sim - 0.25) / 0.55))
+        try:
+            import numpy as np
+            from sklearn.metrics.pairwise import cosine_similarity
+            raw_embs = model.encode([answer, reference_answer])
+            embeddings = np.asarray(raw_embs, dtype=np.float32)
+            raw_sim = float(cosine_similarity(cast(Any, embeddings[0:1]), cast(Any, embeddings[1:2]))[0][0])
+            calibrated_semantic = max(0.0, min(1.0, (raw_sim - 0.25) / 0.55))
+        except Exception:
+            calibrated_semantic = _compute_text_similarity(answer, reference_answer)
     else:
-        # Fallback word overlap if embedding model is not present
-        ans_words = set(re.findall(r"\w+", answer.lower()))
-        ref_words = set(re.findall(r"\w+", (reference_answer or "").lower()))
-        overlap = len(ans_words & ref_words) / max(len(ref_words), 1)
-        calibrated_semantic = min(1.0, overlap * 1.5)
+        calibrated_semantic = _compute_text_similarity(answer, reference_answer or "")
 
     # 2. Concept Coverage
     covered_concepts: List[str] = []
@@ -184,37 +225,24 @@ def evaluate_answer_heuristic(
 
     if evaluation_points:
         answer_lower = answer.lower()
-        if model is not None:
-            # Segment answer into sentences for better localized matching
-            sentences = [s.strip() for s in re.split(r"[.!?\n]+", answer) if len(s.strip()) > 10]
-            if not sentences:
-                sentences = [answer]
+        sentences = [s.strip() for s in re.split(r"[.!?\n]+", answer) if len(s.strip()) > 8]
+        if not sentences:
+            sentences = [answer]
 
-            sent_embs = np.asarray(model.encode(sentences), dtype=np.float32)
-            point_embs = np.asarray(model.encode(evaluation_points), dtype=np.float32)
+        for point in evaluation_points:
+            point_lower = point.lower()
+            point_words = [w for w in point_lower.split() if len(w) > 3]
 
-            for i, point in enumerate(evaluation_points):
-                # Check maximum similarity across any sentence
-                sims = [
-                    float(cosine_similarity(cast(Any, sent_embs[s_idx:s_idx+1]), cast(Any, point_embs[i:i+1]))[0][0])
-                    for s_idx in range(len(sentences))
-                ]
-                max_sim = max(sims) if sims else 0.0
+            # Measure localized similarity across candidate's sentences
+            sims = [_compute_text_similarity(s, point) for s in sentences]
+            max_sim = max(sims) if sims else 0.0
 
-                point_words = [w for w in point.lower().split() if len(w) > 3]
-                kw_hit = point_words and any(w in answer_lower for w in point_words)
+            kw_hit = bool(point_words and any(w in answer_lower for w in point_words))
 
-                if max_sim >= CONCEPT_SIMILARITY_THRESHOLD or (max_sim >= 0.40 and kw_hit):
-                    covered_concepts.append(point)
-                else:
-                    missing_concepts.append(point)
-        else:
-            for point in evaluation_points:
-                point_words = [w for w in point.lower().split() if len(w) > 3]
-                if any(w in answer_lower for w in point_words):
-                    covered_concepts.append(point)
-                else:
-                    missing_concepts.append(point)
+            if max_sim >= 0.40 or kw_hit:
+                covered_concepts.append(point)
+            else:
+                missing_concepts.append(point)
 
         concept_score = len(covered_concepts) / len(evaluation_points)
     else:
