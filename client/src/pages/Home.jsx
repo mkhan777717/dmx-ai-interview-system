@@ -1,67 +1,50 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { HiArrowUpRight, HiCheck, HiXMark } from 'react-icons/hi2'
 import Navbar from '../components/Navbar'
-import AuthModel from '../components/AuthModel'
-import SectionReveal from '../components/ui/SectionReveal'
-import StatCounter from '../components/ui/StatCounter'
-import BrowserMockup from '../components/ui/BrowserMockup'
+import Footer from '../components/Footer'
 import StepTimeline from '../components/ui/StepTimeline'
 import Accordion from '../components/ui/Accordion'
-import GradientButton from '../components/ui/GradientButton'
-import SecondaryButton from '../components/ui/SecondaryButton'
-import Badge from '../components/ui/Badge'
-import Eyebrow from '../components/ui/Eyebrow'
-import {
-  BsStars, BsPlayFill, BsLightningChargeFill,
-} from 'react-icons/bs'
-import { HiArrowUpRight, HiCheck, HiXMark } from 'react-icons/hi2'
+import SectionReveal from '../components/ui/SectionReveal'
+import BrowserMockup from '../components/ui/BrowserMockup'
 
 export default function Home() {
   const navigate = useNavigate()
   const { userData } = useSelector((state) => state.user)
-  const [showAuth, setShowAuth] = useState(false)
 
   const handleStart = () => {
     if (userData) {
       navigate('/v2/interview')
     } else {
-      setShowAuth(true)
+      navigate('/auth')
     }
   }
 
   const workflowSteps = [
     {
-      title: 'Resume & Context Parsing',
-      shortDesc: 'Instant skill vectorization',
-      heading: 'Deep Profile & Context Extraction',
-      description: 'Upload your PDF resume or paste a target Job Description. Our semantic engine vectorizes your technical skills, seniority tiers, and role expectations in under 3 seconds.',
-      bullets: ['Semantic Vector Skill Matching', 'Job Description Keyword Alignment', 'Experience Tier Calibration', 'Instant Profile Matrix'],
-      codeSnippet: `> resume_engine.parse("alex_resume.pdf")\n✓ Detected Role: Senior Backend Engineer\n✓ Top Skills: Python, FastAPI, Distributed Systems, Redis\n✓ Experience Tier: Senior (6+ Years)`,
+      num: '01',
+      title: 'Upload Profile & Resume',
+      desc: 'Parse your PDF resume or paste target job descriptions. Semantic vectors extract your tech stacks and project history.',
+      bullets: ['Automated PDF Parsing', 'Target Role Calibration', 'Custom Tech Stack Matrix'],
     },
     {
-      title: 'Role-Adaptive Engine',
-      shortDesc: 'Dynamically calibrated prompts',
-      heading: 'Custom Questions Tailored to Your Stack',
-      description: 'Generates calibrated DSA, System Design, and STAR behavioral questions matched to your exact background, preventing generic interview questions.',
-      bullets: ['DSA Coding with Monaco IDE', 'System Design Scalability Rounds', 'Behavioral STAR Frameworks', 'Real-Time Hint Generator'],
-      codeSnippet: `> question_engine.generate(role="Full-Stack", mode="Technical")\n✓ Question: "Design an idempotent webhook dispatcher with dead-letter queue."\n✓ Estimated Time: 3 mins | Difficulty: Hard`,
+      num: '02',
+      title: 'AI Persona & Question Calibration',
+      desc: 'Our engine generates adaptive coding, architecture, and behavioral prompts configured to your experience tier.',
+      bullets: ['DSA & Algorithms', 'System Architecture', 'STAR Behavioral Framework'],
     },
     {
-      title: 'Live Avatar Interview',
-      shortDesc: 'Voice, video & live code',
-      heading: 'Real-Time Conversational AI Avatar',
-      description: 'Engage with photorealistic AI avatar interviewers powered by high-speed speech-to-text, low-latency LLMs, and natural audio synthesis with echo-cancellation.',
-      bullets: ['Cloud Video Stream & Lip-Sync', 'Ultra-fast Groq Whisper Transcription', 'Interactive Live Coding Editor', 'Anti-Cheat Tab Integrity Auditing'],
-      codeSnippet: `> livekit_session.connect(room="interview_iq_v2")\n✓ WebRTC Stream Active: 60 FPS\n✓ Audio Engine: Whisper STT (280ms latency)\n✓ AI Interviewer: Speaking...`,
+      num: '03',
+      title: 'Live Interactive Avatar Session',
+      desc: 'Converse with real-time video avatars with voice recognition, live Monaco code IDE, and follow-up prompts.',
+      bullets: ['Low-Latency Voice Stream', 'Live Monaco Code IDE', 'Contextual Follow-Up Qs'],
     },
     {
-      title: 'Rubric Scorecard',
-      shortDesc: 'Granular AI feedback',
-      heading: 'Instant Scorecard & Coaching Plan',
-      description: 'Get deep breakdowns across correctness, technical depth, communication pacing (WPM), confidence index, and personalized improvement roadmap.',
-      bullets: ['Per-Question Strengths & Gaps', 'Speech Pacing & Confidence Index', 'Percentile Ranking vs Peers', 'Personalized Resource Roadmap'],
-      codeSnippet: `> evaluation_engine.finish(interview_id=4021)\n✓ Overall Score: 8.8 / 10 (Top 8% for Role)\n✓ Technical: 9.1 | Delivery: 8.5 | Correctness: 8.9\n✓ Generated 4-week personalized study roadmap.`,
+      num: '04',
+      title: 'Rubric Scorecard & Study Plan',
+      desc: 'Receive deep feedback across technical depth, communication pacing, and a personalized 4-week study plan.',
+      bullets: ['Multi-Dimensional Scores', 'Speech WPM & Confidence', 'Actionable Study Roadmap'],
     },
   ]
 
@@ -114,165 +97,106 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen relative overflow-hidden dark-canvas font-body transition-colors duration-200"
+      className="min-h-screen relative font-body transition-colors duration-150"
       style={{
         backgroundColor: 'var(--bg-page)',
         color: 'var(--text-primary)',
       }}
     >
-      {/* Background ambient lighting */}
-      <div className="ambient-blob bg-[var(--accent)]/12 w-[650px] h-[650px] -top-40 left-1/2 -translate-x-1/2" />
-      <div className="ambient-blob bg-[var(--toggle-knob)]/10 w-[550px] h-[550px] top-1/3 left-[-10%]" />
-      <div className="ambient-blob bg-[var(--accent)]/10 w-[550px] h-[550px] top-2/3 right-[-10%]" />
-
-      {/* Grid texture overlay */}
-      <div className="absolute inset-0 bg-[radial-gradient(var(--border)_1px,transparent_1px)] [background-size:32px_32px] pointer-events-none opacity-40" />
-
       {/* ── NAVBAR ─────────────────────────────────────────────────────────── */}
       <Navbar />
 
-      <main className="pt-32 relative z-10 space-y-28 lg:space-y-36">
+      <main className="pt-32 pb-20 relative z-10 space-y-24 sm:space-y-32">
 
-        {/* ── HERO SECTION ─────────────────────────────────────────────────── */}
-        <section className="px-6 max-w-7xl mx-auto text-center">
+        {/* ── HERO SECTION (Matching Eduvantix Image 2 & 3) ────────────────── */}
+        <section className="px-6 max-w-6xl mx-auto pt-6 sm:pt-12">
           <SectionReveal>
-            {/* Top Pill Badge */}
-            <div
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-xs font-semibold mb-8 shadow-sm"
-              style={{
-                backgroundColor: 'var(--bg-elevated)',
-                borderColor: 'var(--border)',
-              }}
-            >
-              <span
-                className="px-2.5 py-0.5 rounded-full font-bold text-[10px] tracking-widest uppercase shadow-xs"
-                style={{
-                  backgroundColor: 'var(--accent)',
-                  color: 'var(--accent-text-on)',
-                }}
-              >
-                AI Studio 2.0
-              </span>
-              <span className="font-medium tracking-wide" style={{ color: 'var(--text-secondary)' }}>
-                Next-Gen <span className="text-italic-accent text-sm">Real-Time</span> Avatar Interviewer
-              </span>
-            </div>
-
-            {/* Main Headline */}
-            <h1 className="text-4xl sm:text-6xl lg:text-[74px] font-extrabold leading-[1.06] tracking-tight max-w-5xl mx-auto mb-8 font-display" style={{ color: 'var(--text-primary)' }}>
-              Master Technical Screens with{' '}
-              <span className="text-italic-accent font-serif font-normal inline-block transform -rotate-1">
-                Real-Time AI
-              </span>{' '}
-              Avatar Interviewers
-            </h1>
-
-            {/* Sub-heading */}
-            <p className="text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto mb-10 font-normal" style={{ color: 'var(--text-secondary)' }}>
-              Role-calibrated algorithmic rounds, <span className="italic font-medium text-[var(--text-primary)]">photorealistic voice synthesis</span>, and instant rubric diagnostics tailored for elite engineering candidates.
+            {/* Clean Eyebrow Text (NO capsule pill) */}
+            <p className="text-xs font-bold uppercase tracking-widest mb-6" style={{ color: 'var(--accent)' }}>
+              AI CAREER PLATFORM
             </p>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-wrap items-center justify-center gap-4 mb-14">
-              <GradientButton
-                onClick={handleStart}
-                size="lg"
-                iconRight={HiArrowUpRight}
-              >
-                Start Practice Free
-              </GradientButton>
+            {/* Main Headline */}
+            <h1 className="text-5xl sm:text-7xl lg:text-[84px] font-extrabold tracking-tight leading-[1.03] max-w-4xl text-left font-display" style={{ color: 'var(--text-primary)' }}>
+              From Learning<br />to Getting Hired.
+            </h1>
 
-              <SecondaryButton
-                onClick={() => {
-                  const el = document.getElementById('stages')
-                  el?.scrollIntoView({ behavior: 'smooth' })
-                }}
-                size="lg"
-                icon={BsPlayFill}
+            {/* Subtitle */}
+            <p className="text-base sm:text-lg leading-relaxed max-w-2xl text-left mt-6 mb-8 font-normal" style={{ color: 'var(--text-secondary)' }}>
+              InterviewIQ is an AI-powered career platform that takes you from zero to hired. Personalized roadmaps, real projects, AI mentorship, and direct employer connections — all in one place.
+            </p>
+
+            {/* Clean Action Buttons */}
+            <div className="flex flex-wrap items-center gap-4 mb-20">
+              <button
+                onClick={handleStart}
+                className="btn-primary rounded-full px-6 py-3.5 text-sm font-semibold cursor-pointer shadow-sm"
               >
-                Explore How It Works
-              </SecondaryButton>
+                Start Learning Free →
+              </button>
+
+              <button
+                onClick={() => navigate('/pricing')}
+                className="btn-secondary rounded-2xl px-6 py-3.5 text-sm font-semibold cursor-pointer"
+              >
+                Book a Demo
+              </button>
             </div>
 
-            {/* Social Proof Stack */}
-            <div className="flex items-center justify-center gap-4 text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
-              <div className="flex -space-x-2.5 overflow-hidden">
-                {['alex', 'sarah', 'michael', 'elena'].map((name, i) => (
-                  <img
-                    key={name}
-                    src={`https://ui-avatars.com/api/?name=${name}&background=${['4e9c6e','7c6fea','3b82f6','10b981'][i]}&color=ffffff&size=64`}
-                    alt="User"
-                    className="inline-block h-8 w-8 rounded-full ring-2 ring-[var(--bg-page)] object-cover"
-                  />
-                ))}
+            {/* Clean Stats Row (Direct Flat Row with Divider, NO Tablets) */}
+            <div className="pt-10 border-t grid grid-cols-2 sm:grid-cols-4 gap-8 text-left" style={{ borderColor: 'var(--border)' }}>
+              <div>
+                <p className="text-3xl sm:text-4xl font-extrabold font-display" style={{ color: 'var(--text-primary)' }}>10,000+</p>
+                <p className="text-xs mt-1 font-medium" style={{ color: 'var(--text-muted)' }}>Active Students</p>
               </div>
-              <div className="text-left">
-                <div className="flex items-center gap-1 text-amber-500 mb-0.5 text-xs">
-                  {'★'.repeat(5)}
-                  <span className="font-bold ml-1 font-display" style={{ color: 'var(--text-primary)' }}>4.9 / 5 Rating</span>
-                </div>
-                <p className="text-[11px] font-normal tracking-wide" style={{ color: 'var(--text-muted)' }}>Over 10,000+ candidates screened & prepared</p>
+              <div>
+                <p className="text-3xl sm:text-4xl font-extrabold font-display" style={{ color: 'var(--text-primary)' }}>500+</p>
+                <p className="text-xs mt-1 font-medium" style={{ color: 'var(--text-muted)' }}>Partner Institutes</p>
+              </div>
+              <div>
+                <p className="text-3xl sm:text-4xl font-extrabold font-display" style={{ color: 'var(--text-primary)' }}>100+</p>
+                <p className="text-xs mt-1 font-medium" style={{ color: 'var(--text-muted)' }}>Hiring Partners</p>
+              </div>
+              <div>
+                <p className="text-3xl sm:text-4xl font-extrabold font-display" style={{ color: 'var(--text-primary)' }}>94%</p>
+                <p className="text-xs mt-1 font-medium" style={{ color: 'var(--text-muted)' }}>Placement Rate</p>
               </div>
             </div>
           </SectionReveal>
 
           {/* ── BROWSER DASHBOARD PREVIEW ─────────────────────────────────── */}
-          <SectionReveal delay={0.2} className="mt-16 max-w-6xl mx-auto">
+          <SectionReveal delay={0.2} className="mt-20">
             <BrowserMockup url="app.interviewiq.ai/v2/interview-studio">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 text-left">
                 
                 {/* Left Live Avatar Mock */}
                 <div
-                  className="lg:col-span-7 rounded-2xl border p-6 relative overflow-hidden flex flex-col justify-between min-h-[320px]"
+                  className="lg:col-span-7 rounded-2xl border p-6 relative overflow-hidden flex flex-col justify-between min-h-[300px]"
                   style={{
                     backgroundColor: 'var(--bg-page)',
                     borderColor: 'var(--border)',
                   }}
                 >
-                  <div className="flex items-center justify-between z-10">
-                    <span
-                      className="px-3 py-1 text-xs font-bold rounded-full border flex items-center gap-1.5 tracking-wide uppercase text-[10px]"
-                      style={{
-                        backgroundColor: 'rgba(78, 156, 110, 0.12)',
-                        borderColor: 'rgba(78, 156, 110, 0.3)',
-                        color: 'var(--accent)',
-                      }}
-                    >
-                      <span className="w-2 h-2 rounded-full animate-ping" style={{ backgroundColor: 'var(--accent)' }} />
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold flex items-center gap-1.5" style={{ color: 'var(--accent)' }}>
+                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--accent)' }} />
                       Live AI Interviewer
                     </span>
                     <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>01:45 / 03:00</span>
                   </div>
 
-                  <div className="my-auto py-8 text-center relative z-10">
-                    <div
-                      className="w-20 h-20 mx-auto rounded-3xl p-0.5 shadow-md mb-4"
-                      style={{
-                        backgroundColor: 'rgba(78, 156, 110, 0.25)',
-                      }}
-                    >
-                      <div
-                        className="w-full h-full rounded-[22px] flex items-center justify-center border"
-                        style={{
-                          backgroundColor: 'var(--bg-elevated)',
-                          borderColor: 'var(--border)',
-                          color: 'var(--accent)',
-                        }}
-                      >
-                        <BsStars size={36} />
-                      </div>
-                    </div>
-                    <h4 className="text-lg font-bold font-display" style={{ color: 'var(--text-primary)' }}>Sophia — Lead AI Interviewer</h4>
-                    <p className="text-xs mt-2 max-w-md mx-auto italic font-medium leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                  <div className="my-auto py-6 text-left">
+                    <h4 className="text-lg font-bold font-display" style={{ color: 'var(--text-primary)' }}>Sophia — Technical Lead Interviewer</h4>
+                    <p className="text-sm mt-2 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                       "Could you walk me through how you would architect cache invalidation across distributed database replicas?"
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-between pt-4 border-t text-xs z-10" style={{ borderColor: 'var(--border)' }}>
-                    <span className="font-semibold flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500" /> Mic Active (Echo-Cancelled)
+                  <div className="flex items-center justify-between pt-4 border-t text-xs" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
+                    <span className="font-semibold flex items-center gap-1.5" style={{ color: 'var(--accent)' }}>
+                      Mic Active (Echo-Cancelled)
                     </span>
-                    <span className="font-mono text-[11px]" style={{ color: 'var(--text-muted)' }}>WebRTC 60 FPS</span>
+                    <span className="font-mono text-[11px]">WebRTC 60 FPS</span>
                   </div>
                 </div>
 
@@ -285,8 +209,8 @@ export default function Home() {
                       borderColor: 'var(--border)',
                     }}
                   >
-                    <p className="text-[10px] font-bold uppercase tracking-widest font-display" style={{ color: 'var(--text-muted)' }}>
-                      Real-Time Evaluation Telemetry
+                    <p className="text-[11px] font-bold uppercase tracking-wider font-display" style={{ color: 'var(--text-muted)' }}>
+                      Real-Time Telemetry
                     </p>
                     <div className="space-y-2.5">
                       <div>
@@ -302,10 +226,10 @@ export default function Home() {
                       <div>
                         <div className="flex justify-between text-xs font-semibold mb-1">
                           <span style={{ color: 'var(--text-secondary)' }}>Speech Pacing (142 WPM)</span>
-                          <span className="font-bold font-display text-emerald-600 dark:text-emerald-400">Optimal</span>
+                          <span className="font-bold font-display" style={{ color: 'var(--accent)' }}>Optimal</span>
                         </div>
                         <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bg-elevated)' }}>
-                          <div className="h-full bg-emerald-500 rounded-full w-[88%]" />
+                          <div className="h-full rounded-full w-[88%]" style={{ backgroundColor: 'var(--accent)' }} />
                         </div>
                       </div>
                     </div>
@@ -331,7 +255,7 @@ export default function Home() {
                     </p>
                     <div className="pt-2 border-t flex justify-between items-center text-[10px]" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
                       <span>✓ Syntax Verified</span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">Tests Passing</span>
+                      <span className="font-bold" style={{ color: 'var(--accent)' }}>Tests Passing</span>
                     </div>
                   </div>
                 </div>
@@ -341,52 +265,18 @@ export default function Home() {
           </SectionReveal>
         </section>
 
-        {/* ── STAT COUNTERS ───────────────────────────────────────────────── */}
-        <section className="px-6 max-w-7xl mx-auto">
+        {/* ── 4-STAGE STRUCTURED TIMELINE ─────────────────────────────────── */}
+        <section id="stages" className="px-6 max-w-6xl mx-auto scroll-mt-28">
           <SectionReveal>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-              <StatCounter
-                value={10000}
-                suffix="+"
-                label="Interviews Completed"
-                subtitle="Across 40+ countries"
-              />
-              <StatCounter
-                value={94.8}
-                suffix="%"
-                decimals={1}
-                label="Offer Conversion Rate"
-                subtitle="Within 60 days of prep"
-              />
-              <StatCounter
-                value={350}
-                suffix="+"
-                label="Calibrated Tech Roles"
-                subtitle="DSA, Full-Stack, ML, DevOps"
-              />
-              <StatCounter
-                value={4.9}
-                suffix="★"
-                decimals={1}
-                label="Candidate Satisfaction"
-                subtitle="Verified user scorecards"
-              />
-            </div>
-          </SectionReveal>
-        </section>
-
-        {/* ── HOW IT WORKS / 4-STAGE INTERACTIVE TIMELINE ──────────────────── */}
-        <section id="stages" className="px-6 max-w-7xl mx-auto scroll-mt-28">
-          <SectionReveal>
-            <div className="text-center max-w-3xl mx-auto mb-14">
-              <Eyebrow icon={BsLightningChargeFill} className="mb-3">
-                Structured Workflow
-              </Eyebrow>
+            <div className="text-left max-w-3xl mb-12">
+              <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: 'var(--accent)' }}>
+                HOW IT WORKS
+              </p>
               <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight font-display" style={{ color: 'var(--text-primary)' }}>
-                Engineering Your <span className="text-italic-accent font-serif font-normal">Offer-Ready</span> Confidence
+                Structured 4-Stage Interview Process.
               </h2>
               <p className="mt-3 text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                A seamless 4-stage engine that moves you from raw resume to peak interview readiness.
+                A seamless workflow that moves candidates from raw resume upload to offer-ready confidence.
               </p>
             </div>
 
@@ -395,22 +285,22 @@ export default function Home() {
         </section>
 
         {/* ── TRADITIONAL VS INTERVIEWIQ COMPARISON ────────────────────────── */}
-        <section id="features" className="px-6 max-w-7xl mx-auto">
+        <section id="features" className="px-6 max-w-6xl mx-auto">
           <SectionReveal>
-            <div className="text-center max-w-3xl mx-auto mb-14">
-              <Eyebrow icon={BsStars} className="mb-3">
-                The Competitive Edge
-              </Eyebrow>
+            <div className="text-left max-w-3xl mb-12">
+              <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: 'var(--accent)' }}>
+                THE COMPETITIVE EDGE
+              </p>
               <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight font-display" style={{ color: 'var(--text-primary)' }}>
-                Traditional Prep vs. <span className="text-italic-accent font-serif font-normal">InterviewIQ</span>
+                Traditional Prep vs. InterviewIQ.
               </h2>
               <p className="mt-3 text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                Why static question banks fail and dynamic conversational AI delivers results.
+                Why static question flashcards fail and dynamic conversational AI delivers results.
               </p>
             </div>
 
             <div
-              className="rounded-3xl border overflow-hidden shadow-xl"
+              className="rounded-3xl border overflow-hidden shadow-sm"
               style={{
                 backgroundColor: 'var(--bg-elevated)',
                 borderColor: 'var(--border)',
@@ -426,7 +316,7 @@ export default function Home() {
               >
                 <div className="md:col-span-3">Assessment Pillar</div>
                 <div className="md:col-span-4 text-rose-500">Traditional Mock Prep</div>
-                <div className="md:col-span-5" style={{ color: 'var(--accent)' }}>InterviewIQ Studio</div>
+                <div className="md:col-span-5" style={{ color: 'var(--accent)' }}>InterviewIQ Platform</div>
               </div>
 
               <div className="divide-y" style={{ borderColor: 'var(--border)' }}>
@@ -435,18 +325,11 @@ export default function Home() {
                     <div className="md:col-span-3 font-bold font-display" style={{ color: 'var(--text-primary)' }}>
                       {item.feature}
                     </div>
-                    <div className="md:col-span-4 flex items-start gap-2.5 text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                    <div className="md:col-span-4 flex items-start gap-2 text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                       <HiXMark className="text-rose-500 shrink-0 mt-0.5" size={16} />
                       <span>{item.traditional}</span>
                     </div>
-                    <div
-                      className="md:col-span-5 flex items-start gap-2.5 text-xs font-semibold leading-relaxed p-3 rounded-2xl border"
-                      style={{
-                        backgroundColor: 'rgba(78, 156, 110, 0.08)',
-                        borderColor: 'rgba(78, 156, 110, 0.2)',
-                        color: 'var(--accent)',
-                      }}
-                    >
+                    <div className="md:col-span-5 flex items-start gap-2 text-xs font-semibold leading-relaxed" style={{ color: 'var(--accent)' }}>
                       <HiCheck className="shrink-0 mt-0.5" size={16} />
                       <span>{item.interviewIQ}</span>
                     </div>
@@ -460,13 +343,15 @@ export default function Home() {
         {/* ── FAQ SECTION ─────────────────────────────────────────────────── */}
         <section id="faq" className="px-6 max-w-4xl mx-auto">
           <SectionReveal>
-            <div className="text-center mb-12">
-              <Eyebrow className="mb-3">FAQ</Eyebrow>
+            <div className="text-left mb-10">
+              <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: 'var(--accent)' }}>
+                FAQ
+              </p>
               <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-display" style={{ color: 'var(--text-primary)' }}>
-                Answers to <span className="text-italic-accent font-serif font-normal">Common Questions</span>
+                Frequently Asked Questions.
               </h2>
               <p className="mt-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                Everything you need to know about the AI interview engine.
+                Everything you need to know about the AI interview platform.
               </p>
             </div>
 
@@ -475,33 +360,33 @@ export default function Home() {
         </section>
 
         {/* ── BOTTOM CTA BANNER ───────────────────────────────────────────── */}
-        <section className="px-6 max-w-7xl mx-auto pb-24">
+        <section className="px-6 max-w-6xl mx-auto pb-16">
           <SectionReveal>
             <div
-              className="rounded-3xl border p-8 sm:p-14 text-center relative overflow-hidden shadow-2xl"
+              className="rounded-3xl border p-8 sm:p-14 text-left relative overflow-hidden shadow-sm"
               style={{
                 backgroundColor: 'var(--bg-elevated)',
                 borderColor: 'var(--border)',
               }}
             >
-              <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none opacity-15" style={{ backgroundColor: 'var(--accent)' }} />
-              
-              <div className="relative z-10 max-w-2xl mx-auto space-y-6">
-                <Badge variant="accent" icon={BsStars}>Get Started Today</Badge>
+              <div className="max-w-2xl space-y-5">
+                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--accent)' }}>
+                  GET STARTED TODAY
+                </p>
                 <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight font-display" style={{ color: 'var(--text-primary)' }}>
-                  Ready to <span className="text-italic-accent font-serif font-normal">Ace</span> Your Next Interview?
+                  Ready to Ace Your Next Interview?
                 </h2>
                 <p className="text-sm sm:text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                   Join thousands of candidates who practice daily with our conversational AI avatars and step into real interviews fully prepared.
                 </p>
 
-                <div className="pt-2 flex flex-wrap justify-center gap-4">
-                  <GradientButton onClick={handleStart} size="lg" iconRight={HiArrowUpRight}>
-                    Launch Free Session
-                  </GradientButton>
-                  <SecondaryButton onClick={() => navigate('/pricing')} size="lg">
-                    View Plan Tiers
-                  </SecondaryButton>
+                <div className="pt-2 flex flex-wrap gap-4">
+                  <button onClick={handleStart} className="btn-primary rounded-full px-6 py-3.5 text-sm font-semibold cursor-pointer">
+                    Start Learning Free →
+                  </button>
+                  <button onClick={() => navigate('/pricing')} className="btn-secondary rounded-2xl px-6 py-3.5 text-sm font-semibold cursor-pointer">
+                    Book a Demo
+                  </button>
                 </div>
               </div>
             </div>
@@ -510,27 +395,8 @@ export default function Home() {
 
       </main>
 
-      {/* ── FOOTER ──────────────────────────────────────────────────────── */}
-      <footer className="border-t px-6 py-12 text-xs relative z-10 transition-colors" style={{ backgroundColor: 'var(--bg-page)', borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg flex items-center justify-center text-white text-xs" style={{ backgroundColor: 'var(--accent)' }}>
-              <BsStars />
-            </div>
-            <span className="font-bold text-sm font-display" style={{ color: 'var(--text-primary)' }}>
-              Interview<span className="text-[var(--accent)] font-semibold">IQ</span>.AI
-            </span>
-          </div>
-          <p>© {new Date().getFullYear()} InterviewIQ. All rights reserved. Universal AI Interview Studio.</p>
-          <div className="flex gap-6 font-medium" style={{ color: 'var(--text-secondary)' }}>
-            <a href="#" className="hover:text-[var(--accent)] transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-[var(--accent)] transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-[var(--accent)] transition-colors">Security</a>
-          </div>
-        </div>
-      </footer>
-
-      {showAuth && <AuthModel onClose={() => setShowAuth(false)} />}
+      {/* ── FOOTER ─────────────────────────────────────────────────────────── */}
+      <Footer />
     </div>
   )
 }
