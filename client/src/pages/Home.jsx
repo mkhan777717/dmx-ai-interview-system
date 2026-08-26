@@ -266,7 +266,7 @@ export default function Home() {
         </section>
 
         {/* ── 4-STAGE STRUCTURED TIMELINE ─────────────────────────────────── */}
-        <section id="stages" className="px-6 max-w-6xl mx-auto scroll-mt-28">
+        <section id="stages" className="px-6 max-w-6xl mx-auto scroll-mt-28 sm:scroll-mt-32">
           <SectionReveal>
             <div className="text-left max-w-3xl mb-12">
               <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: 'var(--accent)' }}>
@@ -285,7 +285,7 @@ export default function Home() {
         </section>
 
         {/* ── TRADITIONAL VS INTERVIEWIQ COMPARISON ────────────────────────── */}
-        <section id="features" className="px-6 max-w-6xl mx-auto">
+        <section id="features" className="px-6 max-w-6xl mx-auto scroll-mt-28 sm:scroll-mt-32">
           <SectionReveal>
             <div className="text-left max-w-3xl mb-12">
               <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: 'var(--accent)' }}>
@@ -341,7 +341,7 @@ export default function Home() {
         </section>
 
         {/* ── FAQ SECTION ─────────────────────────────────────────────────── */}
-        <section id="faq" className="px-6 max-w-4xl mx-auto">
+        <section id="faq" className="px-6 max-w-4xl mx-auto scroll-mt-28 sm:scroll-mt-32">
           <SectionReveal>
             <div className="text-left mb-10">
               <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: 'var(--accent)' }}>
