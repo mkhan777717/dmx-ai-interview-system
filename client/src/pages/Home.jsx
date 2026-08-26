@@ -166,7 +166,7 @@ export default function Home() {
 
           {/* ── BROWSER DASHBOARD PREVIEW ─────────────────────────────────── */}
           <SectionReveal delay={0.2} className="mt-20">
-            <BrowserMockup url="app.interviewiq.ai/v2/interview-studio">
+            <BrowserMockup>
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 text-left">
                 
                 {/* Left Live Avatar Mock */}

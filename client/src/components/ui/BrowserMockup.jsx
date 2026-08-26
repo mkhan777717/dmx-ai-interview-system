@@ -2,7 +2,6 @@ import React from 'react'
 
 export function BrowserMockup({
   children,
-  url = 'app.interviewiq.ai/v2/live-interview',
   badge = 'Live AI Room',
   className = '',
 }) {
@@ -26,19 +25,6 @@ export function BrowserMockup({
           <div className="w-3 h-3 rounded-full bg-rose-500/80" />
           <div className="w-3 h-3 rounded-full bg-amber-500/80" />
           <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
-        </div>
-
-        {/* URL Bar */}
-        <div
-          className="hidden sm:flex items-center gap-2 px-4 py-1 rounded-xl border text-xs font-mono flex-1 max-w-sm truncate"
-          style={{
-            backgroundColor: 'var(--bg-elevated)',
-            borderColor: 'var(--border)',
-            color: 'var(--text-muted)',
-          }}
-        >
-          <span className="text-[10px]" style={{ color: 'var(--accent)' }}>🔒</span>
-          <span>{url}</span>
         </div>
 
         {/* Live Badge */}
