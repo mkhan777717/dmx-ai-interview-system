@@ -11,9 +11,9 @@ export function SecondaryButton({
   iconRight: IconRight,
 }) {
   const sizeClasses = {
-    sm: 'px-3.5 py-1.5 text-xs rounded-xl',
-    md: 'px-5 py-2.5 text-sm rounded-xl',
-    lg: 'px-7 py-3.5 text-base rounded-2xl',
+    sm: 'px-3.5 py-1.5 text-xs',
+    md: 'px-5 py-2.5 text-sm',
+    lg: 'px-7 py-3.5 text-base',
   }
 
   return (
@@ -21,7 +21,7 @@ export function SecondaryButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`btn-glass inline-flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${sizeClasses[size] || sizeClasses.md} ${className}`}
+      className={`btn-secondary rounded-2xl inline-flex items-center justify-center gap-2 cursor-pointer font-medium disabled:opacity-50 disabled:cursor-not-allowed ${sizeClasses[size] || sizeClasses.md} ${className}`}
     >
       {Icon && <Icon className="text-current shrink-0" />}
       <span>{children}</span>

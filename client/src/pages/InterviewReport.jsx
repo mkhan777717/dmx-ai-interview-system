@@ -19,18 +19,16 @@ function fmtTime(raw) {
 export default function InterviewReport() {
   const { id } = useParams()
   const [report, setReport] = useState(null)
-  const [meta, setMeta]     = useState(null)   // interview metadata from history
-  const [error, setError]   = useState(null)
+  const [meta, setMeta] = useState(null)
+  const [error, setError] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        // Try v2 report first
         const result = await axios.get(`${ServerUrl}/api/v2/interview/report/${id}`, { withCredentials: true })
         setReport(result.data)
-      } catch (err) {
-        // Fallback to legacy report endpoint
+      } catch {
         try {
           const result = await axios.get(`${ServerUrl}/api/interview/report/${id}`, { withCredentials: true })
           setReport(result.data)
@@ -40,15 +38,12 @@ export default function InterviewReport() {
       }
     }
 
-    // Fetch lightweight metadata for the header
     const fetchMeta = async () => {
       try {
         const hist = await axios.get(`${ServerUrl}/api/v2/interview/history`, { withCredentials: true })
         const match = (hist.data || []).find(i => String(i.id) === String(id) || String(i._id) === String(id))
         if (match) setMeta(match)
-      } catch {
-        // Non-critical — header will just be minimal
-      }
+      } catch {}
     }
 
     fetchReport()
@@ -68,39 +63,53 @@ export default function InterviewReport() {
       <div className="px-4 lg:px-6 pt-2 pb-0 max-w-5xl mx-auto w-full">
         <button
           onClick={() => navigate('/history')}
-          className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-cyan-300 transition cursor-pointer mb-4"
+          className="flex items-center gap-2 text-xs font-bold transition cursor-pointer mb-4 hover:text-[var(--accent)]"
+          style={{ color: 'var(--text-muted)' }}
         >
           <BsArrowLeft size={14} /> Back to My Reports
         </button>
 
         {/* Interview metadata card */}
-        <div className="glass-card-static rounded-3xl px-5 py-4 mb-2 flex flex-wrap items-center gap-x-6 gap-y-2">
+        <div
+          className="rounded-3xl px-5 py-4 mb-2 flex flex-wrap items-center gap-x-6 gap-y-2 border shadow-sm"
+          style={{
+            backgroundColor: 'var(--bg-elevated)',
+            borderColor: 'var(--border)',
+          }}
+        >
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 border border-cyan-500/25 flex items-center justify-center text-cyan-300 font-bold text-base">
+            <div
+              className="w-9 h-9 rounded-xl border flex items-center justify-center font-bold text-base"
+              style={{
+                backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                borderColor: 'rgba(78, 156, 110, 0.25)',
+                color: 'var(--accent)',
+              }}
+            >
               {role.charAt(0).toUpperCase()}
             </div>
             <div>
-              <p className="font-bold text-white text-sm font-['Outfit']">{role}</p>
-              <p className="text-[10px] text-slate-400">{mode} Mode</p>
+              <p className="font-bold text-sm font-display" style={{ color: 'var(--text-primary)' }}>{role}</p>
+              <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{mode} Mode</p>
             </div>
           </div>
 
           {createdAt && (
             <>
-              <div className="flex items-center gap-1.5 text-xs text-slate-300">
-                <FaCalendarAlt size={10} className="text-slate-500" />
+              <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
+                <FaCalendarAlt size={10} style={{ color: 'var(--text-muted)' }} />
                 {fmtDate(createdAt)}
               </div>
-              <div className="flex items-center gap-1.5 text-xs text-slate-300">
-                <FaClock size={10} className="text-slate-500" />
+              <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
+                <FaClock size={10} style={{ color: 'var(--text-muted)' }} />
                 {fmtTime(createdAt)}
               </div>
             </>
           )}
 
           {report?.percentile != null && (
-            <span className="ml-auto text-xs font-bold text-indigo-300">
-              Top <span className="text-indigo-200">{Math.round(report.percentile)}%</span> for role
+            <span className="ml-auto text-xs font-bold" style={{ color: 'var(--accent)' }}>
+              Top <span>{Math.round(report.percentile)}%</span> for role
             </span>
           )}
         </div>
@@ -108,18 +117,19 @@ export default function InterviewReport() {
 
       {/* Report body */}
       {error ? (
-        <div className="flex flex-col items-center justify-center min-h-[40vh] gap-3 text-slate-400 px-4">
-          <p className="text-sm font-bold text-rose-400">{error}</p>
+        <div className="flex flex-col items-center justify-center min-h-[40vh] gap-3 px-4" style={{ color: 'var(--text-muted)' }}>
+          <p className="text-sm font-bold text-rose-500">{error}</p>
           <button
             onClick={() => navigate('/history')}
-            className="text-xs text-cyan-400 hover:underline cursor-pointer"
+            className="text-xs hover:underline cursor-pointer"
+            style={{ color: 'var(--accent)' }}
           >
             ← Back to My Reports
           </button>
         </div>
       ) : !report ? (
-        <div className="flex-1 flex flex-col items-center justify-center min-h-[50vh] gap-3 text-slate-400">
-          <FaSpinner className="animate-spin text-2xl text-cyan-400" />
+        <div className="flex-1 flex flex-col items-center justify-center min-h-[50vh] gap-3" style={{ color: 'var(--text-muted)' }}>
+          <FaSpinner className="animate-spin text-2xl" style={{ color: 'var(--accent)' }} />
           <p className="text-sm font-medium">Loading report...</p>
         </div>
       ) : (

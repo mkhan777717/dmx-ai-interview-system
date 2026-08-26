@@ -7,9 +7,21 @@ export function BrowserMockup({
   className = '',
 }) {
   return (
-    <div className={`rounded-3xl border border-white/10 bg-slate-950/80 backdrop-blur-2xl shadow-[0_25px_80px_-15px_rgba(0,0,0,0.8)] overflow-hidden ${className}`}>
+    <div
+      className={`rounded-3xl border shadow-2xl overflow-hidden ${className}`}
+      style={{
+        backgroundColor: 'var(--bg-elevated)',
+        borderColor: 'var(--border)',
+      }}
+    >
       {/* Browser Chrome Header */}
-      <div className="px-5 py-3.5 border-b border-white/8 bg-slate-900/60 flex items-center justify-between gap-4">
+      <div
+        className="px-5 py-3 border-b flex items-center justify-between gap-4"
+        style={{
+          backgroundColor: 'var(--bg-page)',
+          borderColor: 'var(--border)',
+        }}
+      >
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-rose-500/80" />
           <div className="w-3 h-3 rounded-full bg-amber-500/80" />
@@ -17,15 +29,29 @@ export function BrowserMockup({
         </div>
 
         {/* URL Bar */}
-        <div className="hidden sm:flex items-center gap-2 px-4 py-1 rounded-xl bg-white/5 border border-white/5 text-xs text-slate-400 font-mono flex-1 max-w-sm truncate">
-          <span className="text-emerald-400 text-[10px]">🔒</span>
+        <div
+          className="hidden sm:flex items-center gap-2 px-4 py-1 rounded-xl border text-xs font-mono flex-1 max-w-sm truncate"
+          style={{
+            backgroundColor: 'var(--bg-elevated)',
+            borderColor: 'var(--border)',
+            color: 'var(--text-muted)',
+          }}
+        >
+          <span className="text-[10px]" style={{ color: 'var(--accent)' }}>🔒</span>
           <span>{url}</span>
         </div>
 
         {/* Live Badge */}
         {badge && (
-          <div className="flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-[10px] font-bold text-cyan-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+          <div
+            className="flex items-center gap-2 px-2.5 py-0.5 rounded-full border text-[10px] font-bold"
+            style={{
+              backgroundColor: 'rgba(78, 156, 110, 0.12)',
+              borderColor: 'rgba(78, 156, 110, 0.3)',
+              color: 'var(--accent)',
+            }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: 'var(--accent)' }} />
             <span>{badge}</span>
           </div>
         )}

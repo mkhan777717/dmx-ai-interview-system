@@ -2,53 +2,93 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 
 const ThemeContext = createContext({
   theme: 'dark',
-  setTheme: () => {},
+  isDark: true,
   toggleTheme: () => {},
+  setTheme: () => {},
 })
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => {
+  const [theme, setThemeState] = useState(() => {
     try {
-      const saved = localStorage.getItem('app-theme')
-      if (saved === 'light' || saved === 'dark') return saved
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-        return 'light'
+      const saved = localStorage.getItem('theme') || localStorage.getItem('app-theme')
+      if (saved === 'light' || saved === 'dark') {
+        return saved
+      }
+      if (typeof window !== 'undefined' && window.matchMedia) {
+        return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
       }
     } catch {
-      // Fallback
+      // fallback
     }
     return 'dark'
   })
 
-  useEffect(() => {
+  const applyTheme = (newTheme) => {
     const root = document.documentElement
-    if (theme === 'dark') {
-      root.classList.add('dark')
-      root.classList.remove('light')
-      root.style.colorScheme = 'dark'
-    } else {
-      root.classList.add('light')
-      root.classList.remove('dark')
-      root.style.colorScheme = 'light'
-    }
-    try {
-      localStorage.setItem('app-theme', theme)
-    } catch {
-      // Fallback
-    }
-  }, [theme])
-
-  const toggleTheme = () => {
-    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'))
+    root.setAttribute('data-theme', newTheme)
+    root.classList.remove('dark', 'light')
+    root.classList.add(newTheme)
+    root.style.colorScheme = newTheme
   }
 
+  const setTheme = (newTheme) => {
+    if (newTheme !== 'dark' && newTheme !== 'light') return
+    setThemeState(newTheme)
+    try {
+      localStorage.setItem('theme', newTheme)
+      localStorage.setItem('app-theme', newTheme)
+    } catch {}
+    applyTheme(newTheme)
+  }
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark')
+  }
+
+  useEffect(() => {
+    applyTheme(theme)
+  }, [theme])
+
+  // Listen for system theme changes if user hasn't explicitly set localStorage override
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: light)')
+    const handleChange = (e) => {
+      const saved = localStorage.getItem('theme') || localStorage.getItem('app-theme')
+      if (!saved) {
+        const sysTheme = e.matches ? 'light' : 'dark'
+        setThemeState(sysTheme)
+        applyTheme(sysTheme)
+      }
+    }
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange)
+      return () => mediaQuery.removeEventListener('change', handleChange)
+    }
+  }, [])
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
+    <ThemeContext.Provider
+      value={{
+        theme,
+        isDark: theme === 'dark',
+        toggleTheme,
+        setTheme,
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   )
 }
 
 export function useTheme() {
-  return useContext(ThemeContext)
+  const context = useContext(ThemeContext)
+  if (!context) {
+    throw new Error('useTheme must be used within a ThemeProvider')
+  }
+  return context
 }
+
+export default ThemeContext

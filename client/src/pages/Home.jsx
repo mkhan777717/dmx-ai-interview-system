@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { motion } from 'motion/react'
 import Navbar from '../components/Navbar'
 import AuthModel from '../components/AuthModel'
 import SectionReveal from '../components/ui/SectionReveal'
@@ -12,9 +11,9 @@ import Accordion from '../components/ui/Accordion'
 import GradientButton from '../components/ui/GradientButton'
 import SecondaryButton from '../components/ui/SecondaryButton'
 import Badge from '../components/ui/Badge'
+import Eyebrow from '../components/ui/Eyebrow'
 import {
-  BsStars, BsPlayFill, BsCheck2Circle, BsLightningChargeFill,
-  BsShieldCheck, BsGraphUpArrow, BsArrowRight
+  BsStars, BsPlayFill, BsLightningChargeFill,
 } from 'react-icons/bs'
 import { HiArrowUpRight, HiCheck, HiXMark } from 'react-icons/hi2'
 
@@ -100,29 +99,34 @@ export default function Home() {
       answer: 'When you upload your resume or paste a target Job Description, InterviewIQ parses your technical skills, projects, and career level. It feeds these semantic vectors into our question generation engine to construct calibrated DSA, architecture, and behavioral prompts tailored precisely to your background.',
     },
     {
-      question: 'Do I need a webcam and microphone?',
-      answer: 'A microphone is recommended to practice spoken responses with Whisper transcription. The avatar video interviewer streams directly in your browser. If you prefer typing, you can also write your answers directly in text or through the integrated Monaco code editor.',
+      question: 'Can I choose specific interview formats like DSA, System Design, or Behavioral?',
+      answer: 'Yes! InterviewIQ supports specialized modes including Data Structures & Algorithms (with an integrated live Monaco code editor), Distributed System Design, and Behavioral rounds following the STAR methodology.',
     },
     {
-      question: 'Can recruiters and hiring teams use InterviewIQ for candidate screening?',
-      answer: 'Yes! InterviewIQ includes a full Recruiter Screening Pipeline. Hiring managers can create custom assessment links, define target rubrics, invite candidates, and review standardized scoring reports with full audit logs and anti-cheat telemetry.',
+      question: 'How realistic is the AI avatar conversation?',
+      answer: 'Our AI avatars feature ultra-low latency speech-to-text, context-aware reasoning, and high-fidelity video stream lip-sync, creating a lifelike conversational environment that simulates real-world hiring loops.',
     },
     {
-      question: 'What types of interview modes are supported?',
-      answer: 'InterviewIQ natively supports Technical (Coding & DSA), System Design (Architecture & Scalability), HR & Behavioral (STAR framework), and Data Science / Machine Learning interview rounds.',
+      question: 'How does the scoring rubric work?',
+      answer: 'Your performance is assessed across technical accuracy, architectural depth, clarity, speech pacing (WPM), and problem decomposition. You receive an instant comprehensive scorecard with line-by-line feedback.',
     },
   ]
 
   return (
-    <div className="min-h-screen bg-[#050811] text-[#f8fafc] font-['Plus_Jakarta_Sans',sans-serif] selection:bg-cyan-500/25 selection:text-cyan-300 relative overflow-hidden dark-canvas">
-
-      {/* Ambient background drifting blobs */}
-      <div className="ambient-blob bg-cyan-500/12 w-[650px] h-[650px] -top-40 left-1/2 -translate-x-1/2" />
-      <div className="ambient-blob bg-indigo-500/10 w-[550px] h-[550px] top-1/3 left-[-10%]" />
-      <div className="ambient-blob bg-blue-500/10 w-[550px] h-[550px] top-2/3 right-[-10%]" />
+    <div
+      className="min-h-screen relative overflow-hidden dark-canvas font-body transition-colors duration-200"
+      style={{
+        backgroundColor: 'var(--bg-page)',
+        color: 'var(--text-primary)',
+      }}
+    >
+      {/* Background ambient lighting */}
+      <div className="ambient-blob bg-[var(--accent)]/12 w-[650px] h-[650px] -top-40 left-1/2 -translate-x-1/2" />
+      <div className="ambient-blob bg-[var(--toggle-knob)]/10 w-[550px] h-[550px] top-1/3 left-[-10%]" />
+      <div className="ambient-blob bg-[var(--accent)]/10 w-[550px] h-[550px] top-2/3 right-[-10%]" />
 
       {/* Grid texture overlay */}
-      <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.04)_1px,transparent_1px)] [background-size:32px_32px] pointer-events-none opacity-40" />
+      <div className="absolute inset-0 bg-[radial-gradient(var(--border)_1px,transparent_1px)] [background-size:32px_32px] pointer-events-none opacity-40" />
 
       {/* ── NAVBAR ─────────────────────────────────────────────────────────── */}
       <Navbar />
@@ -133,24 +137,38 @@ export default function Home() {
         <section className="px-6 max-w-7xl mx-auto text-center">
           <SectionReveal>
             {/* Top Pill Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-cyan-500/10 via-indigo-500/10 to-transparent border border-cyan-500/30 text-xs font-semibold mb-8 shadow-lg shadow-cyan-500/5">
-              <span className="px-2.5 py-0.5 rounded-full bg-cyan-500 text-slate-950 font-extrabold text-[10px] tracking-widest uppercase shadow-xs">
+            <div
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-xs font-semibold mb-8 shadow-sm"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--border)',
+              }}
+            >
+              <span
+                className="px-2.5 py-0.5 rounded-full font-bold text-[10px] tracking-widest uppercase shadow-xs"
+                style={{
+                  backgroundColor: 'var(--accent)',
+                  color: 'var(--accent-text-on)',
+                }}
+              >
                 AI Studio 2.0
               </span>
-              <span className="text-slate-300 font-medium tracking-wide">Next-Gen Real-Time Avatar Interviewer</span>
+              <span className="font-medium tracking-wide" style={{ color: 'var(--text-secondary)' }}>
+                Next-Gen Real-Time Avatar Interviewer
+              </span>
             </div>
 
-            {/* Main Headline with Calligraphy Accent */}
-            <h1 className="text-4xl sm:text-6xl lg:text-[76px] font-extrabold text-white leading-[1.06] tracking-tight max-w-5xl mx-auto mb-8 font-['Outfit']">
+            {/* Main Headline */}
+            <h1 className="text-4xl sm:text-6xl lg:text-[74px] font-extrabold leading-[1.06] tracking-tight max-w-5xl mx-auto mb-8 font-display" style={{ color: 'var(--text-primary)' }}>
               Master Technical Screens with{' '}
-              <span className="font-calligraphy italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-200 to-indigo-300 pr-1.5 drop-shadow-[0_0_25px_rgba(6,182,212,0.3)]">
+              <span className="text-[var(--accent)] font-bold">
                 Real-Time AI
               </span>{' '}
               Avatar Interviewers
             </h1>
 
             {/* Sub-heading */}
-            <p className="text-lg sm:text-xl text-slate-300/90 leading-relaxed max-w-2xl mx-auto mb-10 font-normal tracking-[-0.01em]">
+            <p className="text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto mb-10 font-normal" style={{ color: 'var(--text-secondary)' }}>
               Role-calibrated algorithmic rounds, photorealistic voice synthesis, and instant rubric diagnostics tailored for elite engineering candidates.
             </p>
 
@@ -177,23 +195,23 @@ export default function Home() {
             </div>
 
             {/* Social Proof Stack */}
-            <div className="flex items-center justify-center gap-4 text-xs text-slate-300 font-medium">
+            <div className="flex items-center justify-center gap-4 text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
               <div className="flex -space-x-2.5 overflow-hidden">
                 {['alex', 'sarah', 'michael', 'elena'].map((name, i) => (
                   <img
                     key={name}
-                    src={`https://ui-avatars.com/api/?name=${name}&background=${['06b6d4','3b82f6','6366f1','0d9488'][i]}&color=050811&size=64`}
+                    src={`https://ui-avatars.com/api/?name=${name}&background=${['4e9c6e','7c6fea','3b82f6','10b981'][i]}&color=ffffff&size=64`}
                     alt="User"
-                    className="inline-block h-8 w-8 rounded-full ring-2 ring-slate-900 object-cover"
+                    className="inline-block h-8 w-8 rounded-full ring-2 ring-[var(--bg-page)] object-cover"
                   />
                 ))}
               </div>
               <div className="text-left">
-                <div className="flex items-center gap-1 text-amber-400 mb-0.5 text-xs">
+                <div className="flex items-center gap-1 text-amber-500 mb-0.5 text-xs">
                   {'★'.repeat(5)}
-                  <span className="font-bold text-white ml-1 font-['Outfit']">4.9 / 5 Rating</span>
+                  <span className="font-bold ml-1 font-display" style={{ color: 'var(--text-primary)' }}>4.9 / 5 Rating</span>
                 </div>
-                <p className="text-slate-400 text-[11px] font-normal tracking-wide">Over 10,000+ candidates screened & prepared</p>
+                <p className="text-[11px] font-normal tracking-wide" style={{ color: 'var(--text-muted)' }}>Over 10,000+ candidates screened & prepared</p>
               </div>
             </div>
           </SectionReveal>
@@ -204,76 +222,116 @@ export default function Home() {
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 text-left">
                 
                 {/* Left Live Avatar Mock */}
-                <div className="lg:col-span-7 bg-slate-950 rounded-2xl border border-white/10 p-6 relative overflow-hidden flex flex-col justify-between min-h-[320px]">
+                <div
+                  className="lg:col-span-7 rounded-2xl border p-6 relative overflow-hidden flex flex-col justify-between min-h-[320px]"
+                  style={{
+                    backgroundColor: 'var(--bg-page)',
+                    borderColor: 'var(--border)',
+                  }}
+                >
                   <div className="flex items-center justify-between z-10">
-                    <span className="px-3 py-1 bg-cyan-500/20 text-cyan-300 text-xs font-bold rounded-full border border-cyan-500/30 flex items-center gap-1.5 tracking-wide uppercase text-[10px]">
-                      <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                    <span
+                      className="px-3 py-1 text-xs font-bold rounded-full border flex items-center gap-1.5 tracking-wide uppercase text-[10px]"
+                      style={{
+                        backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                        borderColor: 'rgba(78, 156, 110, 0.3)',
+                        color: 'var(--accent)',
+                      }}
+                    >
+                      <span className="w-2 h-2 rounded-full animate-ping" style={{ backgroundColor: 'var(--accent)' }} />
                       Live AI Interviewer
                     </span>
-                    <span className="text-xs text-slate-400 font-mono">01:45 / 03:00</span>
+                    <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>01:45 / 03:00</span>
                   </div>
 
                   <div className="my-auto py-8 text-center relative z-10">
-                    <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-cyan-500 to-indigo-600 p-0.5 shadow-xl shadow-cyan-500/20 mb-4">
-                      <div className="w-full h-full bg-slate-900 rounded-[22px] flex items-center justify-center text-cyan-300">
+                    <div
+                      className="w-20 h-20 mx-auto rounded-3xl p-0.5 shadow-md mb-4"
+                      style={{
+                        backgroundColor: 'rgba(78, 156, 110, 0.25)',
+                      }}
+                    >
+                      <div
+                        className="w-full h-full rounded-[22px] flex items-center justify-center border"
+                        style={{
+                          backgroundColor: 'var(--bg-elevated)',
+                          borderColor: 'var(--border)',
+                          color: 'var(--accent)',
+                        }}
+                      >
                         <BsStars size={36} />
                       </div>
                     </div>
-                    <h4 className="text-lg font-bold text-white font-['Outfit']">Sophia — Lead AI Interviewer</h4>
-                    <p className="text-xs text-slate-300 mt-2 max-w-md mx-auto italic font-['Plus_Jakarta_Sans'] font-medium leading-relaxed">
+                    <h4 className="text-lg font-bold font-display" style={{ color: 'var(--text-primary)' }}>Sophia — Lead AI Interviewer</h4>
+                    <p className="text-xs mt-2 max-w-md mx-auto italic font-medium leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                       "Could you walk me through how you would architect cache invalidation across distributed database replicas?"
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-white/10 text-xs z-10">
-                    <span className="text-emerald-400 font-semibold flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400" /> Mic Active (Echo-Cancelled)
+                  <div className="flex items-center justify-between pt-4 border-t text-xs z-10" style={{ borderColor: 'var(--border)' }}>
+                    <span className="font-semibold flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500" /> Mic Active (Echo-Cancelled)
                     </span>
-                    <span className="text-slate-400 font-mono text-[11px]">WebRTC 60 FPS</span>
+                    <span className="font-mono text-[11px]" style={{ color: 'var(--text-muted)' }}>WebRTC 60 FPS</span>
                   </div>
                 </div>
 
                 {/* Right Metrics & Code IDE Mock */}
                 <div className="lg:col-span-5 flex flex-col gap-4">
-                  <div className="bg-slate-950/80 rounded-2xl border border-white/10 p-5 space-y-3">
-                    <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest font-mono">Real-Time Evaluation Telemetry</p>
+                  <div
+                    className="rounded-2xl border p-5 space-y-3"
+                    style={{
+                      backgroundColor: 'var(--bg-page)',
+                      borderColor: 'var(--border)',
+                    }}
+                  >
+                    <p className="text-[10px] font-bold uppercase tracking-widest font-display" style={{ color: 'var(--text-muted)' }}>
+                      Real-Time Evaluation Telemetry
+                    </p>
                     <div className="space-y-2.5">
                       <div>
                         <div className="flex justify-between text-xs font-semibold mb-1">
-                          <span className="text-slate-300">Technical Correctness</span>
-                          <span className="text-cyan-400 font-bold font-['Outfit']">92%</span>
+                          <span style={{ color: 'var(--text-secondary)' }}>Technical Correctness</span>
+                          <span className="font-bold font-display" style={{ color: 'var(--accent)' }}>92%</span>
                         </div>
-                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                          <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full w-[92%]" />
+                        <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                          <div className="h-full rounded-full w-[92%]" style={{ backgroundColor: 'var(--accent)' }} />
                         </div>
                       </div>
 
                       <div>
                         <div className="flex justify-between text-xs font-semibold mb-1">
-                          <span className="text-slate-300">Speech Pacing (142 WPM)</span>
-                          <span className="text-emerald-400 font-bold font-['Outfit']">Optimal</span>
+                          <span style={{ color: 'var(--text-secondary)' }}>Speech Pacing (142 WPM)</span>
+                          <span className="font-bold font-display text-emerald-600 dark:text-emerald-400">Optimal</span>
                         </div>
-                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                           <div className="h-full bg-emerald-500 rounded-full w-[88%]" />
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-slate-950/80 rounded-2xl border border-white/10 p-4 font-mono text-xs text-slate-300 flex-1 flex flex-col justify-between">
-                    <div className="flex items-center justify-between pb-2 border-b border-white/10 text-[10px] text-slate-400">
+                  <div
+                    className="rounded-2xl border p-4 font-mono text-xs flex-1 flex flex-col justify-between"
+                    style={{
+                      backgroundColor: 'var(--bg-page)',
+                      borderColor: 'var(--border)',
+                      color: 'var(--text-secondary)',
+                    }}
+                  >
+                    <div className="flex items-center justify-between pb-2 border-b text-[10px]" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
                       <span>solution.py</span>
-                      <span className="text-cyan-400">Python 3.13</span>
+                      <span style={{ color: 'var(--accent)' }}>Python 3.13</span>
                     </div>
-                    <p className="text-cyan-300/90 leading-relaxed py-2 font-mono text-[11px]">
+                    <p className="leading-relaxed py-2 font-mono text-[11px]" style={{ color: 'var(--text-primary)' }}>
                       def invalidate_cache(key: str) -&gt; bool:<br />
                       &nbsp;&nbsp;&nbsp;&nbsp;redis_client.delete(key)<br />
                       &nbsp;&nbsp;&nbsp;&nbsp;publish_event("cache:evict", key)<br />
                       &nbsp;&nbsp;&nbsp;&nbsp;return True
                     </p>
-                    <div className="pt-2 border-t border-white/10 flex justify-between items-center text-[10px] text-slate-400">
+                    <div className="pt-2 border-t flex justify-between items-center text-[10px]" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
                       <span>✓ Syntax Verified</span>
-                      <span className="text-emerald-400 font-bold">Tests Passing</span>
+                      <span className="font-bold text-emerald-600 dark:text-emerald-400">Tests Passing</span>
                     </div>
                   </div>
                 </div>
@@ -321,13 +379,13 @@ export default function Home() {
         <section id="stages" className="px-6 max-w-7xl mx-auto scroll-mt-28">
           <SectionReveal>
             <div className="text-center max-w-3xl mx-auto mb-14">
-              <Badge variant="cyan" icon={BsLightningChargeFill} className="mb-4">
+              <Eyebrow icon={BsLightningChargeFill} className="mb-3">
                 Structured Workflow
-              </Badge>
-              <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-['Outfit']">
-                Engineering Your <span className="font-calligraphy italic font-normal text-cyan-400">Offer-Ready</span> Confidence
+              </Eyebrow>
+              <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight font-display" style={{ color: 'var(--text-primary)' }}>
+                Engineering Your <span className="text-[var(--accent)] font-semibold">Offer-Ready</span> Confidence
               </h2>
-              <p className="mt-3 text-slate-400 text-base leading-relaxed">
+              <p className="mt-3 text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 A seamless 4-stage engine that moves you from raw resume to peak interview readiness.
               </p>
             </div>
@@ -340,36 +398,56 @@ export default function Home() {
         <section id="features" className="px-6 max-w-7xl mx-auto">
           <SectionReveal>
             <div className="text-center max-w-3xl mx-auto mb-14">
-              <Badge variant="indigo" icon={BsStars} className="mb-4">
+              <Eyebrow icon={BsStars} className="mb-3">
                 The Competitive Edge
-              </Badge>
-              <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-['Outfit']">
-                Traditional Prep vs. <span className="font-calligraphy italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400">InterviewIQ</span>
+              </Eyebrow>
+              <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight font-display" style={{ color: 'var(--text-primary)' }}>
+                Traditional Prep vs. <span className="text-[var(--accent)] font-semibold">InterviewIQ</span>
               </h2>
-              <p className="mt-3 text-slate-400 text-base leading-relaxed">
+              <p className="mt-3 text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 Why static question banks fail and dynamic conversational AI delivers results.
               </p>
             </div>
 
-            <div className="rounded-3xl border border-white/10 bg-slate-950/70 backdrop-blur-xl overflow-hidden shadow-2xl">
-              <div className="grid grid-cols-1 md:grid-cols-12 border-b border-white/10 bg-slate-900/60 p-5 font-['Outfit'] font-bold text-xs uppercase tracking-widest text-slate-400 font-mono">
+            <div
+              className="rounded-3xl border overflow-hidden shadow-xl"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--border)',
+              }}
+            >
+              <div
+                className="grid grid-cols-1 md:grid-cols-12 border-b p-5 font-display font-bold text-xs uppercase tracking-widest"
+                style={{
+                  backgroundColor: 'var(--bg-page)',
+                  borderColor: 'var(--border)',
+                  color: 'var(--text-muted)',
+                }}
+              >
                 <div className="md:col-span-3">Assessment Pillar</div>
-                <div className="md:col-span-4 text-rose-400/90">Traditional Mock Prep</div>
-                <div className="md:col-span-5 text-cyan-300">InterviewIQ Studio</div>
+                <div className="md:col-span-4 text-rose-500">Traditional Mock Prep</div>
+                <div className="md:col-span-5" style={{ color: 'var(--accent)' }}>InterviewIQ Studio</div>
               </div>
 
-              <div className="divide-y divide-white/5">
+              <div className="divide-y" style={{ borderColor: 'var(--border)' }}>
                 {comparisonItems.map((item, idx) => (
-                  <div key={idx} className="grid grid-cols-1 md:grid-cols-12 p-5 gap-4 items-center text-sm transition-colors hover:bg-white/2">
-                    <div className="md:col-span-3 font-bold text-white font-['Outfit']">
+                  <div key={idx} className="grid grid-cols-1 md:grid-cols-12 p-5 gap-4 items-center text-sm transition-colors hover:opacity-90">
+                    <div className="md:col-span-3 font-bold font-display" style={{ color: 'var(--text-primary)' }}>
                       {item.feature}
                     </div>
-                    <div className="md:col-span-4 flex items-start gap-2.5 text-slate-400 text-xs leading-relaxed">
+                    <div className="md:col-span-4 flex items-start gap-2.5 text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                       <HiXMark className="text-rose-500 shrink-0 mt-0.5" size={16} />
                       <span>{item.traditional}</span>
                     </div>
-                    <div className="md:col-span-5 flex items-start gap-2.5 text-cyan-200 text-xs font-semibold leading-relaxed bg-cyan-500/5 p-3 rounded-2xl border border-cyan-500/15">
-                      <HiCheck className="text-cyan-400 shrink-0 mt-0.5" size={16} />
+                    <div
+                      className="md:col-span-5 flex items-start gap-2.5 text-xs font-semibold leading-relaxed p-3 rounded-2xl border"
+                      style={{
+                        backgroundColor: 'rgba(78, 156, 110, 0.08)',
+                        borderColor: 'rgba(78, 156, 110, 0.2)',
+                        color: 'var(--accent)',
+                      }}
+                    >
+                      <HiCheck className="shrink-0 mt-0.5" size={16} />
                       <span>{item.interviewIQ}</span>
                     </div>
                   </div>
@@ -383,11 +461,11 @@ export default function Home() {
         <section id="faq" className="px-6 max-w-4xl mx-auto">
           <SectionReveal>
             <div className="text-center mb-12">
-              <Badge variant="cyan" className="mb-4">FAQ</Badge>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-['Outfit']">
-                Answers to <span className="font-calligraphy italic font-normal text-cyan-400">Common Questions</span>
+              <Eyebrow className="mb-3">FAQ</Eyebrow>
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-display" style={{ color: 'var(--text-primary)' }}>
+                Answers to <span className="text-[var(--accent)] font-semibold">Common Questions</span>
               </h2>
-              <p className="mt-2 text-slate-400 text-sm">
+              <p className="mt-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
                 Everything you need to know about the AI interview engine.
               </p>
             </div>
@@ -399,15 +477,21 @@ export default function Home() {
         {/* ── BOTTOM CTA BANNER ───────────────────────────────────────────── */}
         <section className="px-6 max-w-7xl mx-auto pb-24">
           <SectionReveal>
-            <div className="rounded-3xl bg-gradient-to-r from-cyan-900/30 via-slate-900 to-indigo-950/40 border border-cyan-500/30 p-8 sm:p-14 text-center relative overflow-hidden shadow-2xl">
-              <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
+            <div
+              className="rounded-3xl border p-8 sm:p-14 text-center relative overflow-hidden shadow-2xl"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--border)',
+              }}
+            >
+              <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none opacity-15" style={{ backgroundColor: 'var(--accent)' }} />
               
               <div className="relative z-10 max-w-2xl mx-auto space-y-6">
-                <Badge variant="cyan" icon={BsStars}>Get Started Today</Badge>
-                <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-['Outfit']">
-                  Ready to <span className="font-calligraphy italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-indigo-300">Ace</span> Your Next Interview?
+                <Badge variant="accent" icon={BsStars}>Get Started Today</Badge>
+                <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight font-display" style={{ color: 'var(--text-primary)' }}>
+                  Ready to <span className="text-[var(--accent)] font-semibold">Ace</span> Your Next Interview?
                 </h2>
-                <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+                <p className="text-sm sm:text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                   Join thousands of candidates who practice daily with our conversational AI avatars and step into real interviews fully prepared.
                 </p>
 
@@ -427,21 +511,21 @@ export default function Home() {
       </main>
 
       {/* ── FOOTER ──────────────────────────────────────────────────────── */}
-      <footer className="border-t border-white/8 bg-slate-950/80 px-6 py-12 text-xs text-slate-500 relative z-10">
+      <footer className="border-t px-6 py-12 text-xs relative z-10 transition-colors" style={{ backgroundColor: 'var(--bg-page)', borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-cyan-500 to-indigo-600 flex items-center justify-center text-white text-xs">
+            <div className="w-6 h-6 rounded-lg flex items-center justify-center text-white text-xs" style={{ backgroundColor: 'var(--accent)' }}>
               <BsStars />
             </div>
-            <span className="font-bold text-white text-sm font-['Outfit']">
-              Interview<span className="font-calligraphy italic font-normal text-cyan-400">IQ</span>.AI
+            <span className="font-bold text-sm font-display" style={{ color: 'var(--text-primary)' }}>
+              Interview<span className="text-[var(--accent)] font-semibold">IQ</span>.AI
             </span>
           </div>
           <p>© {new Date().getFullYear()} InterviewIQ. All rights reserved. Universal AI Interview Studio.</p>
-          <div className="flex gap-6 font-medium text-slate-400">
-            <a href="#" className="hover:text-cyan-400 transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-cyan-400 transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-cyan-400 transition-colors">Security</a>
+          <div className="flex gap-6 font-medium" style={{ color: 'var(--text-secondary)' }}>
+            <a href="#" className="hover:text-[var(--accent)] transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-[var(--accent)] transition-colors">Terms of Service</a>
+            <a href="#" className="hover:text-[var(--accent)] transition-colors">Security</a>
           </div>
         </div>
       </footer>

@@ -4,35 +4,32 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark light" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400;1,600;1,700&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&family=Outfit:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400;1,600;1,700&family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&family=Outfit:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <title>InterviewIQ.AI — AI-Powered Career & Interview Platform</title>
     <meta name="description" content="Master tech, behavioral, and system design interviews with lifelike real-time AI interviewers." />
     <script>
       (function() {
         try {
-          var saved = localStorage.getItem('app-theme');
-          var isDark = saved ? saved === 'dark' : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-          if (isDark) {
-            document.documentElement.classList.add('dark');
-            document.documentElement.classList.remove('light');
-            document.documentElement.style.colorScheme = 'dark';
-          } else {
-            document.documentElement.classList.add('light');
-            document.documentElement.classList.remove('dark');
-            document.documentElement.style.colorScheme = 'light';
-          }
+          var saved = localStorage.getItem('theme') || localStorage.getItem('app-theme');
+          var isDark = saved ? saved === 'dark' : !(window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
+          var theme = isDark ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.classList.remove('dark', 'light');
+          document.documentElement.classList.add(theme);
+          document.documentElement.style.colorScheme = theme;
         } catch(e){}
       })();
     </script>
     <style>
       /* Critical adaptive canvas to eliminate FOUC */
-      html.dark, html.dark body { background-color: #050811; color: #f8fafc; }
-      html.light, html.light body { background-color: #f8fafc; color: #0f172a; }
+      :root[data-theme="dark"], html.dark, html.dark body { background-color: #0A0A0A; color: #FFFFFF; }
+      :root[data-theme="light"], html.light, html.light body { background-color: #FFFFFF; color: #0A0A0A; }
     </style>
   </head>
-  <body class="transition-colors duration-300 antialiased selection:bg-cyan-500/20 selection:text-cyan-400">
+  <body class="transition-colors duration-200 antialiased selection:bg-[#4E9C6E]/25 selection:text-[#4E9C6E]">
     <div id="root"></div>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script type="module" src="/src/main.jsx"></script>
