@@ -19,7 +19,7 @@ export default function BrandLogo({ size = 'md', showText = true, className = ''
       />
       {showText && (
         <span className={`${s.text} tracking-tight font-display`} style={{ color: 'var(--text-primary)' }}>
-          interviewiq
+          interviewIQ
         </span>
       )}
     </div>
