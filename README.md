@@ -1,8 +1,8 @@
-# 🎯 InterviewIQ.AI — Enterprise AI-Powered Career & Interview Studio
+# 🎯 AI-Based Interview Evaluation System
 
 <div align="center">
-  <img src="client/public/logo.png" alt="InterviewIQ.AI Logo" width="120" height="120" style="border-radius: 24px;" />
-  <br />
+  <img src="client/public/logo.png" alt="AI-Based Interview Evaluation System Logo" width="130" height="130" style="border-radius: 24px;" />
+  <br /><br />
   <p><strong>Master tech, behavioral, and system design interviews with lifelike real-time AI interviewers and industry-calibrated scoring.</strong></p>
 
   [![React 19](https://img.shields.io/badge/React-19-61dafb.svg?style=flat-square&logo=react)](https://react.dev)
@@ -12,6 +12,11 @@
   [![LiveKit](https://img.shields.io/badge/LiveKit-WebRTC-FF4F00.svg?style=flat-square&logo=webrtc)](https://livekit.io)
   [![TailwindCSS v4](https://img.shields.io/badge/TailwindCSS-v4-06B6D4.svg?style=flat-square&logo=tailwindcss)](https://tailwindcss.com)
 </div>
+
+---
+
+## 1. Overview
+The **AI-Based Interview Evaluation System** is an intelligent platform designed to automate the interview assessment process. The system evaluates candidate responses, assigns scores, identifies strengths and weaknesses, and generates personalized feedback using trained open-source NLP models without relying on external AI APIs. The goal is to provide consistent, scalable, and objective interview assessments for students, freshers, and job seekers.
 
 ---
 
