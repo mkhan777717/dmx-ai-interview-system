@@ -105,12 +105,8 @@ function Auth({ isModel = false }) {
           WebkitBackdropFilter: 'blur(20px)',
         }}
       >
-        {/* Brand Logo & Pill */}
+        {/* Brand Logo */}
         <div className="flex flex-col items-center text-center mb-6">
-          <Badge variant="accent" icon={BsStars} className="mb-4">
-            AI-Powered Interview Studio
-          </Badge>
-
           <div className="mb-2">
             <BrandLogo size="lg" />
           </div>
