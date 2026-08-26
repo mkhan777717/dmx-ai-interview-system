@@ -13,6 +13,7 @@ import { setUserData } from '../redux/userSlice'
 import { hasPermission, getRoleLabel, getRoleBadgeColor } from '../permissions'
 import { ServerUrl } from '../App'
 import ThemeToggle from './ui/ThemeToggle'
+import BrandLogo from './ui/BrandLogo'
 
 // ── Nav Item ──────────────────────────────────────────────────────────────────
 const NavItem = ({ icon: Icon, label, active, onClick }) => (
@@ -94,32 +95,7 @@ export default function V2Layout({
           style={{ borderColor: 'var(--border)' }}
           onClick={() => navigate('/')}
         >
-          <div
-            className="w-9 h-9 rounded-xl border flex items-center justify-center p-1 shadow-xs"
-            style={{
-              backgroundColor: 'var(--bg-page)',
-              borderColor: 'var(--border)',
-            }}
-          >
-            <img
-              src="/logo.png"
-              alt="InterviewIQ Logo"
-              className="w-full h-full object-contain aspect-square"
-            />
-          </div>
-          <h1 className="text-lg font-bold tracking-tight font-display flex items-center gap-1" style={{ color: 'var(--text-primary)' }}>
-            Interview<span className="text-[var(--accent)] font-semibold">IQ</span>
-            <span
-              className="border text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider"
-              style={{
-                backgroundColor: 'rgba(78, 156, 110, 0.12)',
-                borderColor: 'rgba(78, 156, 110, 0.3)',
-                color: 'var(--accent)',
-              }}
-            >
-              AI
-            </span>
-          </h1>
+          <BrandLogo size="md" />
         </div>
 
         {/* Nav */}

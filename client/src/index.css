@@ -372,3 +372,50 @@
 .monaco-editor-background {
   background-color: var(--bg-elevated) !important;
 }
+
+/* ── Brand Logo Animations & Boundary Highlights ── */
+.logo-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-elevated);
+  border: 1.5px solid rgba(78, 156, 110, 0.45);
+  box-shadow: 0 0 14px -1px rgba(78, 156, 110, 0.3);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.logo-badge:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 24px 3px rgba(78, 156, 110, 0.55);
+  transform: scale(1.05);
+}
+
+.logo-glow-pulse {
+  animation: logo-glow-anim 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes logo-glow-anim {
+  0% {
+    box-shadow: 0 0 10px 0px rgba(78, 156, 110, 0.25), inset 0 0 6px rgba(78, 156, 110, 0.1);
+    border-color: rgba(78, 156, 110, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 20px 3px rgba(78, 156, 110, 0.5), inset 0 0 10px rgba(78, 156, 110, 0.25);
+    border-color: rgba(78, 156, 110, 0.85);
+  }
+  100% {
+    box-shadow: 0 0 10px 0px rgba(78, 156, 110, 0.25), inset 0 0 6px rgba(78, 156, 110, 0.1);
+    border-color: rgba(78, 156, 110, 0.35);
+  }
+}
+
+/* ── Editorial Italic Accent Typography ── */
+.text-italic-accent {
+  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: -0.01em;
+  padding: 0 0.05em;
+}

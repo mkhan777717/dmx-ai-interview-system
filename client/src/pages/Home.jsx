@@ -154,14 +154,14 @@ export default function Home() {
                 AI Studio 2.0
               </span>
               <span className="font-medium tracking-wide" style={{ color: 'var(--text-secondary)' }}>
-                Next-Gen Real-Time Avatar Interviewer
+                Next-Gen <span className="text-italic-accent text-sm">Real-Time</span> Avatar Interviewer
               </span>
             </div>
 
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-6xl lg:text-[74px] font-extrabold leading-[1.06] tracking-tight max-w-5xl mx-auto mb-8 font-display" style={{ color: 'var(--text-primary)' }}>
               Master Technical Screens with{' '}
-              <span className="text-[var(--accent)] font-bold">
+              <span className="text-italic-accent font-serif font-normal inline-block transform -rotate-1">
                 Real-Time AI
               </span>{' '}
               Avatar Interviewers
@@ -169,7 +169,7 @@ export default function Home() {
 
             {/* Sub-heading */}
             <p className="text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto mb-10 font-normal" style={{ color: 'var(--text-secondary)' }}>
-              Role-calibrated algorithmic rounds, photorealistic voice synthesis, and instant rubric diagnostics tailored for elite engineering candidates.
+              Role-calibrated algorithmic rounds, <span className="italic font-medium text-[var(--text-primary)]">photorealistic voice synthesis</span>, and instant rubric diagnostics tailored for elite engineering candidates.
             </p>
 
             {/* CTA Buttons */}
@@ -383,7 +383,7 @@ export default function Home() {
                 Structured Workflow
               </Eyebrow>
               <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight font-display" style={{ color: 'var(--text-primary)' }}>
-                Engineering Your <span className="text-[var(--accent)] font-semibold">Offer-Ready</span> Confidence
+                Engineering Your <span className="text-italic-accent font-serif font-normal">Offer-Ready</span> Confidence
               </h2>
               <p className="mt-3 text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 A seamless 4-stage engine that moves you from raw resume to peak interview readiness.
@@ -402,7 +402,7 @@ export default function Home() {
                 The Competitive Edge
               </Eyebrow>
               <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight font-display" style={{ color: 'var(--text-primary)' }}>
-                Traditional Prep vs. <span className="text-[var(--accent)] font-semibold">InterviewIQ</span>
+                Traditional Prep vs. <span className="text-italic-accent font-serif font-normal">InterviewIQ</span>
               </h2>
               <p className="mt-3 text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 Why static question banks fail and dynamic conversational AI delivers results.
@@ -463,7 +463,7 @@ export default function Home() {
             <div className="text-center mb-12">
               <Eyebrow className="mb-3">FAQ</Eyebrow>
               <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-display" style={{ color: 'var(--text-primary)' }}>
-                Answers to <span className="text-[var(--accent)] font-semibold">Common Questions</span>
+                Answers to <span className="text-italic-accent font-serif font-normal">Common Questions</span>
               </h2>
               <p className="mt-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
                 Everything you need to know about the AI interview engine.
@@ -489,7 +489,7 @@ export default function Home() {
               <div className="relative z-10 max-w-2xl mx-auto space-y-6">
                 <Badge variant="accent" icon={BsStars}>Get Started Today</Badge>
                 <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight font-display" style={{ color: 'var(--text-primary)' }}>
-                  Ready to <span className="text-[var(--accent)] font-semibold">Ace</span> Your Next Interview?
+                  Ready to <span className="text-italic-accent font-serif font-normal">Ace</span> Your Next Interview?
                 </h2>
                 <p className="text-sm sm:text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                   Join thousands of candidates who practice daily with our conversational AI avatars and step into real interviews fully prepared.

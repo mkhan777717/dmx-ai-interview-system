@@ -11,6 +11,7 @@ import AuthModel from './AuthModel'
 import { getRoleLabel, getRoleBadgeColor, getDefaultRoute } from '../permissions'
 import GradientButton from './ui/GradientButton'
 import ThemeToggle from './ui/ThemeToggle'
+import BrandLogo from './ui/BrandLogo'
 
 function Navbar() {
   const { userData } = useSelector((state) => state.user)
@@ -83,32 +84,7 @@ function Navbar() {
           className="flex items-center gap-2.5 cursor-pointer group"
           onClick={() => navigate('/')}
         >
-          <div
-            className="w-9 h-9 rounded-xl border flex items-center justify-center p-1 shadow-sm group-hover:scale-105 transition-all duration-200"
-            style={{
-              backgroundColor: 'var(--bg-elevated)',
-              borderColor: 'var(--border)',
-            }}
-          >
-            <img
-              src="/logo.png"
-              alt="InterviewIQ Logo"
-              className="w-full h-full object-contain aspect-square"
-            />
-          </div>
-          <h1 className="text-lg font-bold font-display tracking-tight flex items-center gap-1.5" style={{ color: 'var(--text-primary)' }}>
-            Interview<span className="text-[var(--accent)] font-semibold">IQ</span>
-            <span
-              className="text-[9px] font-bold tracking-widest px-2 py-0.5 rounded-full uppercase border"
-              style={{
-                backgroundColor: 'rgba(78, 156, 110, 0.12)',
-                borderColor: 'rgba(78, 156, 110, 0.3)',
-                color: 'var(--accent)',
-              }}
-            >
-              AI
-            </span>
-          </h1>
+          <BrandLogo size="md" />
         </div>
 
         {/* Center: Nav Links */}
