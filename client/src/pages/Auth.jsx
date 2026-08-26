@@ -12,6 +12,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { getDefaultRoute } from '../permissions'
 import { HiArrowLeft } from 'react-icons/hi2'
 import Badge from '../components/ui/Badge'
+import BrandLogo from '../components/ui/BrandLogo'
 
 function Auth({ isModel = false }) {
   const dispatch = useDispatch()
@@ -110,23 +111,8 @@ function Auth({ isModel = false }) {
             AI-Powered Interview Studio
           </Badge>
 
-          <div className="flex items-center gap-2.5 mb-2">
-            <div
-              className="w-11 h-11 border rounded-2xl flex items-center justify-center p-1.5 shadow-sm"
-              style={{
-                backgroundColor: 'var(--bg-page)',
-                borderColor: 'var(--border)',
-              }}
-            >
-              <img
-                src="/logo.png"
-                alt="InterviewIQ Logo"
-                className="w-full h-full object-contain aspect-square"
-              />
-            </div>
-            <h2 className="font-bold text-2xl tracking-tight font-display" style={{ color: 'var(--text-primary)' }}>
-              InterviewIQ<span className="text-[var(--accent)]">.AI</span>
-            </h2>
+          <div className="mb-2">
+            <BrandLogo size="lg" />
           </div>
 
           <h1 className="text-xl font-bold mt-2 font-display" style={{ color: 'var(--text-primary)' }}>
