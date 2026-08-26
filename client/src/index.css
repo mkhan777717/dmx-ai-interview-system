@@ -4,25 +4,25 @@
   /* ── Dark Theme Tokens (Default) ── */
   :root,
   :root[data-theme="dark"] {
-    --bg-page: #0A0A0A;
-    --bg-nav: rgba(20, 20, 25, 0.65);
-    --bg-elevated: #16161A;         /* cards, secondary buttons, modals */
+    --bg-page: #000000;
+    --bg-nav: rgba(10, 10, 10, 0.8);
+    --bg-elevated: #111111;         /* cards, secondary buttons, modals */
     --text-primary: #FFFFFF;
     --text-secondary: #9CA3AF;
     --text-muted: #6B7280;
-    --border: rgba(255, 255, 255, 0.08);
-    --accent: #4E9C6E;              /* verified exact hex */
+    --border: rgba(255, 255, 255, 0.1);
+    --accent: #4E9C6E;              /* exact emerald green from eduvantix */
     --accent-text-on: #FFFFFF;      /* text color that sits ON the accent button */
     --toggle-knob: #7C6FEA;
 
-    --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
     /* Semantic and legacy aliases */
     --bg-base: var(--bg-page);
     --bg-surface: var(--bg-elevated);
     --bg-card: var(--bg-elevated);
-    --bg-card-hover: #1f1f25;
+    --bg-card-hover: #181818;
     --border-subtle: var(--border);
     --border-hover: rgba(78, 156, 110, 0.45);
     --text-heading: var(--text-primary);
@@ -35,18 +35,18 @@
   /* ── Light Theme Tokens ── */
   :root[data-theme="light"] {
     --bg-page: #FFFFFF;
-    --bg-nav: rgba(255, 255, 255, 0.85);
+    --bg-nav: rgba(255, 255, 255, 0.9);
     --bg-elevated: #FFFFFF;
     --text-primary: #0A0A0A;
     --text-secondary: #4B5563;
     --text-muted: #6B7280;
-    --border: rgba(0, 0, 0, 0.08);
-    --accent: #4E9C6E;              /* SAME value both themes — accent doesn't shift */
+    --border: rgba(0, 0, 0, 0.09);
+    --accent: #4E9C6E;              /* SAME value both themes */
     --accent-text-on: #FFFFFF;
     --toggle-knob: #F0993D;
 
-    --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
     /* Semantic and legacy aliases */
     --bg-base: var(--bg-page);
@@ -64,7 +64,7 @@
 
   html {
     scroll-behavior: smooth;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: background-color 0.15s ease, color 0.15s ease;
   }
 
   body {
@@ -73,12 +73,12 @@
     font-family: var(--font-body);
     overflow-x: hidden;
     min-height: 100vh;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: background-color 0.15s ease, color 0.15s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    letter-spacing: -0.025em;
+    letter-spacing: -0.03em;
     color: var(--text-primary);
   }
 }
@@ -96,206 +96,78 @@
   font-family: var(--font-display);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--accent);
 }
 
-.font-calligraphy {
-  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
-  font-style: italic;
-  letter-spacing: normal;
-}
-
-.font-editorial {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-style: italic;
-  letter-spacing: 0.015em;
-}
-
-.font-cinzel {
-  font-family: 'Cinzel', serif;
-  letter-spacing: 0.06em;
-}
-
-.font-luxury {
-  font-family: 'Cinzel', 'Space Grotesk', serif;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-/* ── Universal Theme Surfaces ── */
-.bg-page {
-  background-color: var(--bg-page);
-}
-
-.bg-elevated {
-  background-color: var(--bg-elevated);
-}
-
-.bg-nav {
-  background-color: var(--bg-nav);
-}
-
-.text-primary-theme {
-  color: var(--text-primary);
-}
-
-.text-secondary-theme {
-  color: var(--text-secondary);
-}
-
-.text-muted-theme {
-  color: var(--text-muted);
-}
-
-.border-theme {
-  border-color: var(--border);
-}
-
-.text-accent-theme {
-  color: var(--accent);
-}
-
-.bg-accent-theme {
-  background-color: var(--accent);
-}
-
-/* ── Primary & Secondary Buttons ── */
+/* ── Standard Button Classes ── */
 .btn-primary {
   background-color: var(--accent);
   color: var(--accent-text-on);
   font-family: var(--font-body);
   font-weight: 600;
   border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 6px 20px -4px rgba(78, 156, 110, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid transparent;
 }
 
 .btn-primary:hover {
-  transform: translateY(-1.5px);
-  box-shadow: 0 10px 25px -4px rgba(78, 156, 110, 0.55), 0 0 16px rgba(78, 156, 110, 0.3);
-  filter: brightness(1.05);
+  opacity: 0.92;
+  transform: translateY(-1px);
 }
 
-.btn-gradient {
-  background-color: var(--accent);
-  color: var(--accent-text-on);
-  font-family: var(--font-body);
-  font-weight: 600;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 6px 20px -4px rgba(78, 156, 110, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.btn-gradient:hover {
-  transform: translateY(-1.5px);
-  box-shadow: 0 10px 25px -4px rgba(78, 156, 110, 0.55), 0 0 16px rgba(78, 156, 110, 0.3);
-  filter: brightness(1.05);
+.btn-primary:active {
+  transform: translateY(0);
 }
 
 .btn-secondary {
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border);
+  background-color: transparent;
   color: var(--text-primary);
+  border: 1px solid var(--border);
   font-family: var(--font-body);
   font-weight: 600;
-  border-radius: 1rem; /* rounded-2xl */
-  box-shadow: var(--shadow-glass);
+  border-radius: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .btn-secondary:hover {
-  transform: translateY(-1.5px);
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.btn-glass {
   background-color: var(--bg-elevated);
-  border: 1px solid var(--border);
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  font-weight: 600;
-  border-radius: 1rem; /* rounded-2xl */
-  box-shadow: var(--shadow-glass);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-.btn-glass:hover {
-  transform: translateY(-1.5px);
-  border-color: var(--accent);
-  color: var(--accent);
+:root[data-theme="light"] .btn-secondary:hover {
+  border-color: rgba(0, 0, 0, 0.2);
 }
 
-/* ── Universal Glass & Card Panels ── */
+/* ── Surface Utilities ── */
 .glass-panel {
-  background: var(--bg-elevated);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background-color: var(--bg-nav);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-glass);
-  color: var(--text-primary);
-  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.glass-panel-subtle {
-  background: var(--bg-nav);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid var(--border);
-  color: var(--text-primary);
-}
-
-.glass-card {
-  background: var(--bg-elevated);
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-glass);
-  color: var(--text-primary);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.glass-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(78, 156, 110, 0.45);
-  box-shadow: var(--shadow-elevated);
-  background: var(--bg-card-hover);
 }
 
 .glass-card-static {
-  background: var(--bg-elevated);
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  background-color: var(--bg-elevated);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-glass);
-  color: var(--text-primary);
-  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.glass-pill {
-  background: var(--bg-elevated);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
   transition: all 0.2s ease;
 }
 
-.glass-pill:hover {
-  background: var(--bg-card-hover);
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-/* ── Interactive Inputs ── */
 .glass-input {
-  background: var(--bg-elevated);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background-color: var(--bg-page);
   border: 1px solid var(--border);
   color: var(--text-primary);
   transition: all 0.2s ease;
@@ -304,49 +176,13 @@
 .glass-input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(78, 156, 110, 0.25);
 }
 
-/* ── Ambient Background Canvas ── */
-.dark-canvas,
-.ambient-mesh-canvas {
-  background-color: var(--bg-page);
-  background-image: 
-    radial-gradient(at 15% 15%, rgba(78, 156, 110, 0.08) 0px, transparent 50%),
-    radial-gradient(at 85% 10%, rgba(124, 111, 234, 0.07) 0px, transparent 50%),
-    radial-gradient(at 50% 85%, rgba(78, 156, 110, 0.06) 0px, transparent 50%);
-  background-attachment: fixed;
-  transition: background-color 0.2s ease;
-}
-
-:root[data-theme="light"] .dark-canvas,
-:root[data-theme="light"] .ambient-mesh-canvas {
-  background-color: #FFFFFF;
-  background-image: 
-    radial-gradient(at 15% 15%, rgba(78, 156, 110, 0.07) 0px, transparent 50%),
-    radial-gradient(at 85% 10%, rgba(240, 153, 61, 0.06) 0px, transparent 50%),
-    radial-gradient(at 50% 85%, rgba(78, 156, 110, 0.05) 0px, transparent 50%);
-}
-
-.ambient-blob {
-  position: absolute;
-  border-radius: 9999px;
-  filter: blur(85px);
-  pointer-events: none;
-  opacity: 0.35;
-  z-index: 0;
-  animation: drift-slow 14s ease-in-out infinite alternate;
-}
-
-:root[data-theme="light"] .ambient-blob {
-  opacity: 0.2;
-  filter: blur(95px);
-}
-
-@keyframes drift-slow {
-  0% { transform: translate(0, 0) scale(1); opacity: 0.35; }
-  50% { transform: translate(25px, -15px) scale(1.08); opacity: 0.5; }
-  100% { transform: translate(-15px, 20px) scale(0.95); opacity: 0.35; }
+/* ── Code Editor Theme Support ── */
+.monaco-editor,
+.monaco-editor .margin,
+.monaco-editor-background {
+  background-color: var(--bg-elevated) !important;
 }
 
 /* ── Custom Scrollbars ── */
@@ -364,58 +200,4 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
-}
-
-/* ── Code Editor Theme Support ── */
-.monaco-editor,
-.monaco-editor .margin,
-.monaco-editor-background {
-  background-color: var(--bg-elevated) !important;
-}
-
-/* ── Brand Logo Animations & Boundary Highlights ── */
-.logo-badge {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-elevated);
-  border: 1.5px solid rgba(78, 156, 110, 0.45);
-  box-shadow: 0 0 14px -1px rgba(78, 156, 110, 0.3);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.logo-badge:hover {
-  border-color: var(--accent);
-  box-shadow: 0 0 24px 3px rgba(78, 156, 110, 0.55);
-  transform: scale(1.05);
-}
-
-.logo-glow-pulse {
-  animation: logo-glow-anim 3.5s ease-in-out infinite alternate;
-}
-
-@keyframes logo-glow-anim {
-  0% {
-    box-shadow: 0 0 10px 0px rgba(78, 156, 110, 0.25), inset 0 0 6px rgba(78, 156, 110, 0.1);
-    border-color: rgba(78, 156, 110, 0.35);
-  }
-  50% {
-    box-shadow: 0 0 20px 3px rgba(78, 156, 110, 0.5), inset 0 0 10px rgba(78, 156, 110, 0.25);
-    border-color: rgba(78, 156, 110, 0.85);
-  }
-  100% {
-    box-shadow: 0 0 10px 0px rgba(78, 156, 110, 0.25), inset 0 0 6px rgba(78, 156, 110, 0.1);
-    border-color: rgba(78, 156, 110, 0.35);
-  }
-}
-
-/* ── Editorial Italic Accent Typography ── */
-.text-italic-accent {
-  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
-  font-style: italic;
-  font-weight: 500;
-  color: var(--accent);
-  letter-spacing: -0.01em;
-  padding: 0 0.05em;
 }

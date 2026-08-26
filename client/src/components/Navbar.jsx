@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { motion, AnimatePresence } from 'motion/react'
-import { HiArrowUpRight } from 'react-icons/hi2'
 import { HiOutlineLogout } from 'react-icons/hi'
 import { useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios'
@@ -9,7 +8,6 @@ import { ServerUrl } from '../App'
 import { setUserData } from '../redux/userSlice'
 import AuthModel from './AuthModel'
 import { getRoleLabel, getRoleBadgeColor, getDefaultRoute } from '../permissions'
-import GradientButton from './ui/GradientButton'
 import ThemeToggle from './ui/ThemeToggle'
 import BrandLogo from './ui/BrandLogo'
 
@@ -32,7 +30,6 @@ function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Close all dropdowns when clicking outside the navbar
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (navRef.current && !navRef.current.contains(e.target)) {
@@ -44,18 +41,19 @@ function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  useEffect(() => {
+    setShowUserPopup(false)
+    setShowSolutionsDropdown(false)
+  }, [location.pathname])
+
   const handleLogout = async () => {
     try {
       await axios.get(ServerUrl + '/api/auth/logout', { withCredentials: true })
-      localStorage.removeItem('token')
       dispatch(setUserData(null))
       setShowUserPopup(false)
       navigate('/')
-    } catch (error) {
-      console.error(error)
-      localStorage.removeItem('token')
+    } catch {
       dispatch(setUserData(null))
-      setShowUserPopup(false)
       navigate('/')
     }
   }
@@ -68,10 +66,8 @@ function Navbar() {
         ref={navRef}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-        className={`max-w-6xl mx-auto rounded-full px-5 py-2.5 flex items-center justify-between transition-all duration-300 pointer-events-auto border shadow-lg ${
-          scrolled ? 'shadow-xl' : ''
-        }`}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className="max-w-6xl mx-auto rounded-full px-6 py-3 flex items-center justify-between transition-all duration-200 pointer-events-auto border shadow-sm"
         style={{
           backgroundColor: 'var(--bg-nav)',
           backdropFilter: 'blur(16px)',
@@ -87,11 +83,11 @@ function Navbar() {
           <BrandLogo size="md" />
         </div>
 
-        {/* Center: Nav Links */}
-        <nav className="hidden md:flex items-center gap-6 text-xs font-semibold font-body tracking-wider uppercase" style={{ color: 'var(--text-secondary)' }}>
+        {/* Center: Clean Nav Links (Title Case, Medium font) */}
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
           <button
             onClick={() => navigate('/#features')}
-            className="hover:text-[var(--accent)] transition-colors cursor-pointer py-1"
+            className="hover:text-[var(--text-primary)] transition-colors cursor-pointer py-1"
           >
             Platform
           </button>
@@ -100,10 +96,10 @@ function Navbar() {
           <div className="relative">
             <button
               onClick={() => { setShowSolutionsDropdown(!showSolutionsDropdown); setShowUserPopup(false) }}
-              className="hover:text-[var(--accent)] transition-colors cursor-pointer flex items-center gap-1 py-1"
+              className="hover:text-[var(--text-primary)] transition-colors cursor-pointer flex items-center gap-1 py-1"
             >
               <span>Solutions</span>
-              <span className="text-[9px] opacity-70">▾</span>
+              <span className="text-[10px] opacity-70">▾</span>
             </button>
 
             {showSolutionsDropdown && (
@@ -113,7 +109,7 @@ function Navbar() {
                   onClick={() => setShowSolutionsDropdown(false)}
                 />
                 <div
-                  className="absolute top-full left-0 mt-2 w-60 rounded-2xl shadow-2xl p-2 z-[60] border animate-in fade-in zoom-in-95 duration-200"
+                  className="absolute top-full left-0 mt-2 w-60 rounded-2xl shadow-xl p-2 z-[60] border"
                   style={{
                     backgroundColor: 'var(--bg-elevated)',
                     borderColor: 'var(--border)',
@@ -148,26 +144,26 @@ function Navbar() {
 
           <button
             onClick={() => navigate('/#stages')}
-            className="hover:text-[var(--accent)] transition-colors cursor-pointer py-1"
+            className="hover:text-[var(--text-primary)] transition-colors cursor-pointer py-1"
           >
             How It Works
           </button>
           <button
             onClick={() => navigate('/pricing')}
-            className="hover:text-[var(--accent)] transition-colors cursor-pointer py-1"
+            className="hover:text-[var(--text-primary)] transition-colors cursor-pointer py-1"
           >
             Pricing
           </button>
           <button
             onClick={() => navigate('/#faq')}
-            className="hover:text-[var(--accent)] transition-colors cursor-pointer py-1"
+            className="hover:text-[var(--text-primary)] transition-colors cursor-pointer py-1"
           >
             FAQ
           </button>
         </nav>
 
         {/* Right: ThemeToggle + Actions / Auth */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3.5">
           {/* Universal Theme Switcher */}
           <ThemeToggle size="sm" />
 
@@ -255,22 +251,12 @@ function Navbar() {
               </AnimatePresence>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowAuth(true)}
-                className="text-xs font-semibold px-3 py-1.5 rounded-full transition cursor-pointer hover:opacity-80"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                Log In
-              </button>
-              <GradientButton
-                onClick={() => setShowAuth(true)}
-                size="sm"
-                iconRight={HiArrowUpRight}
-              >
-                Launch Studio
-              </GradientButton>
-            </div>
+            <button
+              onClick={() => setShowAuth(true)}
+              className="btn-primary rounded-full px-5 py-2 text-xs font-semibold cursor-pointer shadow-sm"
+            >
+              Sign In →
+            </button>
           )}
         </div>
       </motion.div>
