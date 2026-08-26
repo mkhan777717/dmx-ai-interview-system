@@ -15,26 +15,15 @@ function Navbar() {
   const { userData } = useSelector((state) => state.user)
   const [showUserPopup, setShowUserPopup] = useState(false)
   const [showAuth, setShowAuth] = useState(false)
-  const [showSolutionsDropdown, setShowSolutionsDropdown] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const dispatch = useDispatch()
   const navRef = useRef(null)
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  useEffect(() => {
     const handleClickOutside = (e) => {
       if (navRef.current && !navRef.current.contains(e.target)) {
         setShowUserPopup(false)
-        setShowSolutionsDropdown(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -43,8 +32,22 @@ function Navbar() {
 
   useEffect(() => {
     setShowUserPopup(false)
-    setShowSolutionsDropdown(false)
   }, [location.pathname])
+
+  const handleNavClick = (target) => {
+    if (target.startsWith('#')) {
+      if (location.pathname === '/') {
+        const el = document.querySelector(target)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' })
+        }
+      } else {
+        navigate('/' + target)
+      }
+    } else {
+      navigate(target)
+    }
+  }
 
   const handleLogout = async () => {
     try {
@@ -83,79 +86,28 @@ function Navbar() {
           <BrandLogo size="md" />
         </div>
 
-        {/* Center: Clean Nav Links (Title Case, Medium font) */}
+        {/* Center: Essential & Functional Nav Links */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
           <button
-            onClick={() => navigate('/#features')}
-            className="hover:text-[var(--text-primary)] transition-colors cursor-pointer py-1"
-          >
-            Platform
-          </button>
-
-          {/* Solutions Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => { setShowSolutionsDropdown(!showSolutionsDropdown); setShowUserPopup(false) }}
-              className="hover:text-[var(--text-primary)] transition-colors cursor-pointer flex items-center gap-1 py-1"
-            >
-              <span>Solutions</span>
-              <span className="text-[10px] opacity-70">▾</span>
-            </button>
-
-            {showSolutionsDropdown && (
-              <>
-                <div
-                  className="fixed inset-0 z-[55]"
-                  onClick={() => setShowSolutionsDropdown(false)}
-                />
-                <div
-                  className="absolute top-full left-0 mt-2 w-60 rounded-2xl shadow-xl p-2 z-[60] border"
-                  style={{
-                    backgroundColor: 'var(--bg-elevated)',
-                    borderColor: 'var(--border)',
-                  }}
-                >
-                  <button
-                    onClick={() => {
-                      setShowSolutionsDropdown(false)
-                      navigate('/v2/interview')
-                    }}
-                    className="w-full text-left px-3.5 py-2.5 text-xs font-semibold rounded-xl transition cursor-pointer flex items-center gap-2.5 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)]"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--accent)' }} />
-                    Candidate Practice Room
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowSolutionsDropdown(false)
-                      navigate('/recruiter')
-                    }}
-                    className="w-full text-left px-3.5 py-2.5 text-xs font-semibold rounded-xl transition cursor-pointer flex items-center gap-2.5 mt-0.5 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)]"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    <span className="w-2 h-2 rounded-full bg-indigo-400" />
-                    Recruiter Screening Hub
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-
-          <button
-            onClick={() => navigate('/#stages')}
+            onClick={() => handleNavClick('#stages')}
             className="hover:text-[var(--text-primary)] transition-colors cursor-pointer py-1"
           >
             How It Works
           </button>
           <button
-            onClick={() => navigate('/pricing')}
+            onClick={() => handleNavClick('#features')}
+            className="hover:text-[var(--text-primary)] transition-colors cursor-pointer py-1"
+          >
+            Features
+          </button>
+          <button
+            onClick={() => handleNavClick('/pricing')}
             className="hover:text-[var(--text-primary)] transition-colors cursor-pointer py-1"
           >
             Pricing
           </button>
           <button
-            onClick={() => navigate('/#faq')}
+            onClick={() => handleNavClick('#faq')}
             className="hover:text-[var(--text-primary)] transition-colors cursor-pointer py-1"
           >
             FAQ
@@ -170,7 +122,7 @@ function Navbar() {
           {userData ? (
             <div className="relative">
               <button
-                onClick={() => { setShowUserPopup(!showUserPopup); setShowSolutionsDropdown(false) }}
+                onClick={() => setShowUserPopup(!showUserPopup)}
                 className="flex items-center gap-2.5 px-3 py-1.5 rounded-full border transition-all cursor-pointer"
                 style={{
                   backgroundColor: 'var(--bg-elevated)',
