@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import { useDispatch } from 'react-redux'
 import { setUserData } from './redux/userSlice'
@@ -38,6 +38,26 @@ axios.interceptors.request.use((config) => {
   return config
 })
 
+function ScrollToTop() {
+  const { pathname, hash } = useLocation()
+
+  useEffect(() => {
+    if (hash) {
+      const timer = setTimeout(() => {
+        const el = document.querySelector(hash)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 100)
+      return () => clearTimeout(timer)
+    } else {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    }
+  }, [pathname, hash])
+
+  return null
+}
+
 function App() {
   const dispatch = useDispatch()
 
@@ -55,6 +75,7 @@ function App() {
 
   return (
     <>
+      <ScrollToTop />
       {/* Impersonation banner — shown globally when Super Admin is impersonating */}
       <ImpersonationBanner />
 
