@@ -27,8 +27,16 @@ export default function RoleGuard({
   redirectTo = '/403',
   fallback = null,
 }) {
-  const userData = useSelector(state => state.user?.userData)
+  const { userData, loading } = useSelector(state => state.user)
   const userRole = userData?.role || 'USER'
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-page)' }}>
+        <div className="w-6 h-6 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
 
   // Not logged in → redirect to auth
   if (!userData) {
