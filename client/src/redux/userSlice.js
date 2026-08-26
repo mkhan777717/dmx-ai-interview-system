@@ -4,6 +4,7 @@ const userSlice = createSlice({
     name: "user",
     initialState: {
         userData: null,
+        loading: true,
         // Convenience selectors — kept in sync with userData
         role: null,     // 'SUPER_ADMIN' | 'RECRUITER' | 'USER'
         orgId: null,    // number | null
@@ -14,6 +15,7 @@ const userSlice = createSlice({
     reducers: {
         setUserData: (state, action) => {
             state.userData = action.payload;
+            state.loading = false;
             if (action.payload) {
                 state.role  = action.payload.role  || 'USER';
                 state.orgId = action.payload.org_id ?? null;
