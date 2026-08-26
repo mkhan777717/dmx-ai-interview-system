@@ -189,10 +189,10 @@ export default function V2Layout({
       </aside>
 
       {/* ── MAIN CONTENT ────────────────────────────────────────────────────── */}
-      <main className="flex-1 min-w-0 flex flex-col h-screen overflow-hidden z-10">
+      <main className="flex-1 min-w-0 flex flex-col h-screen overflow-hidden relative z-10">
         {/* Header */}
         <header
-          className="h-16 border-b px-8 flex items-center justify-between shrink-0 transition-colors duration-200"
+          className="h-16 border-b px-8 flex items-center justify-between shrink-0 sticky top-0 relative z-50 transition-colors duration-150"
           style={{
             backgroundColor: 'var(--bg-nav)',
             backdropFilter: 'blur(16px)',
@@ -258,14 +258,14 @@ export default function V2Layout({
                   {showNotifications && (
                     <>
                       <div
-                        className="fixed inset-0 z-[55]"
+                        className="fixed inset-0 z-[60]"
                         onClick={() => setShowNotifications(false)}
                       />
                       <motion.div
                         initial={{ opacity: 0, y: 8, scale: 0.96 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                        className="absolute right-0 top-full mt-2 w-68 rounded-2xl shadow-2xl p-4 z-[60] border"
+                        className="absolute right-0 top-full mt-2 w-68 rounded-2xl shadow-2xl p-4 z-[70] border"
                         style={{
                           backgroundColor: 'var(--bg-elevated)',
                           borderColor: 'var(--border)',
@@ -305,14 +305,14 @@ export default function V2Layout({
                   {showProfileMenu && (
                     <>
                       <div
-                        className="fixed inset-0 z-[55]"
+                        className="fixed inset-0 z-[60]"
                         onClick={() => setShowProfileMenu(false)}
                       />
                       <motion.div
                         initial={{ opacity: 0, y: 8, scale: 0.96 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                        className="absolute right-0 top-full mt-2 w-56 rounded-2xl shadow-2xl p-2 z-[60] border"
+                        className="absolute right-0 top-full mt-2 w-56 rounded-2xl shadow-2xl p-2 z-[70] border"
                         style={{
                           backgroundColor: 'var(--bg-elevated)',
                           borderColor: 'var(--border)',
