@@ -4,9 +4,13 @@ venv/
 env/
 .venv/
 
-# Environment variables
+# Environment variables & secrets (NEVER COMMIT)
 .env
-*.env.local
+.env.*
+*.env
+*.env.*
+client/.env*
+server/.env*
 
 # Build outputs
 dist/
