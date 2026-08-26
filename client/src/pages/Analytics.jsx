@@ -138,9 +138,9 @@ export default function Analytics() {
                 <div
                   className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl border shrink-0"
                   style={{
-                    backgroundColor: 'rgba(59, 130, 246, 0.12)',
-                    borderColor: 'rgba(59, 130, 246, 0.25)',
-                    color: '#3B82F6',
+                    backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                    borderColor: 'rgba(78, 156, 110, 0.25)',
+                    color: 'var(--accent)',
                   }}
                 >
                   <FaBullseye />

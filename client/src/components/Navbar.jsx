@@ -52,12 +52,13 @@ function Navbar() {
   const handleLogout = async () => {
     try {
       await axios.get(ServerUrl + '/api/auth/logout', { withCredentials: true })
+    } catch {
+      // ignore
+    } finally {
+      localStorage.removeItem('token')
       dispatch(setUserData(null))
       setShowUserPopup(false)
-      navigate('/')
-    } catch {
-      dispatch(setUserData(null))
-      navigate('/')
+      window.location.href = '/'
     }
   }
 

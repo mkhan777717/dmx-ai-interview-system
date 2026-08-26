@@ -52,6 +52,7 @@
 - **Candidate Hub**: Voice/coding interview rooms, real-time hints, multi-language Monaco IDE, detailed scorecard reports, and personalized improvement roadmaps.
 - **Recruiter Screening Hub**: Organization candidate pipeline, JD parsing, rubric customization, score distribution analytics, and candidate interview report access.
 - **SuperAdmin Studio**: Global platform analytics, organization management, recruiter provisioning, user impersonation, and immutable audit logs.
+- **Unified Clean UI**: Consistent green `var(--accent)` theme across all dashboards, eliminating layout shifts and overlapping UI components, with proper scrolling behavior.
 
 ---
 
