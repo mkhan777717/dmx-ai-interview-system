@@ -17,7 +17,7 @@ const Stepper = ({ currentStep }) => {
     <div className="flex items-center justify-between w-full max-w-3xl mx-auto mb-8 px-4">
       {steps.map((s, i) => (
         <React.Fragment key={s.num}>
-          <div className="flex flex-col items-center gap-2 relative z-10">
+          <div className="flex flex-col items-center gap-2">
             <div
               className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 border"
               style={{
