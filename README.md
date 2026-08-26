@@ -48,11 +48,12 @@
 - **Natural Text-to-Speech (TTS)**: High-quality WAV synthesis with OpenAI TTS (`tts-1`) and macOS native speech fallback.
 - **Echo Cancellation & Auto-Gain**: Browser WebRTC audio capture with noise suppression.
 
-### 🏢 Multi-Role Access Control (RBAC)
+### 🏢 Multi-Role Access Control (RBAC) & Unified Clean Interface
 - **Candidate Hub**: Voice/coding interview rooms, real-time hints, multi-language Monaco IDE, detailed scorecard reports, and personalized improvement roadmaps.
 - **Recruiter Screening Hub**: Organization candidate pipeline, JD parsing, rubric customization, score distribution analytics, and candidate interview report access.
 - **SuperAdmin Studio**: Global platform analytics, organization management, recruiter provisioning, user impersonation, and immutable audit logs.
-- **Unified Clean UI**: Consistent green `var(--accent)` theme across all dashboards, eliminating layout shifts and overlapping UI components, with proper scrolling behavior.
+- **Unified Modern Theme**: Consistent `#4E9C6E` (`var(--accent)`) green palette and Plus Jakarta Sans typography across candidate, recruiter, and admin portals with clean light/dark modes.
+- **Seamless Navigation & UX**: Responsive navbar with precision anchor scrolling (`#stages`, `#faq`), automatic top-of-page scroll restoration on reload, high-priority z-index layering for menus, and immediate landing page redirection on logout.
 
 ---
 
