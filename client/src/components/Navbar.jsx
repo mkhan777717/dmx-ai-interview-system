@@ -204,7 +204,7 @@ function Navbar() {
             </div>
           ) : (
             <button
-              onClick={() => setShowAuth(true)}
+              onClick={() => navigate('/auth')}
               className="btn-primary rounded-full px-5 py-2 text-xs font-semibold cursor-pointer shadow-sm"
             >
               Sign In →
