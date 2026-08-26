@@ -76,14 +76,10 @@ export default function V2Layout({
   const userRole = userData?.role || 'USER'
 
   return (
-    <div className="min-h-screen flex relative overflow-hidden dark-canvas" style={{ backgroundColor: 'var(--bg-page)', color: 'var(--text-primary)' }}>
-      {/* Background ambient blobs */}
-      <div className="ambient-blob bg-[var(--accent)]/10 w-[550px] h-[550px] -top-32 -left-32" />
-      <div className="ambient-blob bg-[var(--toggle-knob)]/10 w-[500px] h-[500px] bottom-10 right-10" />
-
+    <div className="min-h-screen flex w-full relative overflow-x-hidden font-body" style={{ backgroundColor: 'var(--bg-page)', color: 'var(--text-primary)' }}>
       {/* ── SIDEBAR ─────────────────────────────────────────────────────────── */}
       <aside
-        className="w-68 border-r flex flex-col h-screen sticky top-0 overflow-y-auto shrink-0 z-20 transition-colors duration-200"
+        className="w-64 border-r flex flex-col h-screen sticky top-0 overflow-y-auto shrink-0 z-20 transition-colors duration-150"
         style={{
           backgroundColor: 'var(--bg-elevated)',
           borderColor: 'var(--border)',
@@ -108,25 +104,25 @@ export default function V2Layout({
           <NavItem onClick={() => navigate('/analytics')} icon={FaChartBar} label="Analytics" active={location.pathname === '/analytics'} />
 
           {/* Section: Recruiter */}
-          {hasPermission(userRole, 'nav.recruiterDashboard') && (
+          {hasPermission(userRole, 'recruiter.candidates.view') && (
             <>
-              <p className="px-3 text-[10px] font-bold uppercase tracking-widest mt-5 mb-2 font-display" style={{ color: 'var(--text-muted)' }}>Recruiter</p>
-              <NavItem onClick={() => navigate('/recruiter')} icon={FaUsersCog} label="Recruiter Hub" active={location.pathname === '/recruiter'} />
+              <p className="px-3 text-[10px] font-bold uppercase tracking-widest mt-5 mb-2 font-display" style={{ color: 'var(--text-muted)' }}>Recruiting</p>
+              <NavItem onClick={() => navigate('/recruiter')} icon={FaUsersCog} label="Screening Hub" active={location.pathname === '/recruiter'} />
               <NavItem onClick={() => navigate('/admin')} icon={FaShieldAlt} label="Candidate Pipeline" active={location.pathname === '/admin'} />
             </>
           )}
 
           {/* Section: Super Admin */}
-          {hasPermission(userRole, 'nav.superAdminDashboard') && (
+          {hasPermission(userRole, 'system.impersonate') && (
             <>
-              <p className="px-3 text-[10px] font-bold uppercase tracking-widest mt-5 mb-2 font-display" style={{ color: 'var(--toggle-knob)' }}>Super Admin</p>
-              <NavItem onClick={() => navigate('/superadmin')} icon={FaCrown} label="Platform Control" active={location.pathname === '/superadmin'} />
+              <p className="px-3 text-[10px] font-bold uppercase tracking-widest mt-5 mb-2 font-display" style={{ color: 'var(--text-muted)' }}>Administration</p>
+              <NavItem onClick={() => navigate('/superadmin')} icon={FaCrown} label="Platform Console" active={location.pathname === '/superadmin'} />
             </>
           )}
         </nav>
 
         {/* Bottom — User Profile */}
-        <div className="px-3 pb-4 pt-3 border-t space-y-2.5" style={{ borderColor: 'var(--border)' }}>
+        <div className="p-3 border-t space-y-2" style={{ borderColor: 'var(--border)' }}>
           {/* Plan badge */}
           <div
             className="flex items-center gap-2 px-3 py-2 border rounded-2xl"
@@ -193,7 +189,7 @@ export default function V2Layout({
       </aside>
 
       {/* ── MAIN CONTENT ────────────────────────────────────────────────────── */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden z-10">
+      <main className="flex-1 min-w-0 flex flex-col h-screen overflow-hidden z-10">
         {/* Header */}
         <header
           className="h-16 border-b px-8 flex items-center justify-between shrink-0 transition-colors duration-200"
