@@ -161,9 +161,9 @@ export default function Analytics() {
                 <div
                   className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl border shrink-0"
                   style={{
-                    backgroundColor: 'rgba(124, 111, 234, 0.12)',
-                    borderColor: 'rgba(124, 111, 234, 0.25)',
-                    color: 'var(--toggle-knob)',
+                    backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                    borderColor: 'rgba(78, 156, 110, 0.25)',
+                    color: 'var(--accent)',
                   }}
                 >
                   <FaChartPie />

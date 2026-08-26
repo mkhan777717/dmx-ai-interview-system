@@ -151,9 +151,9 @@ export default function Dashboard() {
               <div
                 className="w-9 h-9 rounded-2xl flex items-center justify-center border"
                 style={{
-                  backgroundColor: 'rgba(124, 111, 234, 0.12)',
-                  borderColor: 'rgba(124, 111, 234, 0.25)',
-                  color: 'var(--toggle-knob)',
+                  backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                  borderColor: 'rgba(78, 156, 110, 0.25)',
+                  color: 'var(--accent)',
                 }}
               >
                 <FaChartLine size={14} />

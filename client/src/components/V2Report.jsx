@@ -135,9 +135,9 @@ function AnswerCard({ entry, scoreColor }) {
               <span
                 className="text-[9px] font-bold px-1.5 py-0.5 rounded-full border"
                 style={{
-                  backgroundColor: 'rgba(124, 111, 234, 0.12)',
-                  borderColor: 'rgba(124, 111, 234, 0.25)',
-                  color: 'var(--toggle-knob)',
+                  backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                  borderColor: 'rgba(78, 156, 110, 0.25)',
+                  color: 'var(--accent)',
                 }}
               >
                 Follow-up

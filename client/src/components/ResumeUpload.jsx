@@ -271,7 +271,7 @@ function ResumeUpload({ onStart, onResumeParsed }) {
                             Done <FaCheckCircle size={11} />
                           </span>
                         ) : currentParseStep === item.s ? (
-                          <span className="font-bold flex items-center gap-1" style={{ color: 'var(--toggle-knob)' }}>
+                          <span className="font-bold flex items-center gap-1" style={{ color: 'var(--accent)' }}>
                             Processing <FaSpinner className="animate-spin" size={11} />
                           </span>
                         ) : (
