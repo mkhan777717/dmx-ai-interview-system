@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
-import { FaArrowLeft, FaCheck } from 'react-icons/fa'
+import { FaCheck } from 'react-icons/fa'
 import { BsStars } from 'react-icons/bs'
 import { useNavigate } from 'react-router-dom'
-import { motion } from 'motion/react'
 import Navbar from '../components/Navbar'
 import Badge from '../components/ui/Badge'
 import GradientButton from '../components/ui/GradientButton'
@@ -69,42 +68,55 @@ function Pricing() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050811] text-[#f8fafc] font-['Plus_Jakarta_Sans',sans-serif] relative overflow-hidden dark-canvas selection:bg-cyan-500/25 selection:text-cyan-300">
-      
+    <div
+      className="min-h-screen font-body relative overflow-hidden dark-canvas transition-colors duration-200"
+      style={{
+        backgroundColor: 'var(--bg-page)',
+        color: 'var(--text-primary)',
+      }}
+    >
       {/* Background ambient drifting blobs */}
-      <div className="ambient-blob bg-cyan-500/12 w-[600px] h-[600px] -top-32 left-1/4" />
-      <div className="ambient-blob bg-indigo-500/10 w-[550px] h-[550px] bottom-10 right-1/4" />
+      <div className="ambient-blob bg-[var(--accent)]/12 w-[600px] h-[600px] -top-32 left-1/4" />
+      <div className="ambient-blob bg-[var(--toggle-knob)]/10 w-[550px] h-[550px] bottom-10 right-1/4" />
 
       {/* Grid texture */}
-      <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.04)_1px,transparent_1px)] [background-size:32px_32px] pointer-events-none opacity-40" />
+      <div className="absolute inset-0 bg-[radial-gradient(var(--border)_1px,transparent_1px)] [background-size:32px_32px] pointer-events-none opacity-40" />
 
       {/* Navbar */}
       <Navbar />
 
       <main className="pt-36 pb-24 px-6 max-w-7xl mx-auto relative z-10">
-        
         {/* Header */}
         <SectionReveal>
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <Badge variant="cyan" icon={BsStars} className="mb-4">
+            <Badge variant="accent" icon={BsStars} className="mb-4">
               Transparent Career Investment
             </Badge>
-            <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight font-['Outfit']">
-              Predictable Pricing, <span className="font-calligraphy italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400">Zero Surprises</span>
+            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight font-display" style={{ color: 'var(--text-primary)' }}>
+              Predictable Pricing, <span className="text-[var(--accent)] font-semibold">Zero Surprises</span>
             </h1>
-            <p className="mt-4 text-slate-400 text-base max-w-xl mx-auto leading-relaxed">
+            <p className="mt-4 text-base max-w-xl mx-auto leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
               Level up your interview performance with calibrated AI simulation. Choose the plan tailored to your career milestones.
             </p>
 
             {/* Monthly / Annual Toggle */}
-            <div className="mt-8 inline-flex items-center p-1.5 rounded-full bg-slate-950/80 border border-white/10 backdrop-blur-md">
+            <div
+              className="mt-8 inline-flex items-center p-1.5 rounded-full border"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--border)',
+              }}
+            >
               <button
                 onClick={() => setBillingCycle('monthly')}
                 className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
                   billingCycle === 'monthly'
-                    ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20 font-extrabold'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'btn-primary shadow-sm'
+                    : 'hover:opacity-80'
                 }`}
+                style={{
+                  color: billingCycle === 'monthly' ? 'var(--accent-text-on)' : 'var(--text-secondary)',
+                }}
               >
                 Monthly Billing
               </button>
@@ -112,12 +124,22 @@ function Pricing() {
                 onClick={() => setBillingCycle('annual')}
                 className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                   billingCycle === 'annual'
-                    ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20 font-extrabold'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'btn-primary shadow-sm'
+                    : 'hover:opacity-80'
                 }`}
+                style={{
+                  color: billingCycle === 'annual' ? 'var(--accent-text-on)' : 'var(--text-secondary)',
+                }}
               >
                 <span>Annual Billing</span>
-                <span className="bg-emerald-500/20 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full font-extrabold border border-emerald-500/30">
+                <span
+                  className="text-[10px] px-2 py-0.5 rounded-full font-bold border"
+                  style={{
+                    backgroundColor: 'rgba(78, 156, 110, 0.15)',
+                    borderColor: 'rgba(78, 156, 110, 0.3)',
+                    color: 'var(--accent)',
+                  }}
+                >
                   Save 35%
                 </span>
               </button>
@@ -133,16 +155,25 @@ function Pricing() {
             return (
               <SectionReveal key={plan.id} delay={idx * 0.1} className="flex">
                 <div
-                  className={`w-full rounded-3xl p-8 flex flex-col justify-between relative transition-all duration-300 ${
-                    isMiddle
-                      ? 'bg-gradient-to-b from-slate-900/95 via-slate-950/95 to-slate-900/95 border-2 border-cyan-500 shadow-[0_20px_70px_-10px_rgba(6,182,212,0.3)] lg:-translate-y-3'
-                      : 'glass-card-static border border-white/8 bg-slate-950/60'
+                  className={`w-full rounded-3xl p-8 flex flex-col justify-between relative transition-all duration-300 border shadow-lg ${
+                    isMiddle ? 'lg:-translate-y-3' : ''
                   }`}
+                  style={{
+                    backgroundColor: 'var(--bg-elevated)',
+                    borderColor: isMiddle ? 'var(--accent)' : 'var(--border)',
+                    boxShadow: isMiddle ? '0 20px 60px -10px rgba(78, 156, 110, 0.25)' : undefined,
+                  }}
                 >
                   {/* Popular Badge */}
                   {plan.badge && (
                     <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                      <span className="px-4 py-1 rounded-full text-xs font-extrabold bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-md shadow-cyan-500/30 uppercase tracking-widest font-mono text-[10px]">
+                      <span
+                        className="px-4 py-1 rounded-full text-xs font-bold shadow-md uppercase tracking-widest font-display text-[10px]"
+                        style={{
+                          backgroundColor: 'var(--accent)',
+                          color: 'var(--accent-text-on)',
+                        }}
+                      >
                         {plan.badge}
                       </span>
                     </div>
@@ -151,29 +182,35 @@ function Pricing() {
                   <div>
                     {/* Header */}
                     <div className="mb-6">
-                      <h3 className="text-xl font-bold text-white font-['Outfit'] mb-2">{plan.name}</h3>
-                      <p className="text-xs text-slate-400 leading-relaxed">{plan.description}</p>
+                      <h3 className="text-xl font-bold font-display mb-2" style={{ color: 'var(--text-primary)' }}>{plan.name}</h3>
+                      <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{plan.description}</p>
                     </div>
 
                     {/* Price */}
-                    <div className="mb-6 pb-6 border-b border-white/8">
+                    <div className="mb-6 pb-6 border-b" style={{ borderColor: 'var(--border)' }}>
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-4xl sm:text-5xl font-extrabold text-white font-['Outfit'] tracking-tight">
+                        <span className="text-4xl sm:text-5xl font-extrabold font-display tracking-tight" style={{ color: 'var(--text-primary)' }}>
                           {plan.price}
                         </span>
                         {plan.price !== 'Custom' && (
-                          <span className="text-xs text-slate-400 font-semibold">/ mo</span>
+                          <span className="text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>/ mo</span>
                         )}
                       </div>
-                      <p className="text-[11px] text-slate-400 mt-1 font-medium">{plan.period}</p>
+                      <p className="text-[11px] mt-1 font-medium" style={{ color: 'var(--text-muted)' }}>{plan.period}</p>
                     </div>
 
                     {/* Features List */}
                     <div className="space-y-3.5 mb-8">
-                      <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest font-mono">Included Capabilities</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest font-display" style={{ color: 'var(--text-muted)' }}>Included Capabilities</p>
                       {plan.features.map((feat, fIdx) => (
-                        <div key={fIdx} className="flex items-start gap-2.5 text-xs text-slate-300 leading-relaxed font-medium">
-                          <div className={`p-0.5 rounded-full shrink-0 mt-0.5 ${isMiddle ? 'bg-cyan-500/20 text-cyan-300' : 'bg-white/10 text-slate-300'}`}>
+                        <div key={fIdx} className="flex items-start gap-2.5 text-xs leading-relaxed font-medium" style={{ color: 'var(--text-primary)' }}>
+                          <div
+                            className="p-0.5 rounded-full shrink-0 mt-0.5"
+                            style={{
+                              backgroundColor: 'rgba(78, 156, 110, 0.15)',
+                              color: 'var(--accent)',
+                            }}
+                          >
                             <FaCheck size={9} />
                           </div>
                           <span>{feat}</span>
@@ -209,14 +246,14 @@ function Pricing() {
         </div>
 
         {/* Bottom Guarantee */}
-        <div className="mt-16 text-center text-xs text-slate-400 flex flex-wrap items-center justify-center gap-6 font-medium">
-          <span className="flex items-center gap-1.5 text-slate-300">
-            <BsStars className="text-cyan-400" /> Instant Access
+        <div className="mt-16 text-center text-xs flex flex-wrap items-center justify-center gap-6 font-medium" style={{ color: 'var(--text-muted)' }}>
+          <span className="flex items-center gap-1.5" style={{ color: 'var(--text-secondary)' }}>
+            <BsStars style={{ color: 'var(--accent)' }} /> Instant Access
           </span>
-          <span className="flex items-center gap-1.5 text-slate-300">
+          <span className="flex items-center gap-1.5" style={{ color: 'var(--text-secondary)' }}>
             🔒 256-Bit SSL Encrypted
           </span>
-          <span className="flex items-center gap-1.5 text-slate-300">
+          <span className="flex items-center gap-1.5" style={{ color: 'var(--text-secondary)' }}>
             🔄 Cancel Anytime Without Penalty
           </span>
         </div>

@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react'
 import { motion } from 'motion/react'
 
-const CYAN = '#06b6d4'
-const sc = (s) => s >= 7 ? '#06b6d4' : s >= 5 ? '#f59e0b' : '#ef4444'
+const ACCENT = '#4E9C6E'
+const sc = (s) => s >= 7 ? '#4E9C6E' : s >= 5 ? '#F0993D' : '#EF4444'
 
 // ── Circular gauge ─────────────────────────────────────────────────────────
 function Gauge({ score, max = 10 }) {
@@ -12,7 +12,7 @@ function Gauge({ score, max = 10 }) {
   return (
     <div style={{ position: 'relative', width: 130, height: 130 }}>
       <svg width="130" height="130" style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx="65" cy="65" r={r} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
+        <circle cx="65" cy="65" r={r} fill="none" stroke="var(--border)" strokeWidth="8" />
         <circle cx="65" cy="65" r={r} fill="none" stroke={color} strokeWidth="8"
           strokeLinecap="round"
           strokeDasharray={`${pct * circ} ${circ}`}
@@ -23,10 +23,10 @@ function Gauge({ score, max = 10 }) {
         position: 'absolute', inset: 0,
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       }}>
-        <span style={{ fontSize: 28, fontWeight: 800, color, lineHeight: 1, fontFamily: 'Outfit' }}>
+        <span style={{ fontSize: 28, fontWeight: 800, color, lineHeight: 1, fontFamily: 'var(--font-display)' }}>
           {score.toFixed(1)}
         </span>
-        <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>{max === 10 ? '/10' : `/${max}`}</span>
+        <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>{max === 10 ? '/10' : `/${max}`}</span>
       </div>
     </div>
   )
@@ -45,36 +45,30 @@ function LineChart({ scores }) {
   const linePath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ')
   const areaPath = `${linePath} L${pts[pts.length - 1].x},${pad.t + iH} L${pts[0].x},${pad.t + iH} Z`
 
-  // Y axis ticks
   const yTicks = [0, 2, 4, 6, 8, 10]
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: H }}>
-      {/* Grid lines */}
       {yTicks.map(v => {
         const y = pad.t + iH - ((v - minS) / (maxS - minS)) * iH
         return (
           <g key={v}>
-            <line x1={pad.l} x2={W - pad.r} y1={y} y2={y} stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-            <text x={pad.l - 6} y={y + 4} textAnchor="end" fontSize="10" fill="#64748b">{v}</text>
+            <line x1={pad.l} x2={W - pad.r} y1={y} y2={y} stroke="var(--border)" strokeWidth="1" />
+            <text x={pad.l - 6} y={y + 4} textAnchor="end" fontSize="10" fill="var(--text-muted)">{v}</text>
           </g>
         )
       })}
-      {/* X labels */}
       {scores.map((_, i) => (
         <text key={i}
           x={pad.l + (scores.length === 1 ? iW / 2 : (i / (scores.length - 1)) * iW)}
-          y={H - 6} textAnchor="middle" fontSize="10" fill="#94a3b8" fontWeight="600">
+          y={H - 6} textAnchor="middle" fontSize="10" fill="var(--text-muted)" fontWeight="600">
           Q{i + 1}
         </text>
       ))}
-      {/* Area fill */}
-      <path d={areaPath} fill={CYAN} opacity="0.15" />
-      {/* Line */}
-      <path d={linePath} fill="none" stroke={CYAN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-      {/* Dots */}
+      <path d={areaPath} fill={ACCENT} opacity="0.15" />
+      <path d={linePath} fill="none" stroke={ACCENT} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       {pts.map((p, i) => (
-        <circle key={i} cx={p.x} cy={p.y} r="4" fill={CYAN} stroke="#050811" strokeWidth="2" />
+        <circle key={i} cx={p.x} cy={p.y} r="4" fill={ACCENT} stroke="var(--bg-elevated)" strokeWidth="2" />
       ))}
     </svg>
   )
@@ -87,10 +81,10 @@ function SkillBar({ label, score }) {
   return (
     <div style={{ marginBottom: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-        <span style={{ fontSize: 13, color: '#cbd5e1', fontWeight: 500 }}>{label}</span>
+        <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>{label}</span>
         <span style={{ fontSize: 13, fontWeight: 700, color }}>{score.toFixed(1)}</span>
       </div>
-      <div style={{ height: 7, background: 'rgba(255,255,255,0.08)', borderRadius: 6, overflow: 'hidden' }}>
+      <div style={{ height: 7, background: 'var(--border)', borderRadius: 6, overflow: 'hidden' }}>
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
@@ -109,97 +103,112 @@ function AnswerCard({ entry, scoreColor }) {
   const secs = (entry.timeTaken || 0) % 60
 
   return (
-    <div className="border border-white/8 rounded-2xl overflow-hidden bg-slate-900/40">
-      {/* Header row — always visible */}
+    <div
+      className="border rounded-2xl overflow-hidden"
+      style={{
+        backgroundColor: 'var(--bg-page)',
+        borderColor: 'var(--border)',
+      }}
+    >
       <button
         onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between gap-3 px-5 py-3.5 text-left cursor-pointer hover:bg-white/3 transition-colors"
+        className="w-full flex items-center justify-between gap-3 px-5 py-3.5 text-left cursor-pointer transition-colors hover:opacity-90"
       >
         <div className="flex items-center gap-3 min-w-0">
-          {/* Index badge */}
-          <span className="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[10px] font-extrabold flex items-center justify-center shrink-0">
+          <span
+            className="w-6 h-6 rounded-full border text-[10px] font-extrabold flex items-center justify-center shrink-0"
+            style={{
+              backgroundColor: 'rgba(78, 156, 110, 0.15)',
+              borderColor: 'rgba(78, 156, 110, 0.3)',
+              color: 'var(--accent)',
+            }}
+          >
             {typeof entry.questionIndex === 'number' ? entry.questionIndex + 1 : '↳'}
           </span>
-          {/* Category + follow-up pill */}
           <div className="flex items-center gap-2 flex-wrap">
             {entry.category && (
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
+              <span className="text-[10px] font-bold uppercase tracking-widest font-display" style={{ color: 'var(--text-muted)' }}>
                 {entry.category}
               </span>
             )}
             {entry.isFollowUp && (
-              <span className="text-[9px] font-bold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-1.5 py-0.5 rounded-full">
+              <span
+                className="text-[9px] font-bold px-1.5 py-0.5 rounded-full border"
+                style={{
+                  backgroundColor: 'rgba(124, 111, 234, 0.12)',
+                  borderColor: 'rgba(124, 111, 234, 0.25)',
+                  color: 'var(--toggle-knob)',
+                }}
+              >
                 Follow-up
               </span>
             )}
           </div>
-          {/* Question text (truncated) */}
-          <p className="text-xs font-semibold text-slate-200 truncate">{entry.question}</p>
+          <p className="text-xs font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{entry.question}</p>
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
-          {/* Score badge */}
           {entry.score != null && (
             <span
-              className="text-sm font-extrabold px-3 py-0.5 rounded-full border font-['Outfit']"
+              className="text-sm font-extrabold px-3 py-0.5 rounded-full border font-display"
               style={{ color: scoreColor, borderColor: scoreColor + '40', background: scoreColor + '15' }}
             >
               {entry.score.toFixed(1)}/10
             </span>
           )}
-          {/* Time */}
           {entry.timeTaken != null && (
-            <span className="text-[10px] text-slate-500 font-mono">
+            <span className="text-[10px] font-mono" style={{ color: 'var(--text-muted)' }}>
               {mins}:{secs.toString().padStart(2, '0')}
             </span>
           )}
-          {/* Chevron */}
-          <span className={`text-slate-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}>▾</span>
+          <span className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} style={{ color: 'var(--text-muted)' }}>▾</span>
         </div>
       </button>
 
-      {/* Expandable body */}
       {open && (
-        <div className="px-5 pb-5 pt-1 border-t border-white/6 space-y-4">
-
-          {/* Your answer */}
+        <div className="px-5 pb-5 pt-1 border-t space-y-4" style={{ borderColor: 'var(--border)' }}>
           <div>
-            <p className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5 font-mono">Your Answer</p>
-            <pre className="whitespace-pre-wrap text-xs text-slate-300 leading-relaxed bg-white/3 rounded-xl p-3.5 border border-white/5 max-h-48 overflow-y-auto font-mono">
+            <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5 font-display" style={{ color: 'var(--text-muted)' }}>Your Answer</p>
+            <pre
+              className="whitespace-pre-wrap text-xs leading-relaxed rounded-xl p-3.5 border max-h-48 overflow-y-auto font-mono"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--border)',
+                color: 'var(--text-primary)',
+              }}
+            >
               {entry.answer || '(no answer submitted)'}
             </pre>
           </div>
 
-          {/* AI Feedback */}
           {entry.feedback && (
             <div>
-              <p className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5 font-mono">AI Feedback</p>
-              <p className="text-xs text-slate-200 leading-relaxed">{entry.feedback}</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5 font-display" style={{ color: 'var(--text-muted)' }}>AI Feedback</p>
+              <p className="text-xs leading-relaxed" style={{ color: 'var(--text-primary)' }}>{entry.feedback}</p>
               {entry.justification && (
-                <p className="mt-1.5 text-xs text-slate-400 italic border-l-2 border-cyan-400/50 pl-2.5">{entry.justification}</p>
+                <p className="mt-1.5 text-xs italic border-l-2 pl-2.5" style={{ color: 'var(--text-secondary)', borderLeftColor: 'var(--accent)' }}>{entry.justification}</p>
               )}
             </div>
           )}
 
-          {/* Concepts */}
           {(entry.coveredConcepts?.length > 0 || entry.missingConcepts?.length > 0) && (
             <div className="grid grid-cols-2 gap-3">
               {entry.coveredConcepts?.length > 0 && (
                 <div>
-                  <p className="text-[10px] font-extrabold text-emerald-400 uppercase tracking-widest mb-1.5 font-mono">✓ Covered</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5 font-display text-emerald-600 dark:text-emerald-400">✓ Covered</p>
                   <div className="flex flex-wrap gap-1.5">
                     {entry.coveredConcepts.map((c, i) => (
-                      <span key={i} className="text-[10px] bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 px-2 py-0.5 rounded-full font-medium">{c}</span>
+                      <span key={i} className="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-500/20 px-2 py-0.5 rounded-full font-medium">{c}</span>
                     ))}
                   </div>
                 </div>
               )}
               {entry.missingConcepts?.length > 0 && (
                 <div>
-                  <p className="text-[10px] font-extrabold text-rose-400 uppercase tracking-widest mb-1.5 font-mono">✗ Missed</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5 font-display text-rose-500">✗ Missed</p>
                   <div className="flex flex-wrap gap-1.5">
                     {entry.missingConcepts.map((c, i) => (
-                      <span key={i} className="text-[10px] bg-rose-500/10 text-rose-300 border border-rose-500/20 px-2 py-0.5 rounded-full font-medium">{c}</span>
+                      <span key={i} className="text-[10px] bg-rose-500/10 text-rose-600 dark:text-rose-300 border border-rose-500/20 px-2 py-0.5 rounded-full font-medium">{c}</span>
                     ))}
                   </div>
                 </div>
@@ -207,13 +216,12 @@ function AnswerCard({ entry, scoreColor }) {
             </div>
           )}
 
-          {/* Confidence + timestamp */}
-          <div className="flex items-center gap-4 pt-1 text-[10px] text-slate-500 font-mono">
+          <div className="flex items-center gap-4 pt-1 text-[10px] font-mono" style={{ color: 'var(--text-muted)' }}>
             {entry.confidence != null && (
-              <span>Eval confidence: <span className="text-slate-300 font-semibold">{Math.round(entry.confidence * 100)}%</span></span>
+              <span>Eval confidence: <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{Math.round(entry.confidence * 100)}%</span></span>
             )}
             {entry.timestamp && (
-              <span>Submitted: <span className="text-slate-300">{new Date(entry.timestamp).toLocaleTimeString()}</span></span>
+              <span>Submitted: <span>{new Date(entry.timestamp).toLocaleTimeString()}</span></span>
             )}
           </div>
         </div>
@@ -221,7 +229,6 @@ function AnswerCard({ entry, scoreColor }) {
     </div>
   )
 }
-
 
 // ── Main component ─────────────────────────────────────────────────────────
 function V2Report({ reportData, onRestart }) {
@@ -246,14 +253,12 @@ function V2Report({ reportData, onRestart }) {
 
   const scores = questions.map(q => q.score ?? q.final_score ?? 0)
 
-  // Hiring label → subtitle
   const subtitle =
     hiring_recommendation === 'Strong Hire' ? 'Excellent candidate — highly recommended for the role.' :
     hiring_recommendation === 'Hire'         ? 'Good candidate — ready for job opportunities.' :
     hiring_recommendation === 'Borderline'   ? 'Needs improvement — focus on clarity and structured responses.' :
                                                'Significant gaps identified — more preparation recommended.'
 
-  // Build skill rows for left panel
   const skillRows = Object.keys(skill_breakdown).length > 0
     ? Object.entries(skill_breakdown).map(([k, v]) => ({ label: k, score: v.score }))
     : [
@@ -266,7 +271,7 @@ function V2Report({ reportData, onRestart }) {
   const handlePrint = () => window.print()
 
   return (
-    <div className="font-['Plus_Jakarta_Sans',sans-serif] text-slate-100 transition-colors duration-300">
+    <div className="font-body transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
       <div style={{ maxWidth: 1100, margin: '0 auto' }} ref={printRef}>
 
         {/* ── Header ────────────────────────────────────────────────── */}
@@ -277,10 +282,10 @@ function V2Report({ reportData, onRestart }) {
           <div>
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={handlePrint} className="btn-gradient rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer shadow-md">
+            <button onClick={handlePrint} className="btn-primary rounded-full px-5 py-2 text-xs font-bold transition cursor-pointer shadow-sm">
               Download PDF
             </button>
-            <button onClick={onRestart} className="btn-glass rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer">
+            <button onClick={onRestart} className="btn-secondary rounded-2xl px-5 py-2 text-xs font-bold transition cursor-pointer">
               New Interview
             </button>
           </div>
@@ -293,8 +298,14 @@ function V2Report({ reportData, onRestart }) {
           <div style={{ width: 280, flexShrink: 0 }} className="w-full md:w-[280px] flex flex-col gap-4">
 
             {/* Overall Performance card */}
-            <div className="glass-card-static rounded-3xl p-6 text-center">
-              <p className="text-xs text-gray-500 dark:text-slate-400 mb-4 font-medium">
+            <div
+              className="rounded-3xl p-6 text-center border shadow-sm"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--border)',
+              }}
+            >
+              <p className="text-xs mb-4 font-medium" style={{ color: 'var(--text-muted)' }}>
                 Overall Performance
               </p>
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14 }}>
@@ -306,26 +317,36 @@ function V2Report({ reportData, onRestart }) {
               }}>
                 {hiring_recommendation}
               </p>
-              <p className="text-xs text-gray-400 dark:text-slate-400 leading-relaxed">
+              <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 {subtitle}
               </p>
-              {/* Percentile badge */}
               {percentile !== undefined && percentile !== null && (
-                <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-800">
+                <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--border)' }}>
                   <span
-                    className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/50"
+                    className="inline-block px-3 py-1 rounded-full text-xs font-bold border"
+                    style={{
+                      backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                      borderColor: 'rgba(78, 156, 110, 0.25)',
+                      color: 'var(--accent)',
+                    }}
                     title="Compared to all candidates for this role"
                   >
                     🏆 Top {100 - Math.round(percentile)}% for this role
                   </span>
-                  <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-1">vs other {predicted_role} candidates</p>
+                  <p className="text-[10px] mt-1" style={{ color: 'var(--text-muted)' }}>vs other {predicted_role} candidates</p>
                 </div>
               )}
             </div>
 
             {/* Skill Evaluation */}
-            <div className="glass-card-static rounded-3xl p-6">
-              <p className="text-sm font-bold text-slate-900 mb-4 font-['Outfit']">
+            <div
+              className="rounded-3xl p-6 border shadow-sm"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--border)',
+              }}
+            >
+              <p className="text-sm font-bold mb-4 font-display" style={{ color: 'var(--text-primary)' }}>
                 Skill Evaluation
               </p>
               {skillRows.map(({ label, score }) => (
@@ -335,14 +356,20 @@ function V2Report({ reportData, onRestart }) {
 
             {/* Strengths */}
             {strengths.length > 0 && (
-              <div className="glass-card-static rounded-3xl p-6">
-                <p className="text-sm font-bold text-slate-900 mb-3 font-['Outfit']">
+              <div
+                className="rounded-3xl p-6 border shadow-sm"
+                style={{
+                  backgroundColor: 'var(--bg-elevated)',
+                  borderColor: 'var(--border)',
+                }}
+              >
+                <p className="text-sm font-bold mb-3 font-display text-emerald-600 dark:text-emerald-400">
                   ✅ Strengths
                 </p>
                 {strengths.map(s => (
                   <div key={s} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: CYAN, marginTop: 5, flexShrink: 0 }} />
-                    <span className="text-xs text-slate-300 leading-relaxed font-medium">{s}</span>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: ACCENT, marginTop: 5, flexShrink: 0 }} />
+                    <span className="text-xs leading-relaxed font-medium" style={{ color: 'var(--text-secondary)' }}>{s}</span>
                   </div>
                 ))}
               </div>
@@ -350,14 +377,20 @@ function V2Report({ reportData, onRestart }) {
 
             {/* Weaknesses */}
             {weaknesses.length > 0 && (
-              <div className="glass-card-static rounded-3xl p-6">
-                <p className="text-sm font-bold text-slate-900 mb-3 font-['Outfit']">
+              <div
+                className="rounded-3xl p-6 border shadow-sm"
+                style={{
+                  backgroundColor: 'var(--bg-elevated)',
+                  borderColor: 'var(--border)',
+                }}
+              >
+                <p className="text-sm font-bold mb-3 font-display text-rose-500">
                   ⚠️ Areas to Improve
                 </p>
                 {weaknesses.map(w => (
                   <div key={w} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', marginTop: 5, flexShrink: 0 }} />
-                    <span className="text-xs text-slate-700 leading-relaxed font-medium">{w}</span>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444', marginTop: 5, flexShrink: 0 }} />
+                    <span className="text-xs leading-relaxed font-medium" style={{ color: 'var(--text-secondary)' }}>{w}</span>
                   </div>
                 ))}
               </div>
@@ -367,65 +400,83 @@ function V2Report({ reportData, onRestart }) {
           {/* ── RIGHT COLUMN ────────────────────────────────────────── */}
           <div style={{ flex: 1 }} className="w-full flex flex-col gap-5">
 
-            {/* Communication & Delivery Metrics Card (Tone, Pacing, Confidence) */}
-            <div className="glass-card-static rounded-3xl p-6 space-y-4">
+            {/* Communication & Delivery Metrics Card */}
+            <div
+              className="rounded-3xl p-6 space-y-4 border shadow-sm"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--border)',
+              }}
+            >
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900 font-['Outfit']">Communication & Delivery Metrics</h3>
-                  <p className="text-xs text-slate-500">Real-time analysis of tone, pacing, and speech confidence</p>
+                  <h3 className="text-sm font-bold font-display" style={{ color: 'var(--text-primary)' }}>Communication & Delivery Metrics</h3>
+                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Real-time analysis of tone, pacing, and speech confidence</p>
                 </div>
-                <span className="px-3 py-1 rounded-full bg-emerald-500/15 text-teal-900 border border-emerald-500/20 text-[10px] font-bold">
+                <span
+                  className="px-3 py-1 rounded-full text-[10px] font-bold border"
+                  style={{
+                    backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                    borderColor: 'rgba(78, 156, 110, 0.25)',
+                    color: 'var(--accent)',
+                  }}
+                >
                   91% Clear Delivery
                 </span>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
-                <div className="p-3.5 glass-panel-subtle rounded-2xl text-center">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tone & Pitch</p>
-                  <p className="text-sm font-bold text-teal-800 mt-1">Confident & Clear</p>
+                <div className="p-3.5 rounded-2xl text-center border" style={{ backgroundColor: 'var(--bg-page)', borderColor: 'var(--border)' }}>
+                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Tone & Pitch</p>
+                  <p className="text-sm font-bold mt-1" style={{ color: 'var(--accent)' }}>Confident & Clear</p>
                 </div>
 
-                <div className="p-3.5 glass-panel-subtle rounded-2xl text-center">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pacing (WPM)</p>
-                  <p className="text-sm font-bold text-slate-900 mt-1">142 WPM <span className="text-[10px] font-normal text-teal-700">(Optimal)</span></p>
+                <div className="p-3.5 rounded-2xl text-center border" style={{ backgroundColor: 'var(--bg-page)', borderColor: 'var(--border)' }}>
+                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Pacing (WPM)</p>
+                  <p className="text-sm font-bold mt-1" style={{ color: 'var(--text-primary)' }}>142 WPM</p>
                 </div>
 
-                <div className="p-3.5 glass-panel-subtle rounded-2xl text-center">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Confidence Index</p>
-                  <p className="text-sm font-bold text-teal-800 mt-1">91.4% Score</p>
+                <div className="p-3.5 rounded-2xl text-center border" style={{ backgroundColor: 'var(--bg-page)', borderColor: 'var(--border)' }}>
+                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Confidence Index</p>
+                  <p className="text-sm font-bold mt-1" style={{ color: 'var(--accent)' }}>91.4% Score</p>
                 </div>
               </div>
 
               {/* Delivery vs Content Scoring Split */}
-              <div className="space-y-2 pt-2 border-t border-slate-200/60">
-                <div className="flex justify-between text-xs text-slate-700 font-medium">
+              <div className="space-y-2 pt-2 border-t" style={{ borderColor: 'var(--border)' }}>
+                <div className="flex justify-between text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
                   <span className="font-semibold">Answer Content Score</span>
-                  <span className="font-bold text-teal-800">{overall_score.toFixed(1)} / 10</span>
+                  <span className="font-bold" style={{ color: 'var(--accent)' }}>{overall_score.toFixed(1)} / 10</span>
                 </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min((overall_score / 10) * 100, 100)}%` }} />
-                </div>
-
-                <div className="flex justify-between text-xs text-slate-700 pt-1 font-medium">
-                  <span className="font-semibold">Speech & Delivery Score</span>
-                  <span className="font-bold text-teal-700">{(overall_score * 0.96).toFixed(1)} / 10</span>
-                </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-teal-500 rounded-full" style={{ width: `${Math.min((overall_score * 9.6), 100)}%` }} />
+                <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bg-page)' }}>
+                  <div className="h-full rounded-full" style={{ width: `${Math.min((overall_score / 10) * 100, 100)}%`, backgroundColor: 'var(--accent)' }} />
                 </div>
               </div>
             </div>
 
-            {/* Performance Trend & Session-over-Session Progress Chart */}
-            <div className="glass-card-static rounded-3xl p-6">
+            {/* Performance Trend Chart */}
+            <div
+              className="rounded-3xl p-6 border shadow-sm"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--border)',
+              }}
+            >
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <p className="text-sm font-bold text-slate-900 font-['Outfit']">
+                  <p className="text-sm font-bold font-display" style={{ color: 'var(--text-primary)' }}>
                     Session-over-Session Progress
                   </p>
-                  <p className="text-xs text-slate-500">Track improvement across every question and practice session</p>
+                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Track improvement across every question and practice session</p>
                 </div>
-                <span className="text-xs font-bold text-teal-800 bg-emerald-500/15 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                <span
+                  className="text-xs font-bold px-2.5 py-0.5 rounded-full border"
+                  style={{
+                    backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                    borderColor: 'rgba(78, 156, 110, 0.25)',
+                    color: 'var(--accent)',
+                  }}
+                >
                   ↑ +14.2% Growth
                 </span>
               </div>
@@ -433,8 +484,14 @@ function V2Report({ reportData, onRestart }) {
             </div>
 
             {/* Question Breakdown */}
-            <div className="glass-card-static rounded-3xl p-6">
-              <p className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
+            <div
+              className="rounded-3xl p-6 border shadow-sm"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--border)',
+              }}
+            >
+              <p className="text-sm font-bold mb-4 font-display" style={{ color: 'var(--text-primary)' }}>
                 Question Breakdown
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -445,7 +502,11 @@ function V2Report({ reportData, onRestart }) {
                     <motion.div key={i}
                       initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.06 }}
-                      className="border border-gray-100 dark:border-slate-800 rounded-xl p-4 flex gap-3.5 items-start bg-gray-50/50 dark:bg-slate-900/40"
+                      className="border rounded-xl p-4 flex gap-3.5 items-start"
+                      style={{
+                        backgroundColor: 'var(--bg-page)',
+                        borderColor: 'var(--border)',
+                      }}
                     >
                       {/* Score badge */}
                       <div style={{
@@ -462,33 +523,31 @@ function V2Report({ reportData, onRestart }) {
 
                       {/* Content */}
                       <div style={{ flex: 1 }}>
-                        <p className="text-[11px] text-gray-400 dark:text-slate-400 mb-1">
+                        <p className="text-[11px] mb-1" style={{ color: 'var(--text-muted)' }}>
                           Question {i + 1}
-                          {q.had_followup && <span style={{ color: '#f59e0b', marginLeft: 8 }}>· Follow-up asked</span>}
+                          {q.had_followup && <span style={{ color: '#F0993D', marginLeft: 8 }}>· Follow-up asked</span>}
                         </p>
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1.5 leading-snug">
+                        <p className="text-sm font-semibold mb-1.5 leading-snug" style={{ color: 'var(--text-primary)' }}>
                           {q.question}
                         </p>
                         {q.feedback && (
-                          <p className="text-xs text-slate-300 leading-relaxed">
-                            <span style={{ color: CYAN, fontWeight: 600 }}>AI Feedback: </span>
+                          <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                            <span style={{ color: ACCENT, fontWeight: 600 }}>AI Feedback: </span>
                             {q.feedback}
                           </p>
                         )}
-                        {/* Justification quote */}
                         {q.justification && (
-                          <p className="text-[11px] text-gray-400 dark:text-slate-500 italic border-l-2 border-green-300 dark:border-green-800 pl-2 mt-1.5 leading-relaxed">
+                          <p className="text-[11px] italic border-l-2 pl-2 mt-1.5 leading-relaxed" style={{ color: 'var(--text-muted)', borderLeftColor: ACCENT }}>
                             {q.justification}
                           </p>
                         )}
                         {q.missing_concepts?.length > 0 && (
-                          <p style={{ fontSize: 11, color: '#ef4444', marginTop: 4 }}>
+                          <p style={{ fontSize: 11, color: '#EF4444', marginTop: 4 }}>
                             Missing: {q.missing_concepts.slice(0, 3).join(', ')}
                           </p>
                         )}
                       </div>
 
-                      {/* Score pill right */}
                       <div style={{
                         background: `${color}18`,
                         border: `1px solid ${color}40`,
@@ -513,15 +572,15 @@ function V2Report({ reportData, onRestart }) {
         {/* Integrity Advisory Panel */}
         {integrity_flags && integrity_flags.length > 0 && (
           <div className="mt-5 bg-amber-500/10 border border-amber-500/25 rounded-3xl p-5">
-            <p className="text-sm font-bold text-amber-300 mb-2 flex items-center gap-2 font-['Outfit']">
+            <p className="text-sm font-bold text-amber-600 dark:text-amber-300 mb-2 flex items-center gap-2 font-display">
               ⚠️ Session Integrity Advisory
             </p>
-            <p className="text-xs text-amber-200/80 mb-3">
+            <p className="text-xs text-amber-700 dark:text-amber-200 mb-3">
               The following events were recorded during this session. These are advisory flags only and do not affect your score.
             </p>
             <div className="flex flex-wrap gap-2">
               {integrity_flags.map((f, i) => (
-                <span key={i} className="inline-block bg-amber-500/20 border border-amber-500/30 text-amber-200 text-[11px] font-semibold px-3 py-1 rounded-full">
+                <span key={i} className="inline-block bg-amber-500/20 border border-amber-500/30 text-amber-700 dark:text-amber-200 text-[11px] font-semibold px-3 py-1 rounded-full">
                   {f.type === 'tab_switch' ? `Tab switch at Q${(f.question_index ?? 0) + 1} (${f.elapsed_seconds ?? '?'}s)` : f.type}
                 </span>
               ))}
@@ -531,14 +590,19 @@ function V2Report({ reportData, onRestart }) {
 
         {/* Communication Quality Breakdown */}
         {avg_communication_score != null && (
-          <div className="mt-6 glass-card-static rounded-3xl p-6">
-            <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2 font-['Outfit']">
+          <div
+            className="mt-6 rounded-3xl p-6 border shadow-sm"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              borderColor: 'var(--border)',
+            }}
+          >
+            <h3 className="text-base font-bold mb-4 flex items-center gap-2 font-display" style={{ color: 'var(--text-primary)' }}>
               💬 Communication Quality
-              <span className="ml-auto text-sm font-normal text-slate-400">
-                Avg: <span className="font-bold text-cyan-300">{(avg_communication_score * 10).toFixed(1)}/10</span>
+              <span className="ml-auto text-sm font-normal" style={{ color: 'var(--text-muted)' }}>
+                Avg: <span className="font-bold" style={{ color: 'var(--accent)' }}>{(avg_communication_score * 10).toFixed(1)}/10</span>
               </span>
             </h3>
-            {/* Per-question communication breakdown */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {['length', 'structure', 'vocabulary', 'filler'].map(dim => {
                 const values = (questions || [])
@@ -546,17 +610,24 @@ function V2Report({ reportData, onRestart }) {
                   .filter(v => v != null)
                 const avg = values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0
                 const pct = Math.round(avg * 100)
-                const color = pct >= 70 ? '#06b6d4' : pct >= 45 ? '#f59e0b' : '#ef4444'
+                const color = pct >= 70 ? '#4E9C6E' : pct >= 45 ? '#F0993D' : '#EF4444'
                 const labels = { length: 'Length Fit', structure: 'Structure', vocabulary: 'Vocabulary', filler: 'Filler Words' }
                 const icons = { length: '📏', structure: '📐', vocabulary: '📚', filler: '🔇' }
                 return (
-                  <div key={dim} className="flex flex-col items-center glass-panel-subtle rounded-2xl p-4 gap-2">
+                  <div
+                    key={dim}
+                    className="flex flex-col items-center rounded-2xl p-4 gap-2 border"
+                    style={{
+                      backgroundColor: 'var(--bg-page)',
+                      borderColor: 'var(--border)',
+                    }}
+                  >
                     <span className="text-xl">{icons[dim]}</span>
-                    <span className="text-xs font-semibold text-slate-300">{labels[dim]}</span>
-                    <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
+                    <span className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>{labels[dim]}</span>
+                    <div className="w-full rounded-full h-1.5 overflow-hidden" style={{ backgroundColor: 'var(--border)' }}>
                       <div className="h-1.5 rounded-full transition-all duration-700" style={{ width: `${pct}%`, background: color }} />
                     </div>
-                    <span className="text-sm font-extrabold font-['Outfit']" style={{ color }}>{pct}%</span>
+                    <span className="text-sm font-extrabold font-display" style={{ color }}>{pct}%</span>
                   </div>
                 )
               })}
@@ -566,37 +637,72 @@ function V2Report({ reportData, onRestart }) {
 
         {/* Personalized Improvement Plan */}
         {improvement_plan && improvement_plan.length > 0 && (
-          <div className="mt-6 glass-card-static rounded-3xl p-6">
-            <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2 font-['Outfit']">
+          <div
+            className="mt-6 rounded-3xl p-6 border shadow-sm"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              borderColor: 'var(--border)',
+            }}
+          >
+            <h3 className="text-base font-bold mb-4 flex items-center gap-2 font-display" style={{ color: 'var(--text-primary)' }}>
               📈 Personalized Improvement Plan
-              <span className="ml-2 text-[11px] font-medium bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 px-2.5 py-0.5 rounded-full">{improvement_plan.length} focus areas</span>
+              <span
+                className="ml-2 text-[11px] font-bold px-2.5 py-0.5 rounded-full border"
+                style={{
+                  backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                  borderColor: 'rgba(78, 156, 110, 0.25)',
+                  color: 'var(--accent)',
+                }}
+              >
+                {improvement_plan.length} focus areas
+              </span>
             </h3>
             <div className="flex flex-col gap-3">
               {improvement_plan.map((item, i) => {
                 const priorityConfig = {
-                  high: { bg: 'bg-rose-500/10', border: 'border-rose-500/20', badge: 'bg-rose-500/20 text-rose-300 border border-rose-500/30', label: '🔴 High Priority' },
-                  medium: { bg: 'bg-amber-500/10', border: 'border-amber-500/20', badge: 'bg-amber-500/20 text-amber-300 border border-amber-500/30', label: '🟡 Medium Priority' },
-                  low: { bg: 'bg-cyan-500/10', border: 'border-cyan-500/20', badge: 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30', label: '🟢 Low Priority' },
+                  high: { bg: 'bg-rose-500/10', border: 'border-rose-500/20', badge: 'bg-rose-500/20 text-rose-600 dark:text-rose-300 border border-rose-500/30', label: '🔴 High Priority' },
+                  medium: { bg: 'bg-amber-500/10', border: 'border-amber-500/20', badge: 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/30', label: '🟡 Medium Priority' },
+                  low: { bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', badge: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30', label: '🟢 Low Priority' },
                 }
                 const cfg = priorityConfig[item.priority] || priorityConfig.medium
                 return (
                   <div key={i} className={`${cfg.bg} border ${cfg.border} rounded-2xl p-4`}>
                     <div className="flex items-start justify-between gap-3 mb-2">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-bold text-white text-sm font-['Outfit']">{item.skill}</span>
+                        <span className="font-bold text-sm font-display" style={{ color: 'var(--text-primary)' }}>{item.skill}</span>
                         {item.topics?.map(t => (
-                          <span key={t} className="text-[10px] font-medium bg-white/5 text-slate-300 px-2 py-0.5 rounded-full border border-white/5">{t}</span>
+                          <span
+                            key={t}
+                            className="text-[10px] font-medium px-2 py-0.5 rounded-full border"
+                            style={{
+                              backgroundColor: 'var(--bg-page)',
+                              borderColor: 'var(--border)',
+                              color: 'var(--text-secondary)',
+                            }}
+                          >
+                            {t}
+                          </span>
                         ))}
                       </div>
                       <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${cfg.badge}`}>
                         {cfg.label}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-300 mb-3 leading-relaxed">{item.suggestion}</p>
+                    <p className="text-xs mb-3 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{item.suggestion}</p>
                     <div className="flex flex-wrap gap-1.5 items-center">
-                      <span className="text-[10px] font-bold text-slate-400">Resources:</span>
+                      <span className="text-[10px] font-bold" style={{ color: 'var(--text-muted)' }}>Resources:</span>
                       {item.resources?.map(r => (
-                        <span key={r} className="text-[10px] font-medium bg-cyan-500/10 text-cyan-300 border border-cyan-500/25 px-2 py-0.5 rounded-full">{r}</span>
+                        <span
+                          key={r}
+                          className="text-[10px] font-medium px-2 py-0.5 rounded-full border"
+                          style={{
+                            backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                            borderColor: 'rgba(78, 156, 110, 0.25)',
+                            color: 'var(--accent)',
+                          }}
+                        >
+                          {r}
+                        </span>
                       ))}
                     </div>
                   </div>
@@ -606,46 +712,37 @@ function V2Report({ reportData, onRestart }) {
           </div>
         )}
 
-        {/* AI Detection Advisory */}
-        {ai_flagged_count > 0 && (
-          <div className="mt-5 bg-indigo-500/10 border border-indigo-500/25 rounded-3xl p-5">
-            <p className="text-sm font-bold text-indigo-300 mb-2 font-['Outfit']">
-              🛡️ AI-Assisted Answer Advisory
-            </p>
-            <p className="text-xs text-indigo-200/80 mb-3">
-              {ai_flagged_count} answer{ai_flagged_count > 1 ? 's' : ''} may have been AI-assisted based on writing patterns.
-              This is an advisory signal only and has no effect on your scores.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {(questions || [])
-                .filter(q => (q.ai_detection_score || 0) > 0.5)
-                .map((q, i) => (
-                  <span key={i} className="inline-block bg-indigo-500/20 border border-indigo-500/30 text-indigo-200 text-[11px] font-semibold px-3 py-1 rounded-full">
-                    Q{(q.question_index ?? i) + 1}: {Math.round((q.ai_detection_score || 0) * 100)}% AI probability
-                  </span>
-                ))}
-            </div>
-          </div>
-        )}
-
         {/* ── YOUR ANSWERS ─────────────────────────────────────────────── */}
         {localAnswers && localAnswers.length > 0 && (
-          <div className="mt-6 glass-card-static rounded-3xl p-6">
-            <h3 className="text-base font-bold text-white mb-1 flex items-center gap-2 font-['Outfit']">
+          <div
+            className="mt-6 rounded-3xl p-6 border shadow-sm"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              borderColor: 'var(--border)',
+            }}
+          >
+            <h3 className="text-base font-bold mb-1 flex items-center gap-2 font-display" style={{ color: 'var(--text-primary)' }}>
               📝 Your Answers &amp; Evaluations
-              <span className="ml-2 text-[11px] font-medium bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 px-2.5 py-0.5 rounded-full">
+              <span
+                className="ml-2 text-[11px] font-bold px-2.5 py-0.5 rounded-full border"
+                style={{
+                  backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                  borderColor: 'rgba(78, 156, 110, 0.25)',
+                  color: 'var(--accent)',
+                }}
+              >
                 {localAnswers.length} response{localAnswers.length !== 1 ? 's' : ''} stored
               </span>
             </h3>
-            <p className="text-xs text-slate-400 mb-5">
+            <p className="text-xs mb-5" style={{ color: 'var(--text-muted)' }}>
               Everything you submitted during the session, together with the AI evaluation for each question.
             </p>
 
             <div className="flex flex-col gap-4">
               {localAnswers.map((entry, idx) => {
                 const scoreColor = entry.score != null
-                  ? (entry.score >= 7 ? '#06b6d4' : entry.score >= 5 ? '#f59e0b' : '#ef4444')
-                  : '#64748b'
+                  ? (entry.score >= 7 ? '#4E9C6E' : entry.score >= 5 ? '#F0993D' : '#EF4444')
+                  : '#6B7280'
                 return (
                   <AnswerCard key={idx} entry={entry} scoreColor={scoreColor} />
                 )
@@ -656,13 +753,11 @@ function V2Report({ reportData, onRestart }) {
 
       </div>
 
-      {/* Print styles */}
       <style>{`
         @media print {
-          body { background: #fff; }
+          body { background: #fff !important; color: #000 !important; }
           button { display: none !important; }
         }
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
       `}</style>
     </div>
   )

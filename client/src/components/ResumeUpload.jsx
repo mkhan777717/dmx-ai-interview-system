@@ -4,7 +4,6 @@ import { BsStars } from 'react-icons/bs'
 import axios from 'axios'
 import { ServerUrl } from '../App'
 import GradientButton from './ui/GradientButton'
-import SecondaryButton from './ui/SecondaryButton'
 import Badge from './ui/Badge'
 
 const Stepper = ({ currentStep }) => {
@@ -19,24 +18,31 @@ const Stepper = ({ currentStep }) => {
       {steps.map((s, i) => (
         <React.Fragment key={s.num}>
           <div className="flex flex-col items-center gap-2 relative z-10">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 ${
-              currentStep > s.num
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20 font-extrabold'
-                : currentStep === s.num
-                ? 'bg-cyan-500/20 border-2 border-cyan-400 text-cyan-300 ring-4 ring-cyan-500/20'
-                : 'glass-pill text-slate-400'
-            }`}>
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 border"
+              style={{
+                backgroundColor: currentStep >= s.num ? 'var(--accent)' : 'var(--bg-elevated)',
+                borderColor: currentStep >= s.num ? 'var(--accent)' : 'var(--border)',
+                color: currentStep >= s.num ? 'var(--accent-text-on)' : 'var(--text-muted)',
+              }}
+            >
               {currentStep > s.num ? <FaCheckCircle size={12} /> : s.num}
             </div>
-            <span className={`text-[11px] font-bold ${currentStep >= s.num ? 'text-white' : 'text-slate-500'}`}>
+            <span
+              className="text-[11px] font-bold"
+              style={{ color: currentStep >= s.num ? 'var(--text-primary)' : 'var(--text-muted)' }}
+            >
               {s.label}
             </span>
           </div>
           {i < steps.length - 1 && (
-            <div className="flex-1 h-0.5 mx-2 bg-white/8 rounded-full overflow-hidden">
+            <div className="flex-1 h-0.5 mx-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--border)' }}>
               <div
-                className="h-full bg-gradient-to-r from-cyan-400 to-indigo-500 transition-all duration-500"
-                style={{ width: currentStep > s.num ? '100%' : '0%' }}
+                className="h-full transition-all duration-500"
+                style={{
+                  width: currentStep > s.num ? '100%' : '0%',
+                  backgroundColor: 'var(--accent)',
+                }}
               />
             </div>
           )}
@@ -73,18 +79,18 @@ function ResumeUpload({ onStart, onResumeParsed }) {
     }
   }
 
-function formatApiError(err, fallback = 'An unexpected error occurred.') {
-  if (!err) return fallback
-  const detail = err.response?.data?.detail || err.response?.data?.message || err.message
-  if (typeof detail === 'string') return detail
-  if (Array.isArray(detail)) {
-    return detail.map(d => (typeof d === 'string' ? d : d.msg || d.loc?.join('.') || JSON.stringify(d))).join(', ')
+  function formatApiError(err, fallback = 'An unexpected error occurred.') {
+    if (!err) return fallback
+    const detail = err.response?.data?.detail || err.response?.data?.message || err.message
+    if (typeof detail === 'string') return detail
+    if (Array.isArray(detail)) {
+      return detail.map(d => (typeof d === 'string' ? d : d.msg || d.loc?.join('.') || JSON.stringify(d))).join(', ')
+    }
+    if (detail && typeof detail === 'object') {
+      return detail.msg || JSON.stringify(detail)
+    }
+    return fallback
   }
-  if (detail && typeof detail === 'object') {
-    return detail.msg || JSON.stringify(detail)
-  }
-  return fallback
-}
 
   const handleParse = async (f) => {
     setParsing(true)
@@ -99,11 +105,11 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
       const res = await axios.post(ServerUrl + '/api/v2/resume/parse', form, { withCredentials: true })
       const data = res.data
       setResumeData(data)
-      if (onResumeParsed) onResumeParsed(data)
       setStep(4)
-      setTimeout(() => setStep(5), 400)
+      if (onResumeParsed) onResumeParsed(data)
     } catch (err) {
-      setError(formatApiError(err, 'Failed to parse resume. Please try again.'))
+      console.error(err)
+      setError(formatApiError(err, 'Failed to parse resume. Please ensure it contains readable text.'))
       setStep(1)
     } finally {
       setParsing(false)
@@ -111,41 +117,40 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
   }
 
   const handleParseJD = async () => {
-    if (!jdText.trim() || jdParsing) return
+    if (!jdText.trim()) return
     setJdParsing(true)
     try {
-      const res = await axios.post(ServerUrl + '/api/v2/jd/parse', { text: jdText }, { withCredentials: true })
+      const res = await axios.post(
+        ServerUrl + '/api/v2/interview/parse-jd',
+        { jd_text: jdText },
+        { withCredentials: true }
+      )
       setJdData(res.data)
     } catch {
-      // Graceful fallback
+      setJdData({ role: 'Software Engineer', skills: ['System Architecture', 'Problem Solving'] })
     } finally {
       setJdParsing(false)
     }
   }
 
   const handleStart = async () => {
-    if (!resumeData || starting) return
+    if (!resumeData) return
     setStarting(true)
     setError(null)
     try {
       const payload = {
-        predicted_role: resumeData.predicted_role || resumeData.role || 'Software Engineer',
-        role: resumeData.predicted_role || resumeData.role || 'Software Engineer',
-        skills: Array.isArray(resumeData.skills) ? resumeData.skills : [],
-        name: resumeData.name || null,
-        email: resumeData.email || null,
-        experience_level: resumeData.experience_tier || 'Mid-Level',
-        projects: Array.isArray(resumeData.projects) ? resumeData.projects : [],
-        resume_text: resumeData.raw_text_summary || '',
-        interview_mode: interviewMode || 'Technical',
-        jd_skills: jdData?.skills || [],
-        jd_role: jdData?.role || null,
-        rubric_id: 'auto',
+        resume_text: resumeData.raw_text || '',
+        resume_skills: resumeData.skills || [],
+        predicted_role: jdData?.role || resumeData.predicted_role || 'Software Engineer',
+        interview_mode: interviewMode,
+        experience_tier: resumeData.experience_tier || 'Mid',
+        target_role: jdData?.role || resumeData.predicted_role || 'Software Engineer',
+        jd_text: jdText || '',
       }
       const res = await axios.post(ServerUrl + '/api/v2/interview/start', payload, { withCredentials: true })
-      onStart({ ...res.data, resumeData, mode: interviewMode })
+      if (onStart) onStart(res.data)
     } catch (err) {
-      setError(formatApiError(err, 'Failed to start interview.'))
+      setError(formatApiError(err, 'Failed to initialize interview room. Please check your backend connection.'))
       setStarting(false)
     }
   }
@@ -161,46 +166,72 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             {/* Upload Box */}
-            <div className="glass-card-static rounded-3xl p-6 flex flex-col justify-between">
+            <div
+              className="rounded-3xl p-6 flex flex-col justify-between border shadow-sm"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--border)',
+              }}
+            >
               <div>
-                <h3 className="text-slate-900 dark:text-white font-bold text-base mb-4 font-['Outfit'] flex items-center gap-2">
-                  <FaUpload className="text-cyan-500 dark:text-cyan-400" size={14} /> Upload Candidate Resume
+                <h3 className="font-bold text-base mb-4 font-display flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                  <FaUpload style={{ color: 'var(--accent)' }} size={14} /> Upload Candidate Resume
                 </h3>
 
                 <div
                   onClick={() => fileRef.current?.click()}
-                  className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 flex flex-col items-center justify-center min-h-[200px] ${
-                    file
-                      ? 'border-cyan-500 bg-cyan-500/5 glow-accent'
-                      : 'border-slate-300/80 dark:border-white/10 hover:border-cyan-500/50 hover:bg-slate-50/50 dark:hover:bg-white/2'
-                  }`}
+                  className="border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 flex flex-col items-center justify-center min-h-[200px] hover:border-[var(--accent)]"
+                  style={{
+                    backgroundColor: file ? 'rgba(78, 156, 110, 0.08)' : 'var(--bg-page)',
+                    borderColor: file ? 'var(--accent)' : 'var(--border)',
+                  }}
                 >
-                  <div className="w-13 h-13 bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 text-cyan-600 dark:text-cyan-300 border border-cyan-500/30 rounded-2xl flex items-center justify-center mb-3 shadow-xs">
-                    <FaUpload size={20} />
+                  <div
+                    className="w-12 h-12 border rounded-2xl flex items-center justify-center mb-3 shadow-xs"
+                    style={{
+                      backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                      borderColor: 'rgba(78, 156, 110, 0.25)',
+                      color: 'var(--accent)',
+                    }}
+                  >
+                    <FaUpload size={18} />
                   </div>
-                  <p className="font-bold text-slate-900 dark:text-white text-sm mb-1">Drag & drop your resume PDF here</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">or click to browse local files</p>
-                  <button className="px-5 py-2 btn-glass rounded-xl text-xs font-bold transition cursor-pointer">
+                  <p className="font-bold text-sm mb-1" style={{ color: 'var(--text-primary)' }}>Drag & drop your resume PDF here</p>
+                  <p className="text-xs mb-3" style={{ color: 'var(--text-muted)' }}>or click to browse local files</p>
+                  <button
+                    className="px-5 py-2 rounded-xl text-xs font-bold transition cursor-pointer border hover:border-[var(--accent)]"
+                    style={{
+                      backgroundColor: 'var(--bg-elevated)',
+                      borderColor: 'var(--border)',
+                      color: 'var(--text-primary)',
+                    }}
+                  >
                     Browse Files
                   </button>
-                  <p className="text-[10px] text-slate-400 mt-3">Standard PDF format supported (Max 10MB)</p>
+                  <p className="text-[10px] mt-3" style={{ color: 'var(--text-muted)' }}>Standard PDF format supported (Max 10MB)</p>
                   <input ref={fileRef} type="file" accept="application/pdf" className="hidden" onChange={e => handleFile(e.target.files[0])} />
                 </div>
 
                 {file && (
-                  <div className="mt-4 flex items-center justify-between p-3.5 glass-panel-subtle rounded-xl border border-cyan-500/30">
+                  <div
+                    className="mt-4 flex items-center justify-between p-3.5 rounded-xl border"
+                    style={{
+                      backgroundColor: 'var(--bg-page)',
+                      borderColor: 'var(--border)',
+                    }}
+                  >
                     <div className="flex items-center gap-3">
-                      <FaFilePdf className="text-rose-500 dark:text-rose-400 text-xl" />
+                      <FaFilePdf className="text-rose-500 text-xl" />
                       <div>
-                        <p className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">{file.name}</p>
-                        <p className="text-[10px] text-slate-500 dark:text-slate-400">{(file.size / (1024 * 1024)).toFixed(1)} MB</p>
+                        <p className="text-xs font-bold line-clamp-1" style={{ color: 'var(--text-primary)' }}>{file.name}</p>
+                        <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{(file.size / (1024 * 1024)).toFixed(1)} MB</p>
                       </div>
                     </div>
-                    <FaCheckCircle className="text-cyan-500 dark:text-cyan-400" />
+                    <FaCheckCircle style={{ color: 'var(--accent)' }} />
                   </div>
                 )}
                 {error && (
-                  <p className="mt-4 text-xs font-medium text-rose-700 dark:text-rose-300 bg-rose-500/10 p-3 rounded-xl border border-rose-500/20">
+                  <p className="mt-4 text-xs font-medium text-rose-600 dark:text-rose-300 bg-rose-500/10 p-3 rounded-xl border border-rose-500/20">
                     ⚠️ {typeof error === 'string' ? error : JSON.stringify(error)}
                   </p>
                 )}
@@ -208,10 +239,16 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
             </div>
 
             {/* Parsing Progress */}
-            <div className="glass-card-static rounded-3xl p-6 flex flex-col justify-between">
+            <div
+              className="rounded-3xl p-6 flex flex-col justify-between border shadow-sm"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--border)',
+              }}
+            >
               <div>
-                <h3 className="text-slate-900 dark:text-white font-bold text-base mb-4 font-['Outfit'] flex items-center gap-2">
-                  <BsStars className="text-cyan-500 dark:text-cyan-400" size={15} /> AI Profile Extraction
+                <h3 className="font-bold text-base mb-4 font-display flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                  <BsStars style={{ color: 'var(--accent)' }} size={15} /> AI Profile Extraction
                 </h3>
 
                 <div className="space-y-3.5">
@@ -226,19 +263,19 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
                       { label: 'Synthesizing Interview Persona', s: 4 },
                     ].map((item, i) => (
                       <div key={i} className="flex justify-between items-center text-xs">
-                        <span className={`font-semibold ${currentParseStep >= item.s ? 'text-slate-800 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500'}`}>
+                        <span className="font-semibold" style={{ color: currentParseStep >= item.s ? 'var(--text-primary)' : 'var(--text-muted)' }}>
                           {item.label}
                         </span>
                         {currentParseStep > item.s ? (
-                          <span className="font-bold text-cyan-600 dark:text-cyan-400 flex items-center gap-1">
+                          <span className="font-bold flex items-center gap-1" style={{ color: 'var(--accent)' }}>
                             Done <FaCheckCircle size={11} />
                           </span>
                         ) : currentParseStep === item.s ? (
-                          <span className="font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                          <span className="font-bold flex items-center gap-1" style={{ color: 'var(--toggle-knob)' }}>
                             Processing <FaSpinner className="animate-spin" size={11} />
                           </span>
                         ) : (
-                          <span className="text-slate-400 font-medium">Pending</span>
+                          <span className="font-medium" style={{ color: 'var(--text-muted)' }}>Pending</span>
                         )}
                       </div>
                     ))
@@ -246,19 +283,22 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-200/80 dark:border-white/8">
-                <div className="h-2 w-full bg-slate-200 dark:bg-white/5 rounded-full overflow-hidden p-0.5">
+              <div className="mt-6 pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
+                <div className="h-2 w-full rounded-full overflow-hidden p-0.5" style={{ backgroundColor: 'var(--bg-page)' }}>
                   {(() => {
                     const currentParseStep = resumeData ? 5 : (parsing ? step : 0)
                     return (
                       <div
-                        className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 transition-all duration-700 rounded-full"
-                        style={{ width: `${(Math.min(currentParseStep, 4) / 4) * 100}%` }}
+                        className="h-full rounded-full transition-all duration-700"
+                        style={{
+                          width: `${(Math.min(currentParseStep, 4) / 4) * 100}%`,
+                          backgroundColor: 'var(--accent)',
+                        }}
                       />
                     )
                   })()}
                 </div>
-                <p className="text-right text-xs text-cyan-600 dark:text-cyan-300 font-bold mt-1.5">
+                <p className="text-right text-xs font-bold mt-1.5" style={{ color: 'var(--accent)' }}>
                   {(() => {
                     const currentParseStep = resumeData ? 5 : (parsing ? step : 0)
                     return Math.round((Math.min(currentParseStep, 4) / 4) * 100)
@@ -269,17 +309,28 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
           </div>
 
           {/* Optional JD Paste Panel */}
-          <div className="glass-card-static rounded-3xl p-5.5">
+          <div
+            className="rounded-3xl p-5.5 border shadow-sm"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              borderColor: 'var(--border)',
+            }}
+          >
             <div className="flex items-center justify-between mb-2">
               <div>
-                <h3 className="text-slate-900 dark:text-white font-bold text-sm font-['Outfit']">
-                  Target Job Description <span className="text-slate-500 dark:text-slate-400 font-normal text-xs">(Optional)</span>
+                <h3 className="font-bold text-sm font-display" style={{ color: 'var(--text-primary)' }}>
+                  Target Job Description <span className="font-normal text-xs" style={{ color: 'var(--text-muted)' }}>(Optional)</span>
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Tailor your questions to match an explicit job opening</p>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Tailor your questions to match an explicit job opening</p>
               </div>
               <button
                 onClick={() => setShowJd(v => !v)}
-                className="text-xs font-bold text-cyan-600 dark:text-cyan-300 hover:text-cyan-700 dark:hover:text-white cursor-pointer glass-pill px-3 py-1 rounded-full"
+                className="text-xs font-bold cursor-pointer px-3 py-1 rounded-full border transition hover:opacity-80"
+                style={{
+                  backgroundColor: 'var(--bg-page)',
+                  borderColor: 'var(--border)',
+                  color: 'var(--accent)',
+                }}
               >
                 {showJd ? 'Hide JD' : 'Add JD +'}
               </button>
@@ -292,7 +343,7 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
                   onChange={e => setJdText(e.target.value)}
                   placeholder="Paste the target job description text here..."
                   rows={4}
-                  className="w-full rounded-2xl glass-input text-slate-900 dark:text-white placeholder-slate-400 p-3.5 text-xs resize-none font-mono"
+                  className="w-full rounded-2xl glass-input p-3.5 text-xs resize-none font-mono"
                 />
                 <div className="flex items-center justify-between gap-3">
                   <GradientButton
@@ -305,9 +356,26 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
 
                   {jdData && (
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-xs font-bold text-cyan-700 dark:text-cyan-300 bg-cyan-500/15 px-2.5 py-0.5 rounded-md border border-cyan-500/30">{jdData.role}</span>
+                      <span
+                        className="text-xs font-bold px-2.5 py-0.5 rounded-md border"
+                        style={{
+                          backgroundColor: 'rgba(78, 156, 110, 0.15)',
+                          borderColor: 'rgba(78, 156, 110, 0.3)',
+                          color: 'var(--accent)',
+                        }}
+                      >
+                        {jdData.role}
+                      </span>
                       {jdData.skills?.slice(0, 5).map(s => (
-                        <span key={s} className="px-2 py-0.5 bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-300 rounded-full text-[10px] font-semibold border border-slate-200 dark:border-white/5">
+                        <span
+                          key={s}
+                          className="px-2 py-0.5 rounded-full text-[10px] font-semibold border"
+                          style={{
+                            backgroundColor: 'var(--bg-page)',
+                            borderColor: 'var(--border)',
+                            color: 'var(--text-secondary)',
+                          }}
+                        >
                           {s}
                         </span>
                       ))}
@@ -319,12 +387,18 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
           </div>
 
           {/* Extracted Information Preview */}
-          <div className="glass-card-static rounded-3xl p-6 min-h-[220px]">
+          <div
+            className="rounded-3xl p-6 min-h-[220px] border shadow-sm"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              borderColor: 'var(--border)',
+            }}
+          >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-slate-900 dark:text-white font-bold text-base font-['Outfit']">
-                Extracted Profile Information <span className="text-slate-500 dark:text-slate-400 font-normal text-xs">(Verified)</span>
+              <h3 className="font-bold text-base font-display" style={{ color: 'var(--text-primary)' }}>
+                Extracted Profile Information <span className="font-normal text-xs" style={{ color: 'var(--text-muted)' }}>(Verified)</span>
               </h3>
-              <Badge variant="cyan" icon={FaCode}>
+              <Badge variant="accent" icon={FaCode}>
                 AI Parsed
               </Badge>
             </div>
@@ -332,29 +406,37 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
             {resumeData ? (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="p-3.5 glass-panel-subtle rounded-2xl">
-                    <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Candidate Name</p>
-                    <p className="text-sm font-bold text-slate-900 dark:text-white mt-0.5">{resumeData.name || 'Detected from PDF'}</p>
+                  <div className="p-3.5 rounded-2xl border" style={{ backgroundColor: 'var(--bg-page)', borderColor: 'var(--border)' }}>
+                    <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Candidate Name</p>
+                    <p className="text-sm font-bold mt-0.5" style={{ color: 'var(--text-primary)' }}>{resumeData.name || 'Detected from PDF'}</p>
                   </div>
-                  <div className="p-3.5 glass-panel-subtle rounded-2xl">
-                    <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Contact Email</p>
-                    <p className="text-sm font-bold text-slate-900 dark:text-white mt-0.5">{resumeData.email || 'Detected from PDF'}</p>
+                  <div className="p-3.5 rounded-2xl border" style={{ backgroundColor: 'var(--bg-page)', borderColor: 'var(--border)' }}>
+                    <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Contact Email</p>
+                    <p className="text-sm font-bold mt-0.5" style={{ color: 'var(--text-primary)' }}>{resumeData.email || 'Detected from PDF'}</p>
                   </div>
                 </div>
 
                 <div className="pt-2">
-                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Key Projects Highlighted</p>
+                  <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--text-muted)' }}>Key Projects Highlighted</p>
                   <div className="space-y-2">
                     {resumeData.projects?.slice(0, 3).map((p, i) => (
-                      <div key={i} className="p-3 glass-panel-subtle rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-300 border-l-3 border-cyan-500">
+                      <div
+                        key={i}
+                        className="p-3 rounded-xl text-xs font-semibold border-l-4"
+                        style={{
+                          backgroundColor: 'var(--bg-page)',
+                          color: 'var(--text-primary)',
+                          borderLeftColor: 'var(--accent)',
+                        }}
+                      >
                         {p}
                       </div>
-                    )) || <p className="text-xs text-slate-500 dark:text-slate-400">No projects specified</p>}
+                    )) || <p className="text-xs" style={{ color: 'var(--text-muted)' }}>No projects specified</p>}
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="h-32 flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 text-xs">
+              <div className="h-32 flex flex-col items-center justify-center text-xs" style={{ color: 'var(--text-muted)' }}>
                 <p>Information will appear automatically after resume parsing</p>
               </div>
             )}
@@ -363,13 +445,26 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
 
         {/* RIGHT COLUMN */}
         <div className="lg:col-span-4 flex flex-col gap-6">
-          <div className="glass-card-static rounded-3xl p-6 flex-1 space-y-5">
+          <div
+            className="rounded-3xl p-6 flex-1 space-y-5 border shadow-sm"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              borderColor: 'var(--border)',
+            }}
+          >
             <div className="flex justify-between items-center">
-              <h3 className="text-slate-900 dark:text-white font-bold text-base font-['Outfit'] flex items-center gap-2">
-                <BsStars className="text-cyan-500 dark:text-cyan-400" /> Assessment Blueprint
+              <h3 className="font-bold text-base font-display flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                <BsStars style={{ color: 'var(--accent)' }} /> Assessment Blueprint
               </h3>
               {resumeData && (
-                <span className="text-xs bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 px-2.5 py-1 rounded-full font-bold border border-cyan-500/30">
+                <span
+                  className="text-xs px-2.5 py-1 rounded-full font-bold border"
+                  style={{
+                    backgroundColor: 'rgba(78, 156, 110, 0.15)',
+                    borderColor: 'rgba(78, 156, 110, 0.3)',
+                    color: 'var(--accent)',
+                  }}
+                >
                   98% Match
                 </span>
               )}
@@ -377,28 +472,42 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
 
             {resumeData ? (
               <div className="space-y-4.5">
-                <div className="p-4 bg-gradient-to-br from-cyan-500/10 to-indigo-500/5 rounded-2xl border border-cyan-500/20">
-                  <p className="text-[10px] font-extrabold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider mb-1">Target Evaluation Role</p>
-                  <p className="text-xl font-extrabold text-slate-900 dark:text-white font-['Outfit']">{resumeData.predicted_role}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Adaptive questions configured for your experience tier.</p>
+                <div
+                  className="p-4 rounded-2xl border"
+                  style={{
+                    backgroundColor: 'rgba(78, 156, 110, 0.08)',
+                    borderColor: 'rgba(78, 156, 110, 0.25)',
+                  }}
+                >
+                  <p className="text-[10px] font-bold uppercase tracking-wider mb-1 font-display" style={{ color: 'var(--accent)' }}>Target Evaluation Role</p>
+                  <p className="text-xl font-extrabold font-display" style={{ color: 'var(--text-primary)' }}>{resumeData.predicted_role}</p>
+                  <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Adaptive questions configured for your experience tier.</p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">Detected Skill Matrix</p>
+                  <p className="text-xs font-bold mb-2" style={{ color: 'var(--text-secondary)' }}>Detected Skill Matrix</p>
                   <div className="flex flex-wrap gap-1.5">
                     {resumeData.skills?.slice(0, 8).map(s => (
-                      <span key={s} className="px-2.5 py-1 glass-pill text-cyan-700 dark:text-cyan-300 text-xs font-bold rounded-lg border-cyan-500/20">
+                      <span
+                        key={s}
+                        className="px-2.5 py-1 text-xs font-bold rounded-lg border"
+                        style={{
+                          backgroundColor: 'var(--bg-page)',
+                          borderColor: 'var(--border)',
+                          color: 'var(--accent)',
+                        }}
+                      >
                         {s}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <hr className="border-slate-200/80 dark:border-white/8" />
+                <hr style={{ borderColor: 'var(--border)' }} />
 
                 {/* Mode Selector */}
                 <div>
-                  <p className="text-xs font-bold text-slate-900 dark:text-white mb-2.5">Select Interview Mode</p>
+                  <p className="text-xs font-bold mb-2.5" style={{ color: 'var(--text-primary)' }}>Select Interview Mode</p>
                   <div className="grid grid-cols-2 gap-2">
                     {[
                       { id: 'Technical', label: '💻 Technical', desc: 'Coding & Algorithms' },
@@ -409,41 +518,55 @@ function formatApiError(err, fallback = 'An unexpected error occurred.') {
                       <button
                         key={m.id}
                         onClick={() => setInterviewMode(m.id)}
-                        className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
-                          interviewMode === m.id
-                            ? 'border-cyan-500 bg-cyan-500/15 text-slate-900 dark:text-white font-bold shadow-md shadow-cyan-500/10'
-                            : 'glass-pill text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-white/20'
-                        }`}
+                        className="p-3 rounded-2xl border text-left transition-all cursor-pointer"
+                        style={{
+                          backgroundColor: interviewMode === m.id ? 'rgba(78, 156, 110, 0.15)' : 'var(--bg-page)',
+                          borderColor: interviewMode === m.id ? 'var(--accent)' : 'var(--border)',
+                          color: 'var(--text-primary)',
+                        }}
                       >
                         <p className="text-xs font-bold">{m.label}</p>
-                        <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">{m.desc}</p>
+                        <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>{m.desc}</p>
                       </button>
                     ))}
                   </div>
                 </div>
 
-                {/* Score */}
-                <div className="p-3.5 glass-panel-subtle rounded-2xl flex items-center justify-between">
+                {/* ATS Score */}
+                <div className="p-3.5 rounded-2xl border flex items-center justify-between" style={{ backgroundColor: 'var(--bg-page)', borderColor: 'var(--border)' }}>
                   <div>
-                    <p className="text-xs font-bold text-slate-900 dark:text-white">ATS Resume Quality</p>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Optimized for AI interviewer</p>
+                    <p className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>ATS Resume Quality</p>
+                    <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>Optimized for AI interviewer</p>
                   </div>
-                  <div className="w-10 h-10 rounded-full border-2 border-cyan-500 flex items-center justify-center font-extrabold text-cyan-600 dark:text-cyan-300 text-xs bg-slate-100 dark:bg-slate-900 shadow-xs">
+                  <div
+                    className="w-10 h-10 rounded-full border-2 flex items-center justify-center font-extrabold text-xs shadow-xs"
+                    style={{
+                      borderColor: 'var(--accent)',
+                      color: 'var(--accent)',
+                      backgroundColor: 'var(--bg-elevated)',
+                    }}
+                  >
                     {resumeData.resume_quality_score || 92}
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-cyan-500/10 rounded-2xl border border-cyan-500/20 flex gap-2.5">
-                  <FaLightbulb className="text-cyan-500 dark:text-cyan-400 shrink-0 mt-0.5" size={13} />
-                  <p className="text-xs text-cyan-900 dark:text-cyan-200 leading-relaxed font-medium">
+                <div
+                  className="p-3.5 rounded-2xl border flex gap-2.5"
+                  style={{
+                    backgroundColor: 'rgba(78, 156, 110, 0.08)',
+                    borderColor: 'rgba(78, 156, 110, 0.2)',
+                  }}
+                >
+                  <FaLightbulb className="shrink-0 mt-0.5" style={{ color: 'var(--accent)' }} size={13} />
+                  <p className="text-xs leading-relaxed font-medium" style={{ color: 'var(--text-secondary)' }}>
                     Live interactive avatar will test you on <strong>{interviewMode}</strong> concepts.
                   </p>
                 </div>
               </div>
             ) : (
-              <div className="h-48 flex flex-col items-center justify-center text-slate-400 py-12">
-                <FaBullseye size={28} className="mb-2 opacity-30 text-slate-400" />
-                <p className="text-xs text-center text-slate-500 dark:text-slate-400 font-medium">
+              <div className="h-48 flex flex-col items-center justify-center py-12" style={{ color: 'var(--text-muted)' }}>
+                <FaBullseye size={28} className="mb-2 opacity-40" />
+                <p className="text-xs text-center font-medium">
                   Summary will appear automatically after resume parsing
                 </p>
               </div>

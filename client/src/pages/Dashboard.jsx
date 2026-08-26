@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import V2Layout from '../components/V2Layout'
-import { motion } from 'motion/react'
 import {
-  BsSearch, BsChevronDown,
-  BsThreeDots, BsArrowRight, BsStars,
+  BsStars, BsArrowRight
 } from 'react-icons/bs'
 import {
-  FaCalendarAlt, FaCalendarCheck, FaChartLine, FaRegClock,
+  FaCalendarCheck, FaChartLine, FaRegClock,
 } from 'react-icons/fa'
-import { HiOutlineLightBulb } from 'react-icons/hi'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell,
@@ -19,12 +16,13 @@ import { ServerUrl } from '../App'
 import { useNavigate } from 'react-router-dom'
 import GradientButton from '../components/ui/GradientButton'
 import Badge from '../components/ui/Badge'
-import GlassCard from '../components/ui/GlassCard'
+import { useTheme } from '../context/ThemeContext'
 
-const COLORS = ['#06b6d4', '#3b82f6', '#6366f1', '#10b981', '#f59e0b']
+const COLORS = ['#4E9C6E', '#7C6FEA', '#3B82F6', '#10B981', '#F0993D']
 
 export default function Dashboard() {
   const { userData } = useSelector((state) => state.user)
+  const { isDark } = useTheme()
   const navigate = useNavigate()
 
   const [interviews, setInterviews] = useState([])
@@ -75,21 +73,12 @@ export default function Dashboard() {
     score: Math.round(trendMap[key].total / trendMap[key].count),
   })).slice(-7)
 
-  let exc = 0, good = 0, avg = 0, needs = 0
-  completed.forEach(i => {
-    const score = (i.finalScore || i.final_score || 0) * 10
-    if (score >= 80) exc++
-    else if (score >= 60) good++
-    else if (score >= 40) avg++
-    else needs++
-  })
-
   const headerLeft = (
     <div>
-      <h1 className="text-xl font-bold text-white flex items-center gap-2 font-['Outfit']">
-        Welcome back, <span className="font-calligraphy italic font-normal text-cyan-400">{userData?.name?.split(' ')[0] || 'User'}</span>! 👋
+      <h1 className="text-xl font-bold flex items-center gap-2 font-display" style={{ color: 'var(--text-primary)' }}>
+        Welcome back, <span className="text-[var(--accent)] font-semibold">{userData?.name?.split(' ')[0] || 'User'}</span>! 👋
       </h1>
-      <p className="text-slate-400 text-xs mt-0.5">Here is your practice performance summary for today.</p>
+      <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Here is your practice performance summary for today.</p>
     </div>
   )
 
@@ -113,70 +102,143 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
           {/* Card 1: Completed */}
-          <div className="glass-card-static rounded-3xl p-5 relative overflow-hidden group hover:border-cyan-500/30 transition-all duration-300">
+          <div
+            className="rounded-3xl p-5 relative overflow-hidden border shadow-sm transition-all duration-300 hover:border-[var(--accent)]"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              borderColor: 'var(--border)',
+            }}
+          >
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest font-mono">Completed Sessions</span>
-              <div className="w-9 h-9 rounded-2xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 flex items-center justify-center">
+              <span className="text-[10px] font-bold uppercase tracking-widest font-display" style={{ color: 'var(--text-muted)' }}>Completed Sessions</span>
+              <div
+                className="w-9 h-9 rounded-2xl flex items-center justify-center border"
+                style={{
+                  backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                  borderColor: 'rgba(78, 156, 110, 0.25)',
+                  color: 'var(--accent)',
+                }}
+              >
                 <FaCalendarCheck size={14} />
               </div>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-extrabold text-white font-['Outfit'] tracking-tight">{completed.length}</span>
-              <span className="text-xs text-cyan-300 font-bold bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
+              <span className="text-3xl font-extrabold font-display tracking-tight" style={{ color: 'var(--text-primary)' }}>{completed.length}</span>
+              <span
+                className="text-xs font-bold px-2 py-0.5 rounded-full border"
+                style={{
+                  backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                  borderColor: 'rgba(78, 156, 110, 0.25)',
+                  color: 'var(--accent)',
+                }}
+              >
                 +12% this week
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-2 font-medium">Recorded full evaluations</p>
+            <p className="text-xs mt-2 font-medium" style={{ color: 'var(--text-secondary)' }}>Recorded full evaluations</p>
           </div>
 
           {/* Card 2: Avg Score */}
-          <div className="glass-card-static rounded-3xl p-5 relative overflow-hidden group hover:border-blue-500/30 transition-all duration-300">
+          <div
+            className="rounded-3xl p-5 relative overflow-hidden border shadow-sm transition-all duration-300 hover:border-[var(--accent)]"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              borderColor: 'var(--border)',
+            }}
+          >
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest font-mono">Average Score</span>
-              <div className="w-9 h-9 rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center justify-center">
+              <span className="text-[10px] font-bold uppercase tracking-widest font-display" style={{ color: 'var(--text-muted)' }}>Average Score</span>
+              <div
+                className="w-9 h-9 rounded-2xl flex items-center justify-center border"
+                style={{
+                  backgroundColor: 'rgba(124, 111, 234, 0.12)',
+                  borderColor: 'rgba(124, 111, 234, 0.25)',
+                  color: 'var(--toggle-knob)',
+                }}
+              >
                 <FaChartLine size={14} />
               </div>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-extrabold text-white font-['Outfit'] tracking-tight">{avgScore > 0 ? avgScore : '—'}%</span>
-              <span className="text-xs text-blue-300 font-bold bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20">
+              <span className="text-3xl font-extrabold font-display tracking-tight" style={{ color: 'var(--text-primary)' }}>{avgScore > 0 ? avgScore : '—'}%</span>
+              <span
+                className="text-xs font-bold px-2 py-0.5 rounded-full border"
+                style={{
+                  backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                  borderColor: 'rgba(78, 156, 110, 0.25)',
+                  color: 'var(--accent)',
+                }}
+              >
                 {avgScore >= 75 ? 'Ready for Offer' : 'Keep Practicing'}
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-2 font-medium">Across all technical rounds</p>
+            <p className="text-xs mt-2 font-medium" style={{ color: 'var(--text-secondary)' }}>Across all technical rounds</p>
           </div>
 
           {/* Card 3: Practice Hours */}
-          <div className="glass-card-static rounded-3xl p-5 relative overflow-hidden group hover:border-indigo-500/30 transition-all duration-300">
+          <div
+            className="rounded-3xl p-5 relative overflow-hidden border shadow-sm transition-all duration-300 hover:border-[var(--accent)]"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              borderColor: 'var(--border)',
+            }}
+          >
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest font-mono">Time in Studio</span>
-              <div className="w-9 h-9 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center">
+              <span className="text-[10px] font-bold uppercase tracking-widest font-display" style={{ color: 'var(--text-muted)' }}>Time in Studio</span>
+              <div
+                className="w-9 h-9 rounded-2xl flex items-center justify-center border"
+                style={{
+                  backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                  borderColor: 'rgba(78, 156, 110, 0.25)',
+                  color: 'var(--accent)',
+                }}
+              >
                 <FaRegClock size={14} />
               </div>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-extrabold text-white font-['Outfit'] tracking-tight">{hours}h {mins}m</span>
-              <span className="text-xs text-indigo-300 font-bold bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-500/20">
+              <span className="text-3xl font-extrabold font-display tracking-tight" style={{ color: 'var(--text-primary)' }}>{hours}h {mins}m</span>
+              <span
+                className="text-xs font-bold px-2 py-0.5 rounded-full border"
+                style={{
+                  backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                  borderColor: 'rgba(78, 156, 110, 0.25)',
+                  color: 'var(--accent)',
+                }}
+              >
                 Active Streak
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-2 font-medium">Real-time speech & code</p>
+            <p className="text-xs mt-2 font-medium" style={{ color: 'var(--text-secondary)' }}>Real-time speech & code</p>
           </div>
 
           {/* Card 4: Top Skill Tier */}
-          <div className="glass-card-static rounded-3xl p-5 relative overflow-hidden group hover:border-emerald-500/30 transition-all duration-300">
+          <div
+            className="rounded-3xl p-5 relative overflow-hidden border shadow-sm transition-all duration-300 hover:border-[var(--accent)]"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              borderColor: 'var(--border)',
+            }}
+          >
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest font-mono">Top Role Readiness</span>
-              <div className="w-9 h-9 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
+              <span className="text-[10px] font-bold uppercase tracking-widest font-display" style={{ color: 'var(--text-muted)' }}>Top Role Readiness</span>
+              <div
+                className="w-9 h-9 rounded-2xl flex items-center justify-center border"
+                style={{
+                  backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                  borderColor: 'rgba(78, 156, 110, 0.25)',
+                  color: 'var(--accent)',
+                }}
+              >
                 <BsStars size={14} />
               </div>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-xl font-extrabold text-white font-['Outfit'] tracking-tight truncate max-w-[160px]">
+              <span className="text-xl font-extrabold font-display tracking-tight truncate max-w-[160px]" style={{ color: 'var(--text-primary)' }}>
                 {roleData[0]?.name || 'Full-Stack'}
               </span>
             </div>
-            <p className="text-xs text-emerald-400 mt-2 font-semibold">Tier 1 Target Alignment</p>
+            <p className="text-xs mt-2 font-semibold" style={{ color: 'var(--accent)' }}>Tier 1 Target Alignment</p>
           </div>
         </div>
 
@@ -184,13 +246,19 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
           {/* Performance Trend Area Chart */}
-          <div className="lg:col-span-2 glass-card-static rounded-3xl p-6">
+          <div
+            className="lg:col-span-2 rounded-3xl p-6 border shadow-sm"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              borderColor: 'var(--border)',
+            }}
+          >
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white font-['Outfit']">Score Progression Over Time</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Historical average scores across completed interview sessions</p>
+                <h3 className="text-base font-bold font-display" style={{ color: 'var(--text-primary)' }}>Score Progression Over Time</h3>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Historical average scores across completed interview sessions</p>
               </div>
-              <Badge variant="cyan">7 Sessions</Badge>
+              <Badge variant="accent">7 Sessions</Badge>
             </div>
 
             <div className="h-64 w-full">
@@ -199,27 +267,27 @@ export default function Dashboard() {
                   <AreaChart data={scoreTrendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.4} />
-                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0.0} />
+                        <stop offset="5%" stopColor="#4E9C6E" stopOpacity={0.4} />
+                        <stop offset="95%" stopColor="#4E9C6E" stopOpacity={0.0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.15)" vertical={false} />
-                    <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
-                    <YAxis domain={[0, 100]} stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                    <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} />
+                    <YAxis domain={[0, 100]} stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#0b1120',
-                        border: '1px solid rgba(255,255,255,0.1)',
+                        backgroundColor: isDark ? '#16161A' : '#FFFFFF',
+                        border: '1px solid var(--border)',
                         borderRadius: '12px',
                         fontSize: '12px',
-                        color: '#f8fafc',
-                        boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                        color: isDark ? '#FFFFFF' : '#0A0A0A',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
                       }}
                     />
                     <Area
                       type="monotone"
                       dataKey="score"
-                      stroke="#06b6d4"
+                      stroke="#4E9C6E"
                       strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#scoreGradient)"
@@ -227,7 +295,7 @@ export default function Dashboard() {
                   </AreaChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center text-slate-500 text-xs font-medium">
+                <div className="h-full flex items-center justify-center text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
                   Complete your first interview session to render progression trend.
                 </div>
               )}
@@ -235,12 +303,18 @@ export default function Dashboard() {
           </div>
 
           {/* Role Distribution Pie Chart */}
-          <div className="glass-card-static rounded-3xl p-6 flex flex-col justify-between">
+          <div
+            className="rounded-3xl p-6 flex flex-col justify-between border shadow-sm"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              borderColor: 'var(--border)',
+            }}
+          >
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white font-['Outfit']">Target Domains</h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Sessions grouped by job family</p>
+                  <h3 className="text-base font-bold font-display" style={{ color: 'var(--text-primary)' }}>Target Domains</h3>
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Sessions grouped by job family</p>
                 </div>
               </div>
 
@@ -263,31 +337,31 @@ export default function Dashboard() {
                       </Pie>
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: '#0b1120',
-                          border: '1px solid rgba(255,255,255,0.1)',
+                          backgroundColor: isDark ? '#16161A' : '#FFFFFF',
+                          border: '1px solid var(--border)',
                           borderRadius: '12px',
                           fontSize: '11px',
-                          color: '#fff',
+                          color: isDark ? '#FFFFFF' : '#0A0A0A',
                         }}
                       />
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="h-full flex items-center justify-center text-slate-500 text-xs">
+                  <div className="h-full flex items-center justify-center text-xs" style={{ color: 'var(--text-muted)' }}>
                     No domain data yet
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="space-y-2 pt-2 border-t border-slate-200/80 dark:border-white/8">
+            <div className="space-y-2 pt-2 border-t" style={{ borderColor: 'var(--border)' }}>
               {roleData.slice(0, 3).map((r, i) => (
                 <div key={r.name} className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                    <span className="text-slate-700 dark:text-slate-300 font-medium truncate max-w-[130px]">{r.name}</span>
+                    <span className="font-medium truncate max-w-[130px]" style={{ color: 'var(--text-secondary)' }}>{r.name}</span>
                   </div>
-                  <span className="text-slate-500 dark:text-slate-400 font-bold">{r.value} session{r.value > 1 ? 's' : ''}</span>
+                  <span className="font-bold" style={{ color: 'var(--text-muted)' }}>{r.value} session{r.value > 1 ? 's' : ''}</span>
                 </div>
               ))}
             </div>
@@ -296,15 +370,26 @@ export default function Dashboard() {
         </div>
 
         {/* ── RECENT SESSIONS TABLE ────────────────────────────────────────── */}
-        <div className="glass-card-static rounded-3xl p-6">
+        <div
+          className="rounded-3xl p-6 border shadow-sm"
+          style={{
+            backgroundColor: 'var(--bg-elevated)',
+            borderColor: 'var(--border)',
+          }}
+        >
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white font-['Outfit']">Recent Practice Sessions</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Click any session to open the full diagnostic scorecard</p>
+              <h3 className="text-base font-bold font-display" style={{ color: 'var(--text-primary)' }}>Recent Practice Sessions</h3>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Click any session to open the full diagnostic scorecard</p>
             </div>
             <button
               onClick={() => navigate('/history')}
-              className="text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:text-cyan-500 transition flex items-center gap-1.5 cursor-pointer glass-pill px-3 py-1.5 rounded-full"
+              className="text-xs font-bold transition flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-full border hover:opacity-80"
+              style={{
+                backgroundColor: 'var(--bg-page)',
+                borderColor: 'var(--border)',
+                color: 'var(--accent)',
+              }}
             >
               <span>View All History</span>
               <BsArrowRight size={11} />
@@ -315,7 +400,7 @@ export default function Dashboard() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-slate-200/80 dark:border-white/8 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[10px]">
+                  <tr className="border-b font-bold uppercase tracking-wider text-[10px]" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
                     <th className="pb-3 px-3">Role & Track</th>
                     <th className="pb-3 px-3">Mode</th>
                     <th className="pb-3 px-3">Date</th>
@@ -324,7 +409,7 @@ export default function Dashboard() {
                     <th className="pb-3 px-3 text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200/60 dark:divide-white/5">
+                <tbody className="divide-y" style={{ borderColor: 'var(--border)' }}>
                   {recentInterviews.map((item, idx) => {
                     const reportId = item.id || item._id
                     const roleName = item.role || item.predicted_role || 'Technical Interview'
@@ -334,38 +419,59 @@ export default function Dashboard() {
                       <tr
                         key={idx}
                         onClick={() => navigate(`/report/${reportId}`)}
-                        className="hover:bg-slate-100/60 dark:hover:bg-white/3 transition-colors cursor-pointer group"
+                        className="transition-colors cursor-pointer group hover:bg-[var(--accent)]/5"
                       >
                         <td className="py-3.5 px-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 text-cyan-600 dark:text-cyan-300 flex items-center justify-center font-bold text-xs shrink-0 border border-cyan-500/30">
+                            <div
+                              className="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 border"
+                              style={{
+                                backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                                borderColor: 'rgba(78, 156, 110, 0.25)',
+                                color: 'var(--accent)',
+                              }}
+                            >
                               {roleName.charAt(0)}
                             </div>
-                            <span className="font-bold text-slate-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors">
+                            <span className="font-bold transition-colors group-hover:text-[var(--accent)]" style={{ color: 'var(--text-primary)' }}>
                               {roleName}
                             </span>
                           </div>
                         </td>
                         <td className="py-3.5 px-3">
-                          <span className="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-300 font-semibold text-[11px] border border-slate-200 dark:border-white/5">
+                          <span
+                            className="px-2.5 py-1 rounded-md font-semibold text-[11px] border"
+                            style={{
+                              backgroundColor: 'var(--bg-page)',
+                              borderColor: 'var(--border)',
+                              color: 'var(--text-secondary)',
+                            }}
+                          >
                             {item.mode || item.interview_mode || 'Technical'}
                           </span>
                         </td>
-                        <td className="py-3.5 px-3 text-slate-500 dark:text-slate-400 font-medium">
+                        <td className="py-3.5 px-3 font-medium" style={{ color: 'var(--text-muted)' }}>
                           {new Date(item.createdAt || item.created_at).toLocaleDateString()}
                         </td>
                         <td className="py-3.5 px-3">
-                          <span className="font-extrabold text-slate-900 dark:text-white font-['Outfit']">
+                          <span className="font-extrabold font-display" style={{ color: 'var(--text-primary)' }}>
                             {Math.round(score)} / 100
                           </span>
                         </td>
                         <td className="py-3.5 px-3">
-                          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/20">
+                          <span
+                            className="px-2.5 py-1 rounded-full text-[10px] font-bold border"
+                            style={{
+                              backgroundColor: 'rgba(78, 156, 110, 0.12)',
+                              borderColor: 'rgba(78, 156, 110, 0.25)',
+                              color: 'var(--accent)',
+                            }}
+                          >
                             Completed
                           </span>
                         </td>
                         <td className="py-3.5 px-3 text-right">
-                          <span className="text-slate-500 dark:text-slate-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors font-bold text-xs">
+                          <span className="font-bold text-xs transition-colors group-hover:text-[var(--accent)]" style={{ color: 'var(--text-muted)' }}>
                             View Report →
                           </span>
                         </td>
@@ -376,7 +482,7 @@ export default function Dashboard() {
               </table>
             </div>
           ) : (
-            <div className="text-center py-12 text-slate-400 text-xs">
+            <div className="text-center py-12 text-xs" style={{ color: 'var(--text-muted)' }}>
               <p>No practice sessions completed yet. Start your first session to begin tracking performance!</p>
             </div>
           )}

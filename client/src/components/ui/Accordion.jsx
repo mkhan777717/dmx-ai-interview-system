@@ -16,25 +16,36 @@ export function Accordion({ items = [] }) {
         return (
           <div
             key={index}
-            className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
-              isOpen
-                ? 'bg-slate-900/80 border-cyan-500/30 shadow-lg shadow-cyan-500/5'
-                : 'glass-card border-white/5 hover:border-white/15'
-            }`}
+            className="rounded-2xl border transition-all duration-300 overflow-hidden"
+            style={{
+              backgroundColor: isOpen ? 'var(--bg-elevated)' : 'var(--bg-elevated)',
+              borderColor: isOpen ? 'var(--accent)' : 'var(--border)',
+              boxShadow: isOpen ? '0 4px 20px -4px rgba(78, 156, 110, 0.15)' : 'none',
+            }}
           >
             <button
               onClick={() => toggle(index)}
               className="w-full p-5 text-left flex items-center justify-between gap-4 cursor-pointer"
             >
-              <span className={`text-base font-bold font-['Outfit'] transition-colors ${
-                isOpen ? 'text-cyan-300' : 'text-white'
-              }`}>
+              <span
+                className="text-base font-bold font-display transition-colors"
+                style={{
+                  color: isOpen ? 'var(--accent)' : 'var(--text-primary)',
+                }}
+              >
                 {item.question}
               </span>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-transform duration-300 ${
-                isOpen ? 'rotate-180 bg-cyan-500/20 text-cyan-300' : 'bg-white/5 text-slate-400'
-              }`}>
-                <HiChevronDown size={16} />
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-transform duration-300 ${
+                  isOpen ? 'rotate-180' : ''
+                }`}
+                style={{
+                  backgroundColor: isOpen ? 'rgba(78, 156, 110, 0.15)' : 'var(--bg-page)',
+                  color: isOpen ? 'var(--accent)' : 'var(--text-muted)',
+                  border: '1px solid var(--border)',
+                }}
+              >
+                <HiChevronDown size={15} />
               </div>
             </button>
 
@@ -44,9 +55,9 @@ export function Accordion({ items = [] }) {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  transition={{ duration: 0.25, ease: 'easeInOut' }}
                 >
-                  <div className="px-5 pb-5 pt-1 text-sm text-slate-300 leading-relaxed border-t border-white/5">
+                  <div className="px-5 pb-5 pt-1 text-sm leading-relaxed border-t" style={{ color: 'var(--text-secondary)', borderColor: 'var(--border)' }}>
                     {item.answer}
                   </div>
                 </motion.div>
